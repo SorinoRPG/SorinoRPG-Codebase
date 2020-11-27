@@ -1,0 +1,6 @@
+Element >> Nature
+Element << Rage
+Rage >> Nature
+Rage << Smart
+Smart >> Element
+Smart << Nature
