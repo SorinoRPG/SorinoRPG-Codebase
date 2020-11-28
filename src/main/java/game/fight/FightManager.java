@@ -6,13 +6,12 @@ import data.ProfileNotFoundException;
 
 import data.files.Logger;
 
-import game.IgnatiamonNotFoundException;
-import game.characters.Ignatiamon;
+import game.SorinoNotFoundException;
+import game.characters.Sorino;
 
 import main.userinterface.Prefix;
 import main.userinterface.UserAction;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -21,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class FightManager {
-    public static ArrayList<Ignatiamon> currentFighters = new ArrayList<>();
-    public static ArrayList<Ignatiamon.DeadIgnatiamon> deadIgnatiamon = new ArrayList<>();
+    public static ArrayList<Sorino> currentFighters = new ArrayList<>();
+    public static ArrayList<Sorino.DeadSorino> deadSorino = new ArrayList<>();
     public static ArrayList<User> users = new ArrayList<>();
     public static ArrayList<Opponent> opponents = new ArrayList<>();
 
@@ -54,10 +53,10 @@ public class FightManager {
 
             EmbedBuilder message = new EmbedBuilder();
 
-            message.setTitle("Specify your ignatiamon " + event.getAuthor().getName());
-            message.setFooter("is choosing their ignatiamon", event.getAuthor().getAvatarUrl());
-            message.setDescription("Choose one of your ignatiamon!");
-            message.addField("Ignatiamon: ", Profile.getProfile(event).getIgnatiamon(), false);
+            message.setTitle("Specify your Sorino " + event.getAuthor().getName());
+            message.setFooter("is choosing their Sorino", event.getAuthor().getAvatarUrl());
+            message.setDescription("Choose one of your Sorino!");
+            message.addField("Sorino: ", Profile.getProfile(event).getSorino(), false);
 
             event.getChannel().sendMessage(message.build()).queue();
         } catch(IndexOutOfBoundsException e){
@@ -74,7 +73,6 @@ public class FightManager {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -90,7 +88,6 @@ public class FightManager {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -108,25 +105,24 @@ public class FightManager {
             try{
                 EmbedBuilder message = new EmbedBuilder();
 
-                Ignatiamon ignatiamon = profile.getSpecificIgnatiamon(
+                Sorino sorino = profile.getSpecificSorino(
                          Prefix.removeFightPrefix(event.getMessage().getContentRaw()));
                 calls++;
-                currentFighters.add(ignatiamon);
-                message.setTitle("Specify your ignatiamon " + users.get(1).getName());
-                message.setFooter("is choosing their ignatiamon", users.get(1).getAvatarUrl());
-                message.setDescription("Choose one of your ignatiamon!");
-                message.addField("Ignatiamon: ", Profile.getProfile(users.get(1), event).getIgnatiamon(), false);
+                currentFighters.add(sorino);
+                message.setTitle("Specify your Sorino " + users.get(1).getName());
+                message.setFooter("is choosing their Sorino", users.get(1).getAvatarUrl());
+                message.setDescription("Choose one of your Sorino!");
+                message.addField("Sorino: ", Profile.getProfile(users.get(1), event).getSorino(), false);
                 event.getChannel().sendMessage(message.build()).queue();
-            } catch (IgnatiamonNotFoundException exc){
+            } catch (SorinoNotFoundException exc){
                 Logger logger =
-                        new Logger("Error in finding Ignatiamon \n" +
+                        new Logger("Error in finding Sorino \n" +
                                 Logger.exceptionAsString(exc));
                 event.getChannel().sendMessage(
-                        "Could not find your Ignatiamon! You can try again!"
+                        "Could not find your Sorino! You can try again!"
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -144,7 +140,6 @@ public class FightManager {
                 ).queue();
                 try{
                     logger1.logError();
-                    logger1.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -160,7 +155,6 @@ public class FightManager {
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -170,23 +164,22 @@ public class FightManager {
             }
         } else if(FightManager.calls == 1){
             try{
-                Ignatiamon ignatiamon = profile.getSpecificIgnatiamon(
+                Sorino sorino = profile.getSpecificSorino(
                         Prefix.removeFightPrefix(event.getMessage().getContentRaw())
                 );
                 calls++;
-                currentFighters.add(ignatiamon);
-            } catch (IgnatiamonNotFoundException exc){
+                currentFighters.add(sorino);
+            } catch (SorinoNotFoundException exc){
                 Logger logger =
-                        new Logger("Error in finding Ignatiamon \n" +
+                        new Logger("Error in finding Sorino \n" +
                                 Logger.exceptionAsString(exc));
                 event.getChannel().sendMessage(
-                        "Could not find your Ignatiamon! You can try again!"
+                        "Could not find your Sorino! You can try again!"
                 ).queue();
                 calls = 1;
                 currentFighters.remove(1);
                 try {
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -275,14 +268,14 @@ public class FightManager {
                         return Optional.of(new GameInfo(users.get(currentFighter + 1), users.get(loserIndex)));
 
                     EmbedBuilder message = new EmbedBuilder();
-                    message.setTitle("Specify your switch-out Ignatiamon " + users.get(1).getName());
-                    message.setFooter("is choosing their ignatiamon", users.get(1).getAvatarUrl());
-                    message.setDescription("Choose one of your ignatiamon! -- suffix with !!");
+                    message.setTitle("Specify your switch-out Sorino " + users.get(1).getName());
+                    message.setFooter("is choosing their Sorino", users.get(1).getAvatarUrl());
+                    message.setDescription("Choose one of your Sorino! -- suffix with !!");
 
-                    ArrayList<Ignatiamon> ignatiamonArrayList = Profile.getProfile(users.get(1), event).getIgnatiamonAsList();
-                    ignatiamonArrayList.removeAll(Ignatiamon.DeadIgnatiamon.asIgnatiamon(deadIgnatiamon));
+                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
+                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
 
-                    message.addField("Ignatiamon: ", ignatiamonArrayList.toString(), false);
+                    message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
                     loserIndex = currentFighter;
                 }  catch (IOException | ClassNotFoundException e) {
@@ -294,7 +287,6 @@ public class FightManager {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -310,7 +302,6 @@ public class FightManager {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -356,14 +347,14 @@ public class FightManager {
 
 
                     EmbedBuilder message = new EmbedBuilder();
-                    message.setTitle("Specify your switch-out Ignatiamon " + users.get(1).getName());
-                    message.setFooter("is choosing their ignatiamon", users.get(1).getAvatarUrl());
-                    message.setDescription("Choose one of your ignatiamon! -- suffix with !!");
+                    message.setTitle("Specify your switch-out Sorino " + users.get(1).getName());
+                    message.setFooter("is choosing their Sorino", users.get(1).getAvatarUrl());
+                    message.setDescription("Choose one of your Sorino! -- suffix with !!");
 
-                    ArrayList<Ignatiamon> ignatiamonArrayList = Profile.getProfile(users.get(1), event).getIgnatiamonAsList();
-                    ignatiamonArrayList.removeAll(Ignatiamon.DeadIgnatiamon.asIgnatiamon(deadIgnatiamon));
+                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
+                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
 
-                    message.addField("Ignatiamon: ", ignatiamonArrayList.toString(), false);
+                    message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
                     loserIndex = currentFighter;
                 }  catch (IOException | ClassNotFoundException e) {
@@ -375,7 +366,6 @@ public class FightManager {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -391,7 +381,6 @@ public class FightManager {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -416,20 +405,20 @@ public class FightManager {
         return Optional.empty();
     }
 
-    public static void addSwitchOut(Ignatiamon switchOut, GuildMessageReceivedEvent event){
+    public static void addSwitchOut(Sorino switchOut, GuildMessageReceivedEvent event){
 
 
         if(currentFighter == 0) {
-            if(deadIgnatiamon.contains(new Ignatiamon.DeadIgnatiamon(switchOut, opponents.get(1))))
-                event.getChannel().sendMessage("That ignatiamon has died!")
+            if(deadSorino.contains(new Sorino.DeadSorino(switchOut, opponents.get(1))))
+                event.getChannel().sendMessage("That Sorino has died!")
                     .queue();
             opponents.set(1,
                     new Opponent(switchOut, event));
             currentFighters.set(1,
                     switchOut);
         } else if(currentFighter == 1){
-            if(deadIgnatiamon.contains(new Ignatiamon.DeadIgnatiamon(switchOut, opponents.get(0))))
-                event.getChannel().sendMessage("That ignatiamon has died!")
+            if(deadSorino.contains(new Sorino.DeadSorino(switchOut, opponents.get(0))))
+                event.getChannel().sendMessage("That Sorino has died!")
                         .queue();
             opponents.set(0,
                     new Opponent(switchOut, event));
@@ -445,17 +434,17 @@ public class FightManager {
             winner = Profile.getProfile(users.get(loserIndex+1), event);
         else
             winner = Profile.getProfile(users.get(loserIndex-1), event);
-        winner.increaseCoins(300);
+        winner.setCoins(300);
         winner.incrementWin();
         winner.incrementXP(200, event.getChannel());
         loser.incrementLoss();
-        loser.decreaseCoins(300);
+        loser.setCoins(-300);
 
         users = new ArrayList<>();
         currentFighters = new ArrayList<>();
         currentFighter = 0;
         opponents = new ArrayList<>();
-        deadIgnatiamon = new ArrayList<>();
+        deadSorino = new ArrayList<>();
         loserIndex = 0;
 
         winner.recreateProfile();

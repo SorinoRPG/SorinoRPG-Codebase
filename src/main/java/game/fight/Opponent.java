@@ -1,24 +1,24 @@
 package game.fight;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Optional;
 
 public class Opponent {
-    private final Ignatiamon ignatiamon;
+    private final Sorino sorino;
     private int health;
     private int energy;
     private final GuildMessageReceivedEvent event;
     private boolean conceded = false;
     private int switchOut = 3;
 
-    Opponent(Ignatiamon ignatiamon, GuildMessageReceivedEvent event){
-        this.ignatiamon = ignatiamon;
+    Opponent(Sorino sorino, GuildMessageReceivedEvent event){
+        this.sorino = sorino;
         this.event = event;
-        this.health = ignatiamon.getHealth();
-        this.energy = ignatiamon.getEnergy();
+        this.health = sorino.getHealth();
+        this.energy = sorino.getEnergy();
     }
     private double damageDecrease = 0;
 
@@ -42,11 +42,11 @@ public class Opponent {
     public Optional<String> takeDamage(Move move){
         if (energy < 0)
             return Optional.of("You have no more energy left!");
-        if(damageDecrease + ignatiamon.getIfWeakness(move.getIgnatiamon()) > 1.00)
-            damageDecrease = 1 - (ignatiamon.getIfWeakness(move.getIgnatiamon())+0.01);
+        if(damageDecrease + sorino.getIfWeakness(move.getSorino()) > 1.00)
+            damageDecrease = 1 - (sorino.getIfWeakness(move.getSorino())+0.01);
         health -= move.getEffect() -
                 (move.getEffect() * damageDecrease) +
-                (move.getEffect() * ignatiamon.getIfWeakness(move.getIgnatiamon()));
+                (move.getEffect() * sorino.getIfWeakness(move.getSorino()));
 
         event.getChannel().sendMessage(
                 move.getDesc()

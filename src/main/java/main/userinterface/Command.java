@@ -5,17 +5,15 @@ import data.ProfileNotFoundException;
 import data.files.Logger;
 
 import game.Coins;
-import game.IgnatiamonNotFoundException;
-import game.characters.Ignatiamon;
+import game.SorinoNotFoundException;
+import game.characters.Sorino;
 import game.characters.starter.Gray;
 import game.fight.FightManager;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -80,7 +78,6 @@ public enum Command {
             ).queue();
             try {
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI) {
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -93,7 +90,6 @@ public enum Command {
             logger = new Logger("Shown rank");
 
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException ioException) {
             logger =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -104,7 +100,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -128,7 +123,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -144,7 +138,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -157,7 +150,6 @@ public enum Command {
             logger = new Logger("Shown rank");
 
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException ioException) {
             logger =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -168,7 +160,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -179,36 +170,19 @@ public enum Command {
     }),
     ERASE_PROFILE(event -> {
         Logger logger = new Logger("Erased profile");
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                        .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equals("Developers") || role.getName().equals("Owner"))
-                .findFirst();
-        if (userRole.isEmpty()) return;
 
-        event.getChannel().sendMessage("Erasing " + event
-                .getMessage()
-                .getMentionedUsers()
-                .get(0).getAsMention() + " profile...").queue();
-
-
+        event.getChannel().sendMessage("Erasing " + event.getAuthor().getName() + " profile...").queue();
         String message = event.getMessage().getContentRaw();
         event.getAuthor().openPrivateChannel()
                 .flatMap(channel -> channel.sendMessage("You have been deleted for: " + message.substring(2,
                         message.indexOf(" "))))
                 .queue();
-        Profile.eraseProfile(event
-                .getMessage()
-                .getMentionedUsers()
-                .get(0), event);
+        Profile.eraseProfile(event.getAuthor(), event);
         event.getChannel().sendMessage("The user has been erased successfully!")
                     .queue();
 
         try{
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException e){
             logger =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -219,7 +193,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -246,7 +219,7 @@ public enum Command {
             event.getChannel().sendMessage(message.build()).queue();
             try {
                 Profile profile = Profile.getProfile(event);
-                profile.increaseCoins(coins);
+                profile.setCoins(coins);
                 profile.incrementXP(coins, event.getChannel());
                 profile.recreateProfile();
             } catch (IOException | ClassNotFoundException e) {
@@ -258,7 +231,6 @@ public enum Command {
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -274,7 +246,6 @@ public enum Command {
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -285,17 +256,17 @@ public enum Command {
         }
         else {
             boolean didCatch = new Random().nextInt(100) > 85;
-            Ignatiamon ignatiamon = Ignatiamon.AllIgnatiamon.getRandom(event);
+            Sorino sorino = Sorino.AllSorino.getRandom(event);
             if(didCatch){
                 EmbedBuilder message = new EmbedBuilder();
                 message.setTitle(event.getAuthor().getName() + " found something!");
-                message.setDescription("Successfully found a " + ignatiamon.getName());
-                message.setFooter(" successfully found a " + ignatiamon.getName(),
+                message.setDescription("Successfully found a " + sorino.getName());
+                message.setFooter(" successfully found a " + sorino.getName(),
                         event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessage(message.build()).queue();
                 try {
                     Profile profile = Profile.getProfile(event);
-                    profile.addIgnatiamon(ignatiamon);
+                    profile.addSorino(sorino);
                     profile.incrementXP(30, event.getChannel());
                     profile.recreateProfile();
                 } catch (IOException | ClassNotFoundException e) {
@@ -307,7 +278,6 @@ public enum Command {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -324,7 +294,6 @@ public enum Command {
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -333,13 +302,12 @@ public enum Command {
                     }
                 }
             } else
-                event.getChannel().sendMessage("You attempted to catch a " + ignatiamon.getName() +
+                event.getChannel().sendMessage("You attempted to catch a " + sorino.getName() +
                     " but failed!").queue();
         }
         try {
             logger = new Logger("Search");
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -350,7 +318,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -365,19 +332,18 @@ public enum Command {
         String rawMess = event.getMessage().getContentRaw();
         if(rawMess.endsWith("!!")){
             try {
-                FightManager.addSwitchOut(Ignatiamon.AllIgnatiamon.getIgnatiamon(
+                FightManager.addSwitchOut(Sorino.AllSorino.getIgnatiamon(
                         rawMess.substring(2, rawMess.indexOf("!"))
                 ), event);
-            } catch(IgnatiamonNotFoundException e){
+            } catch(SorinoNotFoundException e){
                 logger =
-                        new Logger("Error in finding ignatiamon\n" +
+                        new Logger("Error in finding Sorino\n" +
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
                         "Could not find profile!"
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -392,7 +358,7 @@ public enum Command {
 
             FightManager.users =
                     FightManager.fightPhase1(event);
-        }else if(Ignatiamon.AllIgnatiamon.isIgnatiamon(rawMess)){
+        }else if(Sorino.AllSorino.isIgnatiamon(rawMess)){
             try {
                 FightManager.fightPhase2(event,
                         Profile.getProfile(event));
@@ -405,7 +371,6 @@ public enum Command {
                 ).queue();
                 try{
                     logger1.logError();
-                    logger1.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -421,7 +386,6 @@ public enum Command {
                 ).queue();
                 try{
                     logger.logError();
-                    logger.closeLogger();
                 } catch (IOException excI){
                     event.getChannel().sendMessage(
                             "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -461,7 +425,6 @@ public enum Command {
                     ).queue();
                     try{
                         logger1.logError();
-                        logger1.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -477,7 +440,6 @@ public enum Command {
                     ).queue();
                     try{
                         logger1.logError();
-                        logger1.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -491,7 +453,6 @@ public enum Command {
         try {
             logger = new Logger("Started fight");
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -501,7 +462,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -531,7 +491,6 @@ public enum Command {
             System.out.println(Logger.exceptionAsString(e));
             try {
                 logger.logError();
-                logger.closeLogger();
                 return;
             } catch (IOException exc){
                 event.getChannel().sendMessage(
@@ -554,7 +513,6 @@ public enum Command {
                 .queue();
         try {
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -564,7 +522,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -596,7 +553,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -612,7 +568,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -622,7 +577,6 @@ public enum Command {
         }
         try {
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -632,7 +586,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -651,7 +604,7 @@ public enum Command {
             //Gets all user info
             ArrayList<String> userInfo = Profile.getProfileAsString(event.getAuthor(), event);
             Profile.eraseProfile(event.getAuthor(), event);
-            ArrayList<Ignatiamon> userIgnatiamon = new ArrayList<>();
+            ArrayList<Sorino> userSorino = new ArrayList<>();
             StringBuilder listBuild = new StringBuilder(userInfo.get(0));
 
             //Counts the occurrences of regex ","
@@ -660,26 +613,25 @@ public enum Command {
             int occurrences = 0;
             while(matcher.find()) occurrences++;
 
-            //Adds each element of the "list" as an Ignatiamon
+            //Adds each element of the "list" as an Sorino
             for(int i = 0; i < occurrences; i++){
                 try {
-                    userIgnatiamon.add(Ignatiamon.AllIgnatiamon.getIgnatiamon(listBuild
+                    userSorino.add(Sorino.AllSorino.getIgnatiamon(listBuild
                             .substring(0,
                                     listBuild
                                             .indexOf(","))));
 
                     //Deletes latest element in the list
                     listBuild.delete(0, listBuild.indexOf(",") + 1);
-                } catch(IgnatiamonNotFoundException e){
+                } catch(SorinoNotFoundException e){
                     Logger logger =
-                            new Logger("Error in finding ignatiamon\n" +
+                            new Logger("Error in finding Sorino\n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
                             "Could not find profile!"
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -688,7 +640,7 @@ public enum Command {
                     }
                 }
             }
-            Profile newProfile = new Profile(userIgnatiamon,
+            Profile newProfile = new Profile(userSorino,
                     new Coins(Integer.parseInt(userInfo.get(1).substring(7))),
                     event.getAuthor().getName(),
                     Integer.parseInt(userInfo.get(2).substring(6)),
@@ -706,7 +658,6 @@ public enum Command {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -722,328 +673,6 @@ public enum Command {
             ).queue();
             try{
                 logger1.logError();
-                logger1.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        }
-    }),
-    AWARD_OP(event -> {
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                        .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equals("Developers") || role.getName().equals("Owner"))
-                .findFirst();
-        if(userRole.isEmpty()) return;
-        try {
-            event.getChannel().sendMessage("You are eligible to Award OP's!").queue();
-            String message = event.getMessage().getContentRaw();
-            User awardee = event.getMessage().getMentionedUsers().get(0);
-            Profile awardeeProfile = Profile.getProfile(awardee, event);
-            awardeeProfile.addIgnatiamon(Ignatiamon.AllIgnatiamon.getOP(
-                    message.substring(2,
-                            event.getMessage().getContentRaw().indexOf(" "))
-            ));
-
-            awardeeProfile.recreateProfile();
-            try {
-                Logger logger = new Logger("Awarded OP Ignatiamon");
-                logger.logAction();
-                logger.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            Logger logger1 =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue();
-            try{
-                logger1.logError();
-                logger1.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        } catch (ProfileNotFoundException e) {
-            Logger logger =
-                    new Logger("Error in finding Profile \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile!"
-            ).queue();
-            try{
-                logger.logError();
-                logger.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        } catch(IgnatiamonNotFoundException e){
-            Logger logger =
-                    new Logger("Error in finding ignatiamon\n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile!"
-            ).queue();
-            try{
-                logger.logError();
-                logger.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        }
-    }),
-    /* TODO In progress
-    RETRACT_OP(event -> {
-        if(!event.getAuthor().getName().equalsIgnoreCase("DentedHead") ||
-            !event.getAuthor().getName().equalsIgnoreCase("DevXtra"))
-            return;
-        try {
-            event.getChannel().sendMessage("You are eligible to Award OP's!").queue();
-            String message = event.getMessage().getContentRaw();
-            User awardee = event.getMessage().getMentionedUsers().get(0);
-            Profile awardeeProfile = Profile.getProfile(awardee);
-            awardeeProfile.removeIgnatiamon(Ignatiamon.AllIgnatiamon.getOP(
-                    message.substring(2,
-                            event.getMessage().getContentRaw().indexOf(" "))
-            ));
-            awardeeProfile.recreateProfile();
-            try {
-                Logger logger = new Logger("Retracted OP Ignatiamon");
-                logger.logAction();
-                logger.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            Logger logger1 =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue();
-            try{
-                logger1.logError();
-                logger1.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        } catch (ProfileNotFoundException e) {
-            Logger logger =
-                    new Logger("Error in finding Profile \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile!"
-            ).queue();
-            try{
-                logger.logError();
-                logger.closeLogger();
-            } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
-            }
-        }
-    }), */
-    ADD_IGNATIAMON(event -> {
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                        .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equals("Developers"))
-                .findFirst();
-
-        if (userRole.isPresent()){
-            event.getChannel().sendMessage("You are eligible to give an Ignatiamon").queue();
-            try {
-                Profile profile = Profile.getProfile(event
-                        .getMessage()
-                        .getMentionedUsers()
-                        .get(0), event);
-                profile.addIgnatiamon(Ignatiamon
-                        .AllIgnatiamon
-                        .getIgnatiamon(event
-                                .getMessage()
-                                .getContentRaw()
-                                .substring(2,
-                        event.getMessage().getContentRaw().indexOf(" "))));
-                profile.recreateProfile();
-            } catch (IOException | ClassNotFoundException e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Could not find profile due to IO and Classes "
-                ).queue();
-                try{
-                    logger1.logError();
-                    logger1.closeLogger();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            } catch (ProfileNotFoundException e) {
-                Logger logger =
-                        new Logger("Error in finding Profile \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Could not find profile!"
-                ).queue();
-                try{
-                    logger.logError();
-                    logger.closeLogger();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            } catch(IgnatiamonNotFoundException e){
-                Logger logger =
-                        new Logger("Error in finding ignatiamon\n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Could not find profile!"
-                ).queue();
-                try{
-                    logger.logError();
-                    logger.closeLogger();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            }
-        }
-    }),
-    /* TODO In progress
-    REMOVE_IGNATIAMON(event -> {
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equals("Developers"))
-                .findFirst();
-
-        if (userRole.isPresent()){
-            event.getChannel().sendMessage("You are eligible to remove Ignatiamon").queue();
-            try {
-                Profile profile = Profile.getProfile(event
-                        .getMessage()
-                        .getMentionedUsers()
-                        .get(0));
-                profile.removeIgnatiamon(Ignatiamon
-                        .AllIgnatiamon
-                        .getIgnatiamon(event
-                                .getMessage()
-                                .getContentRaw()
-                                .substring(2,
-                                        event.getMessage().getContentRaw().indexOf(" "))));
-                profile.recreateProfile();
-            } catch (IOException | ClassNotFoundException e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Could not find profile due to IO and Classes "
-                ).queue();
-                try{
-                    logger1.logError();
-                    logger1.closeLogger();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            } catch (ProfileNotFoundException e) {
-                Logger logger =
-                        new Logger("Error in finding Profile \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Could not find profile!"
-                ).queue();
-                try{
-                    logger.logError();
-                    logger.closeLogger();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            }
-        }
-    }),*/
-    GET_LOGS(event -> {
-        Logger logger = new Logger("Logs requested");
-
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                        .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equals("Developers"))
-                .findFirst();
-        if (userRole.isEmpty()) return;
-
-        event.getAuthor().openPrivateChannel()
-                .flatMap(channel -> channel.sendFile(
-                        new File("/Users/Emman/" +
-                                "IdeaProjects/Ignatiamon!/src/main/java/data/files/ActionLogs.log")))
-                .queue();
-        event.getAuthor().openPrivateChannel()
-                .flatMap(channel -> channel.sendFile(
-                        new File("/Users/Emman/" +
-                                "IdeaProjects/Ignatiamon!/src/main/java/data/files/ErrorLogs.log")))
-                .queue();
-        event.getChannel().sendMessage("I have sent the Logs in a DM to " + event.getAuthor().getAsMention())
-                .queue();
-
-        try {
-            logger.logAction();
-            logger.closeLogger();
-        } catch (IOException e){
-            Logger logger1 =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-
-            event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue();
-            try{
-                logger1.logError();
-                logger1.closeLogger();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -1062,7 +691,6 @@ public enum Command {
         try{
             logger.logError();
             logger.logAction();
-            logger.closeLogger();
         } catch (IOException excI){
             event.getChannel().sendMessage(
                     "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -1082,14 +710,9 @@ public enum Command {
             {
                 put(Prefix.PrefixString.FIGHT, Command.FIGHT);
                 put(Prefix.PrefixString.SEARCH, Command.SEARCH);
-                put(Prefix.PrefixString.AWARD_OP, Command.AWARD_OP);
-//                put(Prefix.PrefixString.RETRACT_OP, Command.RETRACT_OP);
                 put(Prefix.PrefixString.SEE_PROFILE, Command.SEE_PROFILE);
                 put(Prefix.PrefixString.UPDATE_PROFILE, Command.UPDATE_PROFILE);
                 put(Prefix.PrefixString.CREATE_PROFILE, Command.CREATE_PROFILE);
-                put(Prefix.PrefixString.ADD_IGNATIAMON, Command.ADD_IGNATIAMON);
-//                put(Prefix.PrefixString.REMOVE_IGNATIAMON, Command.REMOVE_IGNATIAMON);
-                put(Prefix.PrefixString.GET_LOGS, Command.GET_LOGS);
                 put(Prefix.PrefixString.ERASE_PROFILE, Command.ERASE_PROFILE);
                 put(Prefix.PrefixString.SEE_RANK, Command.SEE_RANK);
                 put(Prefix.PrefixString.LEADERBOARD, Command.LEADERBOARD);

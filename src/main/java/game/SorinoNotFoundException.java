@@ -1,10 +1,10 @@
 package game;
 
 
-public class IgnatiamonNotFoundException extends Exception{
+public class SorinoNotFoundException extends Exception{
     String cause;
 
-    public IgnatiamonNotFoundException(String cause){
+    public SorinoNotFoundException(String cause){
         this.cause = cause;
     }
 

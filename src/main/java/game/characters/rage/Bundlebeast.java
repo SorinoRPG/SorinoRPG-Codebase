@@ -1,6 +1,6 @@
 package game.characters.rage;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Bundlebeast extends Rage implements Ignatiamon {
+public class Bundlebeast extends Rage implements Sorino {
     @Override
     public int getHealth() {
         return 340;
@@ -25,13 +25,13 @@ public class Bundlebeast extends Rage implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Bundlebeast") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Bundlebeast") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Bundle Run
@@ -39,8 +39,8 @@ public class Bundlebeast extends Rage implements Ignatiamon {
             false, 4,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636582127042580/c8e882ed12a4e9165ed40165ee9a28b0.png");
     @Override
-    public Move customRageMove(Ignatiamon initiator) {
-        bundleRun.addIgnatiamon(initiator);
+    public Move customRageMove(Sorino initiator) {
+        bundleRun.addSorino(initiator);
         return bundleRun;
     }
 
@@ -52,7 +52,7 @@ public class Bundlebeast extends Rage implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "BUNDLE RUN": return Optional.ofNullable(customRageMove(initiator));
             case "GOUGE": return Optional.ofNullable(super.gouge(initiator));

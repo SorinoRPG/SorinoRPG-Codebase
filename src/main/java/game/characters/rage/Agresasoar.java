@@ -1,6 +1,6 @@
 package game.characters.rage;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Agresasoar extends Rage implements Ignatiamon {
+public class Agresasoar extends Rage implements Sorino {
     @Override
     public int getHealth() {
         return 315;
@@ -25,13 +25,13 @@ public class Agresasoar extends Rage implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Agresasoar") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Agresasoar") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Reckless
@@ -39,8 +39,8 @@ public class Agresasoar extends Rage implements Ignatiamon {
             false, 4,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636306397298708/d4ngiyr-c99998eb-3b87-4c57-8a67-ddf320cbb08d.png");
     @Override
-    public Move customRageMove(Ignatiamon initiator) {
-        reckless.addIgnatiamon(initiator);
+    public Move customRageMove(Sorino initiator) {
+        reckless.addSorino(initiator);
         return reckless;
     }
 
@@ -52,7 +52,7 @@ public class Agresasoar extends Rage implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "RECKLESS": return Optional.ofNullable(customRageMove(initiator));
             case "GOUGE": return Optional.ofNullable(super.gouge(initiator));

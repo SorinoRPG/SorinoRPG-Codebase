@@ -45,14 +45,9 @@ public class Prefix {
     public static boolean assertPrefix(Message command){
         return command.getContentRaw().startsWith(PrefixString.FIGHT.prefix())
                 || command.getContentRaw().startsWith(PrefixString.SEARCH.prefix())
-                || command.getContentRaw().startsWith(PrefixString.AWARD_OP.prefix())
-//                || command.getContentRaw().startsWith(PrefixString.RETRACT_OP.prefix())
                 || command.getContentRaw().startsWith(PrefixString.SEE_PROFILE.prefix())
                 || command.getContentRaw().startsWith(PrefixString.CREATE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.ADD_IGNATIAMON.prefix())
-//                || command.getContentRaw().startsWith(PrefixString.REMOVE_IGNATIAMON.prefix())
                 || command.getContentRaw().startsWith(PrefixString.UPDATE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.GET_LOGS.prefix())
                 || command.getContentRaw().startsWith(PrefixString.ERASE_PROFILE.prefix())
                 || command.getContentRaw().startsWith(PrefixString.SEE_RANK.prefix())
                 || command.getContentRaw().startsWith(PrefixString.LEADERBOARD.prefix());
@@ -111,13 +106,6 @@ public class Prefix {
             public String prefix() {
                 return "-R";
             }
-        }
-        ,
-        GET_LOGS() {
-            @Override
-            public String prefix() {
-                return "-^";
-            }
         },
         FIGHT() {
             @Override
@@ -130,27 +118,13 @@ public class Prefix {
             public String prefix() {
                 return "-*";
             }
-        }
-        ,
+        },
         SEARCH() {
             @Override
             public String prefix() {
                 return "--";
             }
         },
-        AWARD_OP() {
-            @Override
-            public String prefix() {
-                return "-/";
-            }
-        },
-        /*
-        RETRACT_OP() {
-            @Override
-            public String prefix() {
-                return "-\\";
-            }
-        },*/
         CREATE_PROFILE(){
             @Override
             public String prefix(){
@@ -162,19 +136,7 @@ public class Prefix {
             public String prefix(){
                 return "-)";
             }
-        },
-        ADD_IGNATIAMON(){
-            @Override
-            public String prefix() {
-                return "-%";
-            }
         };
-        /*REMOVE_IGNATIAMON(){
-            @Override
-            public String prefix() {
-                return "-$";
-            }
-        };*/
 
         /**
          * Used to convert a prefix in a {@link String} form to a {@link PrefixString}

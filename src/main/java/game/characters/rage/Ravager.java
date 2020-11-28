@@ -1,6 +1,6 @@
 package game.characters.rage;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Ravager extends Rage implements Ignatiamon{
+public class Ravager extends Rage implements Sorino {
     @Override
     public int getHealth() {
         return 330;
@@ -25,13 +25,13 @@ public class Ravager extends Rage implements Ignatiamon{
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Ravager") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Ravager") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     // Scavenge
@@ -39,8 +39,8 @@ public class Ravager extends Rage implements Ignatiamon{
             true, 50,
             "https://cdn.discordapp.com/attachments/768534237493985291/777637163776344064/9k.png");
     @Override
-    public Move customRageMove(Ignatiamon initiator) {
-        scavenge.addIgnatiamon(initiator);
+    public Move customRageMove(Sorino initiator) {
+        scavenge.addSorino(initiator);
         return scavenge;
     }
 
@@ -52,7 +52,7 @@ public class Ravager extends Rage implements Ignatiamon{
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "SCAVENGE": return Optional.of(customRageMove(initiator));
             case "GOUGE": return Optional.of(gouge(initiator));

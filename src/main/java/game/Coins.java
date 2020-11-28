@@ -9,11 +9,8 @@ public class Coins implements Serializable {
         this.amount = amount;
     }
 
-    public void increaseCoins(int increase){
-        this.amount += increase;
-    }
-    public void decreaseCoins(int increase){
-        this.amount -= increase;
+    public void setCoins(int coins){
+        amount += coins;
     }
     public int getCoins(){
         return this.amount;

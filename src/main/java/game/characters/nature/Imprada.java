@@ -1,6 +1,6 @@
 package game.characters.nature;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Imprada extends Nature implements Ignatiamon{
+public class Imprada extends Nature implements Sorino {
     @Override
     public int getHealth() {
         return 385;
@@ -25,13 +25,13 @@ public class Imprada extends Nature implements Ignatiamon{
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Imprada") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Imprada") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Enhance
@@ -39,8 +39,8 @@ public class Imprada extends Nature implements Ignatiamon{
             true, 50,
             "https://cdn.discordapp.com/attachments/768534237493985291/777631094216327168/68-684174_increase-png-green-upward-arrow-png.png");
     @Override
-    public Move customNatureMove(Ignatiamon initiator) {
-        enhance.addIgnatiamon(initiator);
+    public Move customNatureMove(Sorino initiator) {
+        enhance.addSorino(initiator);
         return enhance;
     }
 
@@ -52,7 +52,7 @@ public class Imprada extends Nature implements Ignatiamon{
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "ENHANCE": return Optional.ofNullable(customNatureMove(initiator));
             case "POISON IVY": return Optional.ofNullable(super.poisonIvy(initiator));

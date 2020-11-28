@@ -1,21 +1,21 @@
 package game.fight;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 
 import java.io.Serializable;
 
 public class Move implements Serializable {
     private final double effect;
     private final String desc;
-    private Ignatiamon ignatiamon;
+    private Sorino sorino;
     private final boolean defensive;
     private final int energy;
     private final String imageUrl;
 
-    public Move(double effect, String desc, Ignatiamon initiator, boolean defensive, int energy, String imageUrl) {
+    public Move(double effect, String desc, Sorino initiator, boolean defensive, int energy, String imageUrl) {
         this.effect = effect;
         this.desc = desc;
-        this.ignatiamon = initiator;
+        this.sorino = initiator;
         this.defensive = defensive;
         this.energy = energy;
         this.imageUrl = imageUrl;
@@ -27,8 +27,8 @@ public class Move implements Serializable {
         this.energy = energy;
         this.imageUrl = imageUrl;
     }
-    public void addIgnatiamon(Ignatiamon initiator){
-        this.ignatiamon = initiator;
+    public void addSorino(Sorino initiator){
+        this.sorino = initiator;
     }
 
     public boolean isDefensive() {
@@ -40,8 +40,8 @@ public class Move implements Serializable {
     public String getDesc() {
         return this.desc;
     }
-    public Ignatiamon getIgnatiamon() {
-        return this.ignatiamon;
+    public Sorino getSorino() {
+        return this.sorino;
     }
     public int getEnergy(){
         return energy;

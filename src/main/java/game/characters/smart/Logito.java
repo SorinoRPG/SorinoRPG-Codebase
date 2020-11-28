@@ -1,6 +1,6 @@
 package game.characters.smart;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Logito extends Smart implements Ignatiamon {
+public class Logito extends Smart implements Sorino {
     @Override
     public int getHealth() {
         return 350;
@@ -25,13 +25,13 @@ public class Logito extends Smart implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Logito") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Logito") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Adapt
@@ -39,8 +39,8 @@ public class Logito extends Smart implements Ignatiamon {
             true, 40,
             "https://cdn.discordapp.com/attachments/768534237493985291/777638669531873290/Z.png");
     @Override
-    public Move customSmartMove(Ignatiamon initiator) {
-        adapt.addIgnatiamon(initiator);
+    public Move customSmartMove(Sorino initiator) {
+        adapt.addSorino(initiator);
         return adapt;
     }
 
@@ -52,7 +52,7 @@ public class Logito extends Smart implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "CONFUSE": return Optional.of(confuse(initiator));
             case "MIND TAP": return Optional.of(mindTap(initiator));

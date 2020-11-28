@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Shop {
-
     static ArrayList<Item> shop;
 
-    public static void createShop(){
+    public void createShop(){
         shop = new ArrayList<>(Arrays.asList(new Item("Revive",
                                                     1000, "Revives a specific Ignatiamon"),
                                              new Item("Ignaball",

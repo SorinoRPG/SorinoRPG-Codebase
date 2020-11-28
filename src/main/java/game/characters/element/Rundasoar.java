@@ -1,6 +1,6 @@
 package game.characters.element;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Rundasoar extends Element implements Ignatiamon {
+public class Rundasoar extends Element implements Sorino {
     @Override
     public int getHealth() {
         return 350;
@@ -25,13 +25,13 @@ public class Rundasoar extends Element implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Rundasoar") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Rundasoar") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Train
@@ -39,8 +39,8 @@ public class Rundasoar extends Element implements Ignatiamon {
             true, 60,
             "https://cdn.discordapp.com/attachments/768534237493985291/777629361427316766/barbell_abs_main.png");
     @Override
-    public Move customElementMove(Ignatiamon initiator) {
-        train.addIgnatiamon(initiator);
+    public Move customElementMove(Sorino initiator) {
+        train.addSorino(initiator);
         return train;
     }
 
@@ -52,7 +52,7 @@ public class Rundasoar extends Element implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "HARNESS": return Optional.ofNullable(harness(initiator));
             case "BURN": return Optional.ofNullable(burn(initiator));

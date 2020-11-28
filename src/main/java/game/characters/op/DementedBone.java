@@ -1,6 +1,6 @@
 package game.characters.op;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DementedBone extends OP implements Ignatiamon {
+public class DementedBone extends OP implements Sorino {
     @Override
     public int getHealth() {
         return 700;
@@ -25,12 +25,12 @@ public class DementedBone extends OP implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("DementedBone") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("DementedBone") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
+    public double getIfWeakness(Sorino sorino) {
         return 0;
     }
 
@@ -42,7 +42,7 @@ public class DementedBone extends OP implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "SCRATCH": return Optional.ofNullable(scratch(initiator));
             case "PUNCH": return Optional.ofNullable(punch(initiator));
@@ -67,8 +67,8 @@ public class DementedBone extends OP implements Ignatiamon {
             false, 30,
             "https://cdn.discordapp.com/attachments/768534237493985291/777632401408917524/pwwnGkoX5U6N7du92E9BwhHZu32RBhA44QxsmST2HchbDoW0aKdzLaMZDNBcKyB3-YskXR6tFG7gfDzwP7jowPayqvBIUws.png");
     @Override
-    public Move customOPMove(Ignatiamon initiator) {
-        dementIt.addIgnatiamon(initiator);
+    public Move customOPMove(Sorino initiator) {
+        dementIt.addSorino(initiator);
         return dementIt;
     }
 

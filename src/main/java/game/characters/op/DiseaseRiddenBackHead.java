@@ -1,6 +1,6 @@
 package game.characters.op;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DiseaseRiddenBackHead extends OP implements Ignatiamon {
+public class DiseaseRiddenBackHead extends OP implements Sorino {
     @Override
     public int getHealth() {
         return 700;
@@ -25,12 +25,12 @@ public class DiseaseRiddenBackHead extends OP implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("DiseaseRiddenBackHead") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("DiseaseRiddenBackHead") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
+    public double getIfWeakness(Sorino sorino) {
         return 0;
     }
 
@@ -42,7 +42,7 @@ public class DiseaseRiddenBackHead extends OP implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "SCRATCH": return Optional.of(scratch(initiator));
             case "PUNCH": return Optional.of(punch(initiator));
@@ -67,8 +67,8 @@ public class DiseaseRiddenBackHead extends OP implements Ignatiamon {
             false, 10,
             "https://cdn.discordapp.com/attachments/768534237493985291/777632800341229588/DTthCSt77XxueHZxyMn5CA.png");
     @Override
-    public Move customOPMove(Ignatiamon initiator) {
-        infect.addIgnatiamon(initiator);
+    public Move customOPMove(Sorino initiator) {
+        infect.addSorino(initiator);
         return infect;
     }
 

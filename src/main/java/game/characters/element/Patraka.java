@@ -1,6 +1,6 @@
 package game.characters.element;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Patraka extends Element implements Ignatiamon {
+public class Patraka extends Element implements Sorino {
     @Override
     public int getHealth() {
         return 295;
@@ -25,13 +25,13 @@ public class Patraka extends Element implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Patraka") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Patraka") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Recycle
@@ -39,8 +39,8 @@ public class Patraka extends Element implements Ignatiamon {
             true, 35,
             "https://cdn.discordapp.com/attachments/768534237493985291/777624443618459698/IMG_E2375.JPG");
     @Override
-    public Move customElementMove(Ignatiamon initiator) {
-        recycle.addIgnatiamon(initiator);
+    public Move customElementMove(Sorino initiator) {
+        recycle.addSorino(initiator);
         return recycle;
     }
 
@@ -52,7 +52,7 @@ public class Patraka extends Element implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "HARNESS": return Optional.ofNullable(harness(initiator));
             case "BURN": return Optional.ofNullable(burn(initiator));

@@ -1,6 +1,6 @@
 package game.characters.smart;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Zookratar extends Smart implements Ignatiamon {
+public class Zookratar extends Smart implements Sorino {
     @Override
     public int getHealth() {
         return 370;
@@ -25,13 +25,13 @@ public class Zookratar extends Smart implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Zookratar") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Zookratar") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     @Override
@@ -46,13 +46,13 @@ public class Zookratar extends Smart implements Ignatiamon {
              false, 40,
             "https://cdn.discordapp.com/attachments/768534237493985291/777638811655340042/9k.png");
     @Override
-    public Move customSmartMove(Ignatiamon initiator) {
-        jungleBrain.addIgnatiamon(initiator);
+    public Move customSmartMove(Sorino initiator) {
+        jungleBrain.addSorino(initiator);
         return jungleBrain;
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "JUNGLE BRAIN": return Optional.of(customSmartMove(initiator));
             case "CONFUSE": return Optional.of(confuse(initiator));

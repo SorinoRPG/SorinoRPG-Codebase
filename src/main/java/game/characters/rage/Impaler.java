@@ -1,6 +1,6 @@
 package game.characters.rage;
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Impaler extends Rage implements Ignatiamon{
+public class Impaler extends Rage implements Sorino {
     @Override
     public int getHealth() {
         return 315;
@@ -25,13 +25,13 @@ public class Impaler extends Rage implements Ignatiamon{
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Impaler") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Impaler") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
-        return super.getIfWeakness(ignatiamon);
+    public double getIfWeakness(Sorino sorino) {
+        return super.getIfWeakness(sorino);
     }
 
     //Impale
@@ -39,8 +39,8 @@ public class Impaler extends Rage implements Ignatiamon{
              false, 5,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636770866659428/rsz_1derelict_dragons_teeth_5262.png");
     @Override
-    public Move customRageMove(Ignatiamon initiator) {
-        impale.addIgnatiamon(initiator);
+    public Move customRageMove(Sorino initiator) {
+        impale.addSorino(initiator);
         return impale;
     }
 
@@ -52,7 +52,7 @@ public class Impaler extends Rage implements Ignatiamon{
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "IMPALE": return Optional.ofNullable(customRageMove(initiator));
             case "GOUGE": return Optional.ofNullable(super.gouge(initiator));

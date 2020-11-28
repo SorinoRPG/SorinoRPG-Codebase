@@ -1,7 +1,7 @@
 package game.characters.starter;
 
 
-import game.characters.Ignatiamon;
+import game.characters.Sorino;
 import game.fight.Move;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class Gray extends Starter implements Ignatiamon {
+public class Gray extends Starter implements Sorino {
     @Override
     public int getHealth() {
         return 300;
@@ -26,12 +26,12 @@ public class Gray extends Starter implements Ignatiamon {
     }
 
     @Override
-    public Optional<Ignatiamon> getIgnatiamon(String ignatiamon) {
-        return ignatiamon.equalsIgnoreCase("Gray") ? Optional.of(this) : Optional.empty();
+    public Optional<Sorino> getSorino(String sorino) {
+        return sorino.equalsIgnoreCase("Gray") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public double getIfWeakness(Ignatiamon ignatiamon) {
+    public double getIfWeakness(Sorino sorino) {
         return super.getIfWeakness();
     }
 
@@ -41,7 +41,7 @@ public class Gray extends Starter implements Ignatiamon {
     }
 
     @Override
-    public Optional<Move> getMove(String move, Ignatiamon initiator) {
+    public Optional<Move> getMove(String move, Sorino initiator) {
         switch (move.toUpperCase()){
             case "SCRATCH":
                 return Optional.of(scratch(initiator));

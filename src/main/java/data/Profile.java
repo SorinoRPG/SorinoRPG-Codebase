@@ -2,8 +2,8 @@ package data;
 
 import data.files.Logger;
 import game.Coins;
-import game.IgnatiamonNotFoundException;
-import game.characters.Ignatiamon;
+import game.SorinoNotFoundException;
+import game.characters.Sorino;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Profile implements Serializable {
-    private final ArrayList<Ignatiamon> userIgnatiamon;
+    private final ArrayList<Sorino> userSorino;
     private final Coins coins;
     private final String ID;
     private final String imageUrl;
@@ -28,9 +28,9 @@ public class Profile implements Serializable {
     private int xp = 0;
 
 
-    public Profile(ArrayList<Ignatiamon> ignatiamon, Coins coins,
+    public Profile(ArrayList<Sorino> sorino, Coins coins,
                    String name, int wins, int loses, String imageUrl, Guild guild){
-        this.userIgnatiamon = ignatiamon;
+        this.userSorino = sorino;
         this.coins = coins;
         this.ID = name;
         this.wins = wins;
@@ -39,31 +39,28 @@ public class Profile implements Serializable {
         this.guild = guild;
     }
 
-    public Ignatiamon getSpecificIgnatiamon(String ignatiamonStr) throws IgnatiamonNotFoundException {
-        for(Ignatiamon ignatiamon:
-                userIgnatiamon){
-            if(ignatiamon.getIgnatiamon(ignatiamonStr).isPresent())
-                return ignatiamon;
+    public Sorino getSpecificSorino(String sorinoStr) throws SorinoNotFoundException {
+        for(Sorino sorino :
+                userSorino){
+            if(sorino.getSorino(sorinoStr).isPresent())
+                return sorino;
         }
-        throw new IgnatiamonNotFoundException(
-                ignatiamonStr + " was not found in the Profile!");
+        throw new SorinoNotFoundException(
+                sorinoStr + " was not found in the Profile!");
     }
-    public String getIgnatiamon(){
-        return userIgnatiamon.toString();
+    public String getSorino(){
+        return userSorino.toString();
     }
-    public ArrayList<Ignatiamon> getIgnatiamonAsList(){
-        return userIgnatiamon;
+    public ArrayList<Sorino> getSorinoAsList(){
+        return userSorino;
     }
-    public void addIgnatiamon(Ignatiamon ignatiamon){
-        if(userIgnatiamon.contains(ignatiamon))
+    public void addSorino(Sorino sorino){
+        if(userSorino.contains(sorino))
             return;
-        this.userIgnatiamon.add(ignatiamon);
+        this.userSorino.add(sorino);
     }
-    public void decreaseCoins(int amount){
-        coins.decreaseCoins(amount);
-    }
-    public void increaseCoins(int amount){
-        coins.increaseCoins(amount);
+    public void setCoins(int amount){
+        coins.setCoins(amount);
     }
     public void incrementWin(){
         this.wins++;
@@ -103,7 +100,6 @@ public class Profile implements Serializable {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 channel.sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -114,7 +110,8 @@ public class Profile implements Serializable {
     }
 
     public static Profile[] allProfiles(int size) throws IOException, ClassNotFoundException {
-        File directory = new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files");
+        File directory = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files");
         File[] files = directory.listFiles();
         Profile[] profiles = new Profile[size];
         for (int i = 0; i == files.length-1; i++) {
@@ -126,7 +123,8 @@ public class Profile implements Serializable {
     }
 
     public static int getUserSize(Guild guild){
-        File directory = new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files");
+        File directory = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files");
         File[] files = directory.listFiles();
         int occurrences = 0;
         for (File file : files)
@@ -152,7 +150,6 @@ public class Profile implements Serializable {
             ).queue();
             try{
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException excI){
                 channel.sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -174,11 +171,12 @@ public class Profile implements Serializable {
         FileWriter fileWriter =
                 new FileWriter(
                         new File(
-                                "/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@" +
+                                "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                        "/src/main/java/data/files/@" +
                                         guild.getId() + ID + ".txt"
                         )
                 );
-        fileWriter.write("Ignatiamon: " + userIgnatiamon.toString() + "\n" +
+        fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
@@ -187,7 +185,8 @@ public class Profile implements Serializable {
                 new ObjectOutputStream(
                         new FileOutputStream(
                                 new File(
-                                        "/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@" +
+                                        "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                                "/src/main/java/data/files/@@" +
                                         guild.getId()
                                         + ID+ ".txt")
                         )
@@ -206,13 +205,14 @@ public class Profile implements Serializable {
         FileWriter fileWriter =
                 new FileWriter(
                         new File(
-                                "/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@" +
+                                "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                        "/src/main/java/data/files/@" +
                                         guild.getId()
                                         + ID + ".txt"
                         ),
                         false
                 );
-        fileWriter.write("Ignatiamon: " + userIgnatiamon.toString() + "\n" +
+        fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
@@ -221,17 +221,18 @@ public class Profile implements Serializable {
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
                         new FileOutputStream(
-                                new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+                                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                        "/src/main/java/data/files/@@" +
                                         guild.getId()
                                         + ID+ ".txt")
                         )
                 );
-        assert new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@" + guild.getId()
+        assert new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files/@'" + guild.getId()
                 + ID+ ".txt").delete();
         try {
             objectOutputStream.writeObject(this);
             objectOutputStream.close();
-            logger.closeLogger();
             fileWriter.close();
         } catch (IOException ioException){
             objectOutputStream.close();
@@ -244,11 +245,13 @@ public class Profile implements Serializable {
             ProfileNotFoundException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
-                        new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+                        new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                "/src/main/java/data/files/@@" +
                                 event.getGuild().getId()
                                 + event.getAuthor().getName() + ".txt")
                 ));
-        if(!new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+        if(!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files/@@" +
                 event.getGuild().getId()
                 + event.getAuthor().getName() + ".txt").exists()){
             objectInputStream.close();
@@ -266,11 +269,13 @@ public class Profile implements Serializable {
             ProfileNotFoundException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
-                        new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+                        new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                "/src/main/java/data/files/@@" +
                                 event.getGuild().getId()
                                 + author.getName() + ".txt"
                 )));
-        if (!new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+        if (!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files/@@" +
                 event.getGuild().getId()
                 + author.getName() + ".txt").exists()) {
             objectInputStream.close();
@@ -286,11 +291,13 @@ public class Profile implements Serializable {
     }
 
     public static void eraseProfile(User erasedUser, GuildMessageReceivedEvent event){
-        File toBeDeleted = new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@"+
+        File toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files/@" +
                 event.getGuild().getId()
                 + erasedUser.getName() + ".txt");
         if (toBeDeleted.delete()){
-            toBeDeleted = new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@@"+
+            toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                    "/src/main/java/data/files/@'" +
                     event.getGuild().getId()
                     + erasedUser.getName() + ".txt");
             assert toBeDeleted.delete();
@@ -303,7 +310,8 @@ public class Profile implements Serializable {
             throws ProfileNotFoundException {
         try {
             ArrayList<String> profileInfo = new ArrayList<>();
-            File myObj = new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/@"+
+            File myObj = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                    "/src/main/java/data/files/@" +
                     event.getGuild().getId()
                     + author.getName() + ".txt");
             Scanner myReader = new Scanner(myObj);
@@ -318,7 +326,7 @@ public class Profile implements Serializable {
     }
     @Override
     public String toString() {
-        return "Ignatiamon: " + userIgnatiamon.toString() + "\n" +
+        return "Sorino: " + userSorino.toString() + "\n" +
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +

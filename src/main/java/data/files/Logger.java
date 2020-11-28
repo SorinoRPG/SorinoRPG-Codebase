@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 
 public class Logger {
     String info;
-    FileWriter fileWriter;
 
     public Logger(String loggingInfo){
         this.info = loggingInfo;
@@ -19,30 +18,25 @@ public class Logger {
         return sw.toString();
     }
     public void logAction() throws IOException {
-
-        fileWriter = new FileWriter(
-                new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/ActionLogs.log")
+        FileWriter fileWriter = new FileWriter(
+                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/" +
+                        "src/main/java/data/files/ActionLogs.log")
         , true);
         fileWriter.write(this.info + ">>Happened at>> " +
                 DateTimeFormatter
                         .ofPattern("dd/MM/yyyy HH:mm:ss")
                         .format(LocalDateTime.now()) + "\n\n");
+        fileWriter.close();
     }
     public void logError() throws IOException {
-
-        fileWriter = new FileWriter(
-                new File("/Users/Emman/IdeaProjects/Ignatiamon!/src/main/java/data/files/ErrorLogs.log")
+        FileWriter fileWriter = new FileWriter(
+                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/" +
+                        "src/main/java/data/files/ErrorLogs.log")
         , true);
         fileWriter.write(this.info + ">>Happened at>> " +
                 DateTimeFormatter
                         .ofPattern("dd/MM/yyyy HH:mm:ss")
                         .format(LocalDateTime.now()) + "\n\n");
-    }
-    public void closeLogger(){
-        try {
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        fileWriter.close();
     }
 }

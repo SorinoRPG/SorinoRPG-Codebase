@@ -4,7 +4,7 @@ package game.characters;
 import data.Profile;
 import data.ProfileNotFoundException;
 import data.files.Logger;
-import game.IgnatiamonNotFoundException;
+import game.SorinoNotFoundException;
 import game.characters.element.*;
 import game.characters.nature.*;
 import game.characters.op.DementedBone;
@@ -27,185 +27,185 @@ import java.util.EnumSet;
 import java.util.Arrays;
 import java.util.Random;
 
-public interface Ignatiamon extends Serializable{
+public interface Sorino extends Serializable{
     int getHealth();
     int getEnergy();
     int getRarity();
-    Optional<Ignatiamon> getIgnatiamon(String ignatiamon);
+    Optional<Sorino> getSorino(String sorino);
     String toString();
-    double getIfWeakness(Ignatiamon ignatiamon);
+    double getIfWeakness(Sorino sorino);
     List<String> getMoves();
-    Optional<Move> getMove(String move, Ignatiamon initiator);
+    Optional<Move> getMove(String move, Sorino initiator);
     List<Move> getAllMoves();
     String getName();
 
-    class DeadIgnatiamon{
-        private final Ignatiamon ignatiamon;
+    class DeadSorino {
+        private final Sorino sorino;
         Opponent opponent;
 
-        public DeadIgnatiamon(Ignatiamon ignatiamon, Opponent opponent){
-            this.ignatiamon = ignatiamon;
+        public DeadSorino(Sorino sorino, Opponent opponent){
+            this.sorino = sorino;
             this.opponent = opponent;
         }
 
-        public static List<Ignatiamon> asIgnatiamon(List<DeadIgnatiamon> ignatiamonList){
-            ArrayList<Ignatiamon> ignatiamonArrayList = new ArrayList<>();
+        public static List<Sorino> asSorino(List<DeadSorino> deadSorinos){
+            ArrayList<Sorino> sorinoArrayList = new ArrayList<>();
 
-            for (DeadIgnatiamon deadIgnatiamon : ignatiamonList)
-                ignatiamonArrayList.add(deadIgnatiamon.ignatiamon);
-            return ignatiamonArrayList;
+            for (DeadSorino deadSorino : deadSorinos)
+                sorinoArrayList.add(deadSorino.sorino);
+            return sorinoArrayList;
         }
     }
 
-    interface GetIgnatiamon{
-        Ignatiamon getIgnatiamon();
+    interface GetSorino {
+        Sorino getSorino();
     }
 
     @SuppressWarnings("unused")
-    enum AllIgnatiamon implements GetIgnatiamon{
+    enum AllSorino implements GetSorino {
         GRAY {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Gray();
             }
         },
         CALKANOR {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Calkanor();
             }
         },
         LOGITO {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Logito();
             }
         },
         ZOOKRATAR {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Zookratar();
             }
         },
         RAVAGER {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Ravager();
             }
         },
         IMPALER {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Impaler();
             }
         },
         BUNDLEBEAST {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Bundlebeast();
             }
         },
         AGRESASOAR {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Agresasoar();
             }
         },
         WILDILIO {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Wildilio();
             }
         },
         TRAOLTER {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Traolter();
             }
         },
         IMPRADA {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Imprada();
             }
         },
         PATRAKA {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Patraka();
             }
         },
         QUAINTUS {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Quaintus();
             }
         },
         RUNDASOAR {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new Rundasoar();
             }
         },
         DEMENTEDBONE {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new DementedBone();
             }
         },
         DENTEDDEMENTED {
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new DentedDemented();
             }
         },
         DISEASERIDDENBACKHEAD{
             @Override
-            public Ignatiamon getIgnatiamon() {
+            public Sorino getSorino() {
                 return new DiseaseRiddenBackHead();
             }
         };
         public static boolean isIgnatiamon(String command){
             command = command.replace("-=", "");
-            List<AllIgnatiamon> ignatiamonList
-                    = new ArrayList<>(EnumSet.allOf(AllIgnatiamon.class));
-            for (AllIgnatiamon ignatiamon : ignatiamonList) {
-                if(ignatiamon.getIgnatiamon().getIgnatiamon(command).isPresent())
+            List<AllSorino> ignatiamonList
+                    = new ArrayList<>(EnumSet.allOf(AllSorino.class));
+            for (AllSorino ignatiamon : ignatiamonList) {
+                if(ignatiamon.getSorino().getSorino(command).isPresent())
                     return true;
             }
             return false;
         }
 
-        public static Ignatiamon getOP(String op) throws IgnatiamonNotFoundException {
-            List<Ignatiamon> opIgnatiamon =
-                    new ArrayList<>(Arrays.asList(DENTEDDEMENTED.getIgnatiamon(),
-                            DISEASERIDDENBACKHEAD.getIgnatiamon(),
-                            DEMENTEDBONE.getIgnatiamon()));
-            for (Ignatiamon ignatiamon:
-                 opIgnatiamon) {
-                if(ignatiamon.getIgnatiamon(op).isPresent())
-                    return ignatiamon;
+        public static Sorino getOP(String op) throws SorinoNotFoundException {
+            List<Sorino> opSorino =
+                    new ArrayList<>(Arrays.asList(DENTEDDEMENTED.getSorino(),
+                            DISEASERIDDENBACKHEAD.getSorino(),
+                            DEMENTEDBONE.getSorino()));
+            for (Sorino sorino :
+                    opSorino) {
+                if(sorino.getSorino(op).isPresent())
+                    return sorino;
             }
-            throw new IgnatiamonNotFoundException("String was incorrect") ;
+            throw new SorinoNotFoundException("String was incorrect") ;
         }
-        public static Ignatiamon getIgnatiamon(String ig) throws IgnatiamonNotFoundException {
-            List<AllIgnatiamon> opIgnatiamon =
-                    new ArrayList<>(EnumSet.allOf(AllIgnatiamon.class));
-            for (AllIgnatiamon ignatiamon:
+        public static Sorino getIgnatiamon(String ig) throws SorinoNotFoundException {
+            List<AllSorino> opIgnatiamon =
+                    new ArrayList<>(EnumSet.allOf(AllSorino.class));
+            for (AllSorino ignatiamon:
                     opIgnatiamon) {
-                if(ignatiamon.getIgnatiamon().getIgnatiamon(ig).isPresent())
-                    return ignatiamon.getIgnatiamon();
+                if(ignatiamon.getSorino().getSorino(ig).isPresent())
+                    return ignatiamon.getSorino();
             }
-            throw new IgnatiamonNotFoundException("String was incorrect");
+            throw new SorinoNotFoundException("String was incorrect");
         }
-        public static Ignatiamon getRandom(GuildMessageReceivedEvent event){
-            ArrayList<AllIgnatiamon> ignatiamon = new ArrayList<>(EnumSet.allOf(AllIgnatiamon.class));
-            ArrayList<Ignatiamon> randomIgnatiamon = new ArrayList<>();
+        public static Sorino getRandom(GuildMessageReceivedEvent event){
+            ArrayList<AllSorino> ignatiamon = new ArrayList<>(EnumSet.allOf(AllSorino.class));
+            ArrayList<Sorino> randomSorino = new ArrayList<>();
 
-            for (AllIgnatiamon allIgnatiamon : ignatiamon) {
-                Ignatiamon currIgnatiamon = allIgnatiamon.getIgnatiamon();
+            for (AllSorino allSorino : ignatiamon) {
+                Sorino currSorino = allSorino.getSorino();
                 try {
-                    if (Profile.getProfile(event).getIgnatiamonAsList().contains(currIgnatiamon))
+                    if (Profile.getProfile(event).getSorinoAsList().contains(currSorino))
                         continue;
                 } catch (IOException | ClassNotFoundException e) {
                     Logger logger =
@@ -216,7 +216,6 @@ public interface Ignatiamon extends Serializable{
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -233,7 +232,6 @@ public interface Ignatiamon extends Serializable{
                     ).queue();
                     try{
                         logger.logError();
-                        logger.closeLogger();
                     } catch (IOException excI){
                         event.getChannel().sendMessage(
                                 "Error in logging, mention a dev to get it fixed! @Developers\n" +
@@ -241,11 +239,11 @@ public interface Ignatiamon extends Serializable{
                         ).queue();
                     }
                 }
-                for(int i = 0; i < currIgnatiamon.getRarity(); i++)
-                    randomIgnatiamon.add(currIgnatiamon);
+                for(int i = 0; i < currSorino.getRarity(); i++)
+                    randomSorino.add(currSorino);
             }
 
-            return randomIgnatiamon.get(new Random().nextInt(randomIgnatiamon.size()));
+            return randomSorino.get(new Random().nextInt(randomSorino.size()));
         }
     }
 }
