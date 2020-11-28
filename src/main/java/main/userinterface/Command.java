@@ -12,7 +12,6 @@ import game.fight.FightManager;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +20,25 @@ import java.util.regex.Pattern;
 
 
 public enum Command {
+    HELP(event -> {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(0xff0000);
+        embedBuilder.setTitle("HELP");
+        embedBuilder.addField("Invite SorinoRPG to your server",
+                "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
+                true);
+        embedBuilder.addField("Website containg the command information",
+                "[Website](https://sorinorpg.github.io/SorinoRPG/)",
+                true);
+        embedBuilder.addField("Follow Us on Twitter",
+                "[Twitter](https://twitter.com/RpgSorino)",
+                true);
+        embedBuilder.addField("Become a Patron",
+                "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
+                true);
+
+        event.getChannel().sendMessage(embedBuilder.build());
+    }),
     LEADERBOARD(event -> {
         Logger logger;
 
@@ -716,6 +734,7 @@ public enum Command {
                 put(Prefix.PrefixString.ERASE_PROFILE, Command.ERASE_PROFILE);
                 put(Prefix.PrefixString.SEE_RANK, Command.SEE_RANK);
                 put(Prefix.PrefixString.LEADERBOARD, Command.LEADERBOARD);
+                put(Prefix.PrefixString.HELP, Command.HELP);
             }
         };
 

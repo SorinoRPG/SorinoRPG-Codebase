@@ -50,7 +50,8 @@ public class Prefix {
                 || command.getContentRaw().startsWith(PrefixString.UPDATE_PROFILE.prefix())
                 || command.getContentRaw().startsWith(PrefixString.ERASE_PROFILE.prefix())
                 || command.getContentRaw().startsWith(PrefixString.SEE_RANK.prefix())
-                || command.getContentRaw().startsWith(PrefixString.LEADERBOARD.prefix());
+                || command.getContentRaw().startsWith(PrefixString.LEADERBOARD.prefix())
+                || command.getContentRaw().startsWith(PrefixString.HELP.prefix());
     }
 
     /**
@@ -93,6 +94,12 @@ public class Prefix {
             @Override
             public String prefix() {
                 return "-L";
+            }
+        },
+        HELP(){
+            @Override
+            public String prefix() {
+                return "-help";
             }
         },
         ERASE_PROFILE() {

@@ -10,13 +10,11 @@ public class Opponent {
     private final Sorino sorino;
     private int health;
     private int energy;
-    private final GuildMessageReceivedEvent event;
     private boolean conceded = false;
     private int switchOut = 3;
 
     Opponent(Sorino sorino, GuildMessageReceivedEvent event){
         this.sorino = sorino;
-        this.event = event;
         this.health = sorino.getHealth();
         this.energy = sorino.getEnergy();
     }
@@ -39,7 +37,7 @@ public class Opponent {
         return switchOut == 0;
     }
 
-    public Optional<String> takeDamage(Move move){
+    public Optional<String> takeDamage(Move move, GuildMessageReceivedEvent event){
         if (energy < 0)
             return Optional.of("You have no more energy left!");
         if(damageDecrease + sorino.getIfWeakness(move.getSorino()) > 1.00)
@@ -54,7 +52,7 @@ public class Opponent {
         conceded = this.health < 0;
         return Optional.empty();
     }
-    public Optional<String> defenseUp(Move move){
+    public Optional<String> defenseUp(Move move, GuildMessageReceivedEvent event){
         if (energy < 0)
             return Optional.of("You have no more usages!");
         damageDecrease += move.getEffect();

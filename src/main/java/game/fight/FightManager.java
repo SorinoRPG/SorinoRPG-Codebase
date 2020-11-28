@@ -235,7 +235,7 @@ public class FightManager {
             Optional<String> noUsage;
             if(nextMove.isDefensive()) {
                 noUsage = opponents.get(currentFighter).defenseUp(
-                        nextMove);
+                        nextMove, event);
                 noUsage.ifPresentOrElse(s ->
                                 event.getChannel().sendMessage(s).queue(),
                         () -> {
@@ -247,7 +247,7 @@ public class FightManager {
             }
             else {
                 noUsage = opponents.get(currentFighter + 1).takeDamage(
-                        nextMove);
+                        nextMove, event);
                 noUsage.ifPresentOrElse(s ->
                             event.getChannel().sendMessage(s).queue(),
                         () -> {
@@ -267,13 +267,15 @@ public class FightManager {
                     if(opponents.get(currentFighter).switchOut())
                         return Optional.of(new GameInfo(users.get(currentFighter + 1), users.get(loserIndex)));
 
+                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
+                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
+                    if(sorinoArrayList.isEmpty()) return Optional.of(
+                            new GameInfo(users.get(currentFighter + 1), users.get(loserIndex)));
+
                     EmbedBuilder message = new EmbedBuilder();
                     message.setTitle("Specify your switch-out Sorino " + users.get(1).getName());
                     message.setFooter("is choosing their Sorino", users.get(1).getAvatarUrl());
                     message.setDescription("Choose one of your Sorino! -- suffix with !!");
-
-                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
-                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
 
                     message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
@@ -314,7 +316,7 @@ public class FightManager {
         } else if(currentFighter == 1){
             if(nextMove.isDefensive()) {
                 Optional<String> noUsage = opponents.get(currentFighter).defenseUp(
-                        nextMove);
+                        nextMove, event);
                 noUsage.ifPresentOrElse(s ->
                             event.getChannel().sendMessage(s).queue(),
                         () -> {
@@ -326,7 +328,7 @@ public class FightManager {
             }
             else {
                 Optional<String> noUsage = opponents.get(currentFighter-1).takeDamage(
-                        nextMove);
+                        nextMove, event);
                 noUsage.ifPresentOrElse(s ->
                             event.getChannel().sendMessage(s).queue(),
                         () -> {
@@ -345,14 +347,17 @@ public class FightManager {
                     if(opponents.get(currentFighter).switchOut())
                         return Optional.of(new GameInfo(users.get(currentFighter + 1), users.get(loserIndex)));
 
+                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
+                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
+                    if(sorinoArrayList.isEmpty()) return Optional.of(
+                            new GameInfo(users.get(currentFighter + 1), users.get(loserIndex)));
 
                     EmbedBuilder message = new EmbedBuilder();
                     message.setTitle("Specify your switch-out Sorino " + users.get(1).getName());
                     message.setFooter("is choosing their Sorino", users.get(1).getAvatarUrl());
                     message.setDescription("Choose one of your Sorino! -- suffix with !!");
 
-                    ArrayList<Sorino> sorinoArrayList = Profile.getProfile(users.get(1), event).getSorinoAsList();
-                    sorinoArrayList.removeAll(Sorino.DeadSorino.asSorino(deadSorino));
+
 
                     message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
