@@ -48,11 +48,11 @@ public interface Sorino extends Serializable{
             this.opponent = opponent;
         }
 
-        public static List<Sorino> asSorino(List<DeadSorino> deadSorinos){
+        public static List<Sorino> asSorino(List<DeadSorino> deadSorino){
             ArrayList<Sorino> sorinoArrayList = new ArrayList<>();
 
-            for (DeadSorino deadSorino : deadSorinos)
-                sorinoArrayList.add(deadSorino.sorino);
+            for (DeadSorino dead_Sorino : deadSorino)
+                sorinoArrayList.add(dead_Sorino.sorino);
             return sorinoArrayList;
         }
     }
@@ -165,12 +165,12 @@ public interface Sorino extends Serializable{
                 return new DiseaseRiddenBackHead();
             }
         };
-        public static boolean isIgnatiamon(String command){
+        public static boolean isSorino(String command){
             command = command.replace("-=", "");
-            List<AllSorino> ignatiamonList
+            List<AllSorino> sorinoList
                     = new ArrayList<>(EnumSet.allOf(AllSorino.class));
-            for (AllSorino ignatiamon : ignatiamonList) {
-                if(ignatiamon.getSorino().getSorino(command).isPresent())
+            for (AllSorino sorino : sorinoList) {
+                if(sorino.getSorino().getSorino(command).isPresent())
                     return true;
             }
             return false;
@@ -188,21 +188,21 @@ public interface Sorino extends Serializable{
             }
             throw new SorinoNotFoundException("String was incorrect") ;
         }
-        public static Sorino getIgnatiamon(String ig) throws SorinoNotFoundException {
-            List<AllSorino> opIgnatiamon =
+        public static Sorino getSorino(String sor) throws SorinoNotFoundException {
+            List<AllSorino> opSorino =
                     new ArrayList<>(EnumSet.allOf(AllSorino.class));
-            for (AllSorino ignatiamon:
-                    opIgnatiamon) {
-                if(ignatiamon.getSorino().getSorino(ig).isPresent())
-                    return ignatiamon.getSorino();
+            for (AllSorino sorino:
+                    opSorino) {
+                if(sorino.getSorino().getSorino(sor).isPresent())
+                    return sorino.getSorino();
             }
             throw new SorinoNotFoundException("String was incorrect");
         }
         public static Sorino getRandom(GuildMessageReceivedEvent event){
-            ArrayList<AllSorino> ignatiamon = new ArrayList<>(EnumSet.allOf(AllSorino.class));
+            ArrayList<AllSorino> sorino = new ArrayList<>(EnumSet.allOf(AllSorino.class));
             ArrayList<Sorino> randomSorino = new ArrayList<>();
 
-            for (AllSorino allSorino : ignatiamon) {
+            for (AllSorino allSorino : sorino) {
                 Sorino currSorino = allSorino.getSorino();
                 try {
                     if (Profile.getProfile(event).getSorinoAsList().contains(currSorino))

@@ -24,10 +24,11 @@ public enum Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(0xff0000);
         embedBuilder.setTitle("HELP");
+        embedBuilder.setDescription("SorinoRPG Help and Information");
         embedBuilder.addField("Invite SorinoRPG to your server",
                 "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
                 true);
-        embedBuilder.addField("Website containg the command information",
+        embedBuilder.addField("Website containing the command information",
                 "[Website](https://sorinorpg.github.io/SorinoRPG/)",
                 true);
         embedBuilder.addField("Follow Us on Twitter",
@@ -37,7 +38,7 @@ public enum Command {
                 "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
                 true);
 
-        event.getChannel().sendMessage(embedBuilder.build());
+        event.getChannel().sendMessage(embedBuilder.build()).queue();
     }),
     LEADERBOARD(event -> {
         Logger logger;
@@ -350,7 +351,7 @@ public enum Command {
         String rawMess = event.getMessage().getContentRaw();
         if(rawMess.endsWith("!!")){
             try {
-                FightManager.addSwitchOut(Sorino.AllSorino.getIgnatiamon(
+                FightManager.addSwitchOut(Sorino.AllSorino.getSorino(
                         rawMess.substring(2, rawMess.indexOf("!"))
                 ), event);
             } catch(SorinoNotFoundException e){
@@ -376,7 +377,7 @@ public enum Command {
 
             FightManager.users =
                     FightManager.fightPhase1(event);
-        }else if(Sorino.AllSorino.isIgnatiamon(rawMess)){
+        }else if(Sorino.AllSorino.isSorino(rawMess)){
             try {
                 FightManager.fightPhase2(event,
                         Profile.getProfile(event));
@@ -495,7 +496,8 @@ public enum Command {
         Profile userProfile =
                 new Profile(new ArrayList<>(Collections.singletonList(new Gray())),
                         new Coins(50),
-                        event.getAuthor().getName(), 0, 0, event.getAuthor().getAvatarUrl(),
+                        event.getAuthor().getId(), event.getAuthor().getName()
+                        ,0, 0, event.getAuthor().getAvatarUrl(),
                         event.getGuild());
         try {
             userProfile.createProfile();
@@ -634,7 +636,7 @@ public enum Command {
             //Adds each element of the "list" as an Sorino
             for(int i = 0; i < occurrences; i++){
                 try {
-                    userSorino.add(Sorino.AllSorino.getIgnatiamon(listBuild
+                    userSorino.add(Sorino.AllSorino.getSorino(listBuild
                             .substring(0,
                                     listBuild
                                             .indexOf(","))));
@@ -660,6 +662,7 @@ public enum Command {
             }
             Profile newProfile = new Profile(userSorino,
                     new Coins(Integer.parseInt(userInfo.get(1).substring(7))),
+                    event.getAuthor().getId(),
                     event.getAuthor().getName(),
                     Integer.parseInt(userInfo.get(2).substring(6)),
                     Integer.parseInt(userInfo.get(3).substring(7)),

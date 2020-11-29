@@ -80,7 +80,9 @@ public class GuildListener extends ListenerAdapter {
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
         try {
             Profile profile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())),
-                    new Coins(50), event.getMember().getUser().getName(), 0, 0, event.getMember().getUser().getAvatarUrl(), event.getGuild());
+                    new Coins(50), event.getMember().getUser().getId(),
+                    event.getMember().getUser().getName(), 0, 0,
+                    event.getMember().getUser().getAvatarUrl(), event.getGuild());
             profile.createProfile();
         } catch(IOException e){
 

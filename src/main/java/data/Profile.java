@@ -22,20 +22,22 @@ public class Profile implements Serializable {
     private final ArrayList<Sorino> userSorino;
     private final Coins coins;
     private final String ID;
+    private final String name;
     private final String imageUrl;
     private final Guild guild;
     private int wins;
     private int loses;
     private int level = 0;
-    private int xpLevelThresh = 100;
+    private int xpLevelThresh = 250;
     private int xp = 0;
 
 
     public Profile(ArrayList<Sorino> sorino, Coins coins,
-                   String name, int wins, int loses, String imageUrl, Guild guild){
+                   String id, String name, int wins, int loses, String imageUrl, Guild guild){
         this.userSorino = sorino;
         this.coins = coins;
-        this.ID = name;
+        this.ID = id;
+        this.name = name;
         this.wins = wins;
         this.loses = loses;
         this.imageUrl = imageUrl;
@@ -75,7 +77,7 @@ public class Profile implements Serializable {
         return level;
     }
     public String getName(){
-        return this.ID;
+        return this.name;
     }
 
     public void incrementXP(int increment, TextChannel channel){
@@ -84,9 +86,10 @@ public class Profile implements Serializable {
         if(xp >= xpLevelThresh){
             level++;
             xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.5);
+            xp = 0;
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle(this.ID + " has advanced to trainer level " + level + "!");
+            embedBuilder.setTitle(this.name + " has advanced to trainer level " + level + "!");
             embedBuilder.setDescription("XP: " + xp + "/" + xpLevelThresh);
             embedBuilder.setImage(imageUrl);
 
@@ -118,7 +121,7 @@ public class Profile implements Serializable {
                 "/src/main/java/data/files");
 
         List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles()));
-        List<File> filteredList = files.stream().filter((file) ->
+        List<File> filteredList = files.parallelStream().filter((file) ->
                 file.getPath().contains("@@" + guildID)).collect(Collectors.toList());
 
         Profile[] profiles = new Profile[size];
@@ -155,7 +158,7 @@ public class Profile implements Serializable {
         return builder.build();
     }
 
-    private static Profile readFromFile(File file) throws IOException, ClassNotFoundException {
+    public static Profile readFromFile(File file) throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream = new
                 ObjectInputStream(new FileInputStream(file));
         return (Profile) objectInputStream.readObject();
@@ -242,7 +245,7 @@ public class Profile implements Serializable {
                         new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                 "/src/main/java/data/files/@@" +
                                 event.getGuild().getId()
-                                + event.getAuthor().getName() + ".txt")
+                                + event.getAuthor().getId() + ".txt")
                 ));
         if(!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/@@" +
@@ -266,7 +269,7 @@ public class Profile implements Serializable {
                         new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                 "/src/main/java/data/files/@@" +
                                 event.getGuild().getId()
-                                + author.getName() + ".txt"
+                                + author.getId() + ".txt"
                 )));
         if (!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/@@" +
@@ -288,12 +291,12 @@ public class Profile implements Serializable {
         File toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/@" +
                 event.getGuild().getId()
-                + erasedUser.getName() + ".txt");
+                + erasedUser.getId() + ".txt");
         if (toBeDeleted.delete()){
             toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                     "/src/main/java/data/files/@'" +
                     event.getGuild().getId()
-                    + erasedUser.getName() + ".txt");
+                    + erasedUser.getId() + ".txt");
             assert toBeDeleted.delete();
         }
     }

@@ -1,5 +1,5 @@
 package data.datareading;
 
 interface FileAction {
-    void action();
+    void action(String string);
 }
