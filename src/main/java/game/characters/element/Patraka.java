@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Patraka extends Element implements Sorino {
     @Override
-    public int getHealth() {
-        return 295;
+    public int getHealth(int level) {
+        return 295 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 400;
+    public int getEnergy(int level) {
+        return 400 + (level * 10);
     }
 
     @Override

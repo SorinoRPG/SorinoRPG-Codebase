@@ -79,7 +79,7 @@ public enum Command {
             builder.setTitle("Leaderboard");
             builder.setDescription("The leaderboard for the server");
 
-            Profile[] profileArr = Profile.allProfiles(Profile.getUserSize(event.getGuild()));
+            Profile[] profileArr = Profile.getProfiles(10, event.getGuild().getId());
             new Sorting().quickSort(profileArr, 0, profileArr.length);
 
             for(int i = 0; i < profileArr.length; i++)

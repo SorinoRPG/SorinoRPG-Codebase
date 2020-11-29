@@ -13,7 +13,10 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Profile implements Serializable {
     private final ArrayList<Sorino> userSorino;
@@ -83,7 +86,7 @@ public class Profile implements Serializable {
             xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.5);
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle(this.ID + " has advanced to level " + level + "!");
+            embedBuilder.setTitle(this.ID + " has advanced to trainer level " + level + "!");
             embedBuilder.setDescription("XP: " + xp + "/" + xpLevelThresh);
             embedBuilder.setImage(imageUrl);
 
@@ -109,34 +112,25 @@ public class Profile implements Serializable {
         }
     }
 
-    public static Profile[] allProfiles(int size) throws IOException, ClassNotFoundException {
-        File directory = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+    public static Profile[] getProfiles(int size, String guildID) throws IOException, ClassNotFoundException {
+        File directory = new File
+                ("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files");
-        File[] files = directory.listFiles();
-        Profile[] profiles = new Profile[size];
-        for (int i = 0; i == files.length-1; i++) {
-            File file = files[i];
-            if(file.getPath().substring(63).startsWith("@@"))
-                profiles[i] = readFromFile(file);
-        }
-        return profiles;
-    }
 
-    public static int getUserSize(Guild guild){
-        File directory = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files");
-        File[] files = directory.listFiles();
-        int occurrences = 0;
-        for (File file : files)
-            if (file.getPath().substring(63).startsWith("@@" + guild.getId()))
-                occurrences++;
-        return occurrences;
+        List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles()));
+        List<File> filteredList = files.stream().filter((file) ->
+                file.getPath().contains("@@" + guildID)).collect(Collectors.toList());
+
+        Profile[] profiles = new Profile[size];
+        for (int i = 0; i < filteredList.size() || i < size; i++)
+            profiles[i] = readFromFile(filteredList.get(i));
+        return profiles;
     }
 
     public MessageEmbed showLevel(TextChannel channel){
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setTitle("XP: " + xp + "/" + xpLevelThresh + "\t Level: " + level);
+        builder.setTitle("XP: " + xp + "/" + xpLevelThresh + "\t Trainer Level: " + level);
         builder.setImage(imageUrl);
 
         try {
@@ -180,7 +174,7 @@ public class Profile implements Serializable {
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
-                "Level: " + level + "\t XP -- " + xp + "/" + xpLevelThresh);
+                "Trainer Level: " + level + "\n XP -- " + xp + "/" + xpLevelThresh);
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
                         new FileOutputStream(
@@ -216,7 +210,7 @@ public class Profile implements Serializable {
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
-                "Level: " + level + "\t XP -- " + xp + "/" + xpLevelThresh);
+                "Trainer Level: " + level + "\n XP -- " + xp + "/" + xpLevelThresh);
         logger.logAction();
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
@@ -330,6 +324,6 @@ public class Profile implements Serializable {
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
-                "Level: " + level + "\t XP -- " + xp + "/" + xpLevelThresh;
+                "Trainer Level: " + level + "\n XP -- " + xp + "/" + xpLevelThresh;
     }
 }

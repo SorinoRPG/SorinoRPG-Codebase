@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Imprada extends Nature implements Sorino {
     @Override
-    public int getHealth() {
-        return 385;
+    public int getHealth(int level) {
+        return 385 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 420;
+    public int getEnergy(int level) {
+        return 420 + (level * 10);
     }
 
     @Override

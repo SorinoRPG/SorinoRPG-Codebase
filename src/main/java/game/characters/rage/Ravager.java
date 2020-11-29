@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Ravager extends Rage implements Sorino {
     @Override
-    public int getHealth() {
-        return 330;
+    public int getHealth(int level) {
+        return 330 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 500;
+    public int getEnergy(int level) {
+        return 500 + (level * 10);
     }
 
     @Override

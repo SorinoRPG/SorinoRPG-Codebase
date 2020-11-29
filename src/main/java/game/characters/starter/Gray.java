@@ -11,13 +11,13 @@ import java.util.Optional;
 
 public class Gray extends Starter implements Sorino {
     @Override
-    public int getHealth() {
-        return 300;
+    public int getHealth(int level) {
+        return 300 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 300;
+    public int getEnergy(int level) {
+        return 300 + (level * 10);
     }
 
     @Override
@@ -63,8 +63,6 @@ public class Gray extends Starter implements Sorino {
     public String getName() {
         return "Gray: Starter type";
     }
-
-
 
     @Override
     public String toString() {

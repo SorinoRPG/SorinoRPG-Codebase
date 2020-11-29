@@ -1,9 +1,13 @@
 package game.fight;
 
+import data.Profile;
+import data.ProfileNotFoundException;
+import data.files.Logger;
 import game.characters.Sorino;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class Opponent {
@@ -15,8 +19,40 @@ public class Opponent {
 
     Opponent(Sorino sorino, GuildMessageReceivedEvent event){
         this.sorino = sorino;
-        this.health = sorino.getHealth();
-        this.energy = sorino.getEnergy();
+        try {
+            this.health = sorino.getHealth(Profile.getProfile(event).getLevel());
+            this.energy = sorino.getEnergy(Profile.getProfile(event).getLevel());
+        } catch (IOException | ClassNotFoundException e) {
+            Logger logger =
+                    new Logger("Error in finding Profile due to IO and Classes \n" +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "Could not find profile due to IO and Classes "
+            ).queue();
+            try {
+                logger.logError();
+            } catch (IOException excI) {
+                event.getChannel().sendMessage(
+                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
+                                Logger.exceptionAsString(excI)
+                ).queue();
+            }
+        } catch (ProfileNotFoundException e) {
+            Logger logger =
+                    new Logger("Error in finding Profile \n" +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "Could not find profile!"
+            ).queue();
+            try{
+                logger.logError();
+            } catch (IOException excI){
+                event.getChannel().sendMessage(
+                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
+                                Logger.exceptionAsString(excI)
+                ).queue();
+            }
+        }
     }
     private double damageDecrease = 0;
 

@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Bundlebeast extends Rage implements Sorino {
     @Override
-    public int getHealth() {
-        return 340;
+    public int getHealth(int level) {
+        return 340 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 380;
+    public int getEnergy(int level) {
+        return 380 + (level * 10);
     }
 
     @Override

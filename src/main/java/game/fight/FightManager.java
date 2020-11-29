@@ -12,6 +12,7 @@ import game.characters.Sorino;
 import main.userinterface.Prefix;
 import main.userinterface.UserAction;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 

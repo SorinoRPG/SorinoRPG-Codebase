@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Wildilio extends Nature implements Sorino {
     @Override
-    public int getHealth() {
-        return 350;
+    public int getHealth(int level) {
+        return 350 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 460;
+    public int getEnergy(int level) {
+        return 460 + (level * 10);
     }
 
     @Override

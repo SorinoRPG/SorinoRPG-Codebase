@@ -28,8 +28,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public interface Sorino extends Serializable{
-    int getHealth();
-    int getEnergy();
+    int getHealth(int level);
+    int getEnergy(int level);
     int getRarity();
     Optional<Sorino> getSorino(String sorino);
     String toString();

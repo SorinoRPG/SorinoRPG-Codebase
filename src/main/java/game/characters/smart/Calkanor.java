@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Calkanor extends Smart implements Sorino {
     @Override
-    public int getHealth() {
-        return 410;
+    public int getHealth(int level) {
+        return 410 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 500;
+    public int getEnergy(int level) {
+        return 500 + (level * 10);
     }
 
     @Override

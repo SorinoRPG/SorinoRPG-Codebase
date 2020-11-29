@@ -8,17 +8,16 @@ import game.characters.starter.Gray;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class GuildListener extends ListenerAdapter {
 
@@ -30,11 +29,33 @@ public class GuildListener extends ListenerAdapter {
                 new Logger("Disconnected");
         try {
             logger.logError();
-            logger.closeLogger();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+
+        embedBuilder.setTitle("SorinoRPG has just landed!");
+        embedBuilder.setDescription("Thank you for inviting SorinoRPG to " + event.getGuild().getName());
+        embedBuilder.addField("Invite SorinoRPG to your server",
+                "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
+                true);
+        embedBuilder.addField("Website containing the command information",
+                "[Website](https://sorinorpg.github.io/SorinoRPG/)",
+                true);
+        embedBuilder.addField("Follow Us on Twitter",
+                "[Twitter](https://twitter.com/RpgSorino)",
+                true);
+        embedBuilder.addField("Become a Patron",
+                "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
+                true);
+
+        Objects.requireNonNull(event.getGuild().getDefaultChannel()).sendMessage(embedBuilder.build()).queue();
+    }
+
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         Optional<Role> userRole = Objects
@@ -54,8 +75,6 @@ public class GuildListener extends ListenerAdapter {
                 Command.getCommand(event.getMessage());
         command.userAction
                 .action(event);
-
-//        event.getMessage().delete().queue();
     }
     @Override
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
@@ -72,7 +91,6 @@ public class GuildListener extends ListenerAdapter {
             System.out.println(Logger.exceptionAsString(e));
             try {
                 logger.logError();
-                logger.closeLogger();
             } catch (IOException exc){
                 event.getGuild().getTextChannelsByName("ignatiamon-comments", true).get(0).sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n"

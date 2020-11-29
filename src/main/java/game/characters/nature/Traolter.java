@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Traolter extends Nature implements Sorino {
     @Override
-    public int getHealth() {
-        return 390;
+    public int getHealth(int level) {
+        return 390 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 410;
+    public int getEnergy(int level) {
+        return 410 + (level * 10);
     }
 
     @Override

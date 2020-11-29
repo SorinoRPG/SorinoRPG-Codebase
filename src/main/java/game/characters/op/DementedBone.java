@@ -10,18 +10,18 @@ import java.util.Optional;
 
 public class DementedBone extends OP implements Sorino {
     @Override
-    public int getHealth() {
+    public int getHealth(int level) {
         return 700;
     }
 
     @Override
-    public int getEnergy() {
-        return 1000;
+    public int getEnergy(int level) {
+        return 1000 + (level * 10);
     }
 
     @Override
     public int getRarity() {
-        return 0;
+        return 1;
     }
 
     @Override

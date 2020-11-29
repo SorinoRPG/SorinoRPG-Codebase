@@ -28,7 +28,7 @@ import javax.security.auth.login.LoginException;
 public class MainBot {
     /**
      * The initializer for the bot is of course the main method.
-     * It has set the activity to a "Ignatiamon with Sti Links" and the
+     * It has set the activity to a "-help for information" and the
      * status to Do Not Disturb
      *
      * @param args Used to see the token
@@ -44,7 +44,7 @@ public class MainBot {
         JDABuilder.createLight(args[0],
                 GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new GuildListener())
-                .setActivity(Activity.playing("Ignatiamon with Sti Links!"))
+                .setActivity(Activity.watching("-help for information"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build();
     }

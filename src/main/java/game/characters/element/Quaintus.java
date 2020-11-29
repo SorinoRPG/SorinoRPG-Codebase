@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public class Quaintus extends Element implements Sorino {
     @Override
-    public int getHealth() {
-        return 300;
+    public int getHealth(int level) {
+        return 300 + (level * 10);
     }
 
     @Override
-    public int getEnergy() {
-        return 350;
+    public int getEnergy(int level) {
+        return 350 + (level * 10);
     }
 
     @Override
