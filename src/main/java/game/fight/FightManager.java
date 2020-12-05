@@ -65,35 +65,41 @@ public class FightManager {
 
             message.setTitle("You did not tell me who you wish to fight!");
             event.getChannel().sendMessage(message.build()).queue();
-        } catch (IOException | ClassNotFoundException e) {
+        }  catch (IOException | ClassNotFoundException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
+                    "Could not find profile due to a SorinoRPG server error." +
+                            "These could have been the causes:\n" +
+                            "1. Your account is being used in something else," +
+                            " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                            "you can use your account.\n" +
+                            "2. Your account is currently being reviewed or processed, this could be due" +
+                            "to suspicious activity or receiving an award of some sort. For the latter," +
+                            "you will be able to use your account in a minute or so. For the former," +
+                            "this may happen regularly on and off until we can take further action.\n" +
+                            "3. There was a server issue, please report this to our email " +
+                            "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
             ).queue();
             try{
                 logger1.logError();
             } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
+                excI.printStackTrace();
             }
         } catch (ProfileNotFoundException e) {
             Logger logger =
                     new Logger("Error in finding Profile \n" +
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
-                    "Could not find profile!"
+                    "Could not find profile. Have you created a profile? If so, try the Update Profile" +
+                            " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
+                            "mention us on twitter @Rpgsorino"
             ).queue();
             try{
                 logger.logError();
             } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
+                excI.printStackTrace();
             }
         }
         return users;
@@ -125,10 +131,7 @@ public class FightManager {
                 try{
                     logger.logError();
                 } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
+                    excI.printStackTrace();
                 }
                 calls = 0;
                 currentFighters.remove(0);
@@ -137,30 +140,36 @@ public class FightManager {
                         new Logger("Error in finding Profile due to IO and Classes \n" +
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
-                        "Could not find profile due to IO and Classes "
+                        "Could not find profile due to a SorinoRPG server error." +
+                                "These could have been the causes:\n" +
+                                "1. Your account is being used in something else," +
+                                " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                "you can use your account.\n" +
+                                "2. Your account is currently being reviewed or processed, this could be due" +
+                                "to suspicious activity or receiving an award of some sort. For the latter," +
+                                "you will be able to use your account in a minute or so. For the former," +
+                                "this may happen regularly on and off until we can take further action.\n" +
+                                "3. There was a server issue, please report this to our email " +
+                                "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                 ).queue();
                 try{
                     logger1.logError();
                 } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
+                    excI.printStackTrace();
                 }
             } catch (ProfileNotFoundException e) {
                 Logger logger =
                         new Logger("Error in finding Profile \n" +
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
-                        "Could not find profile!"
+                        "Could not find profile. Have you created a profile? If so, try the Update Profile" +
+                                " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
+                                "mention us on twitter @Rpgsorino"
                 ).queue();
                 try{
                     logger.logError();
                 } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
+                    excI.printStackTrace();
                 }
             }
         } else if(FightManager.calls == 1){
@@ -281,35 +290,41 @@ public class FightManager {
                     message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
                     loserIndex = currentFighter;
-                }  catch (IOException | ClassNotFoundException e) {
-                    Logger logger =
+                } catch (IOException | ClassNotFoundException e) {
+                    Logger logger1 =
                             new Logger("Error in finding Profile due to IO and Classes \n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
-                            "Could not find profile due to IO and Classes "
+                            "Could not find profile due to a SorinoRPG server error." +
+                                    "These could have been the causes:\n" +
+                                    "1. Your account is being used in something else," +
+                                    " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                    "you can use your account.\n" +
+                                    "2. Your account is currently being reviewed or processed, this could be due" +
+                                    "to suspicious activity or receiving an award of some sort. For the latter," +
+                                    "you will be able to use your account in a minute or so. For the former," +
+                                    "this may happen regularly on and off until we can take further action.\n" +
+                                    "3. There was a server issue, please report this to our email " +
+                                    "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                     ).queue();
                     try{
-                        logger.logError();
+                        logger1.logError();
                     } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
+                        excI.printStackTrace();
                     }
                 } catch (ProfileNotFoundException e) {
                     Logger logger =
                             new Logger("Error in finding Profile \n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
-                            "Could not find profile!"
+                            "Could not find profile. Have you created a profile? If so, try the Update Profile" +
+                                    " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
+                                    "mention us on twitter @Rpgsorino"
                     ).queue();
                     try{
                         logger.logError();
                     } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
+                        excI.printStackTrace();
                     }
                 }
             }
@@ -363,35 +378,41 @@ public class FightManager {
                     message.addField("Sorino: ", sorinoArrayList.toString(), false);
                     event.getChannel().sendMessage(message.build()).queue();
                     loserIndex = currentFighter;
-                }  catch (IOException | ClassNotFoundException e) {
-                    Logger logger =
+                } catch (IOException | ClassNotFoundException e) {
+                    Logger logger1 =
                             new Logger("Error in finding Profile due to IO and Classes \n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
-                            "Could not find profile due to IO and Classes "
+                            "Could not find profile due to a SorinoRPG server error." +
+                                    "These could have been the causes:\n" +
+                                    "1. Your account is being used in something else," +
+                                    " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                    "you can use your account.\n" +
+                                    "2. Your account is currently being reviewed or processed, this could be due" +
+                                    "to suspicious activity or receiving an award of some sort. For the latter," +
+                                    "you will be able to use your account in a minute or so. For the former," +
+                                    "this may happen regularly on and off until we can take further action.\n" +
+                                    "3. There was a server issue, please report this to our email " +
+                                    "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                     ).queue();
                     try{
-                        logger.logError();
+                        logger1.logError();
                     } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
+                        excI.printStackTrace();
                     }
                 } catch (ProfileNotFoundException e) {
                     Logger logger =
                             new Logger("Error in finding Profile \n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
-                            "Could not find profile!"
+                            "Could not find profile. Have you created a profile? If so, try the Update Profile" +
+                                    " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
+                                    "mention us on twitter @Rpgsorino"
                     ).queue();
                     try{
                         logger.logError();
                     } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
+                        excI.printStackTrace();
                     }
                 }
             }

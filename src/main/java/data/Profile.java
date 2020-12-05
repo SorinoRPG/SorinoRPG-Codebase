@@ -118,15 +118,13 @@ public class Profile implements Serializable {
     public static Profile[] getProfiles(int size, String guildID) throws IOException, ClassNotFoundException {
         File directory = new File
                 ("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files");
+                "/src/main/java/data/files/" + guildID);
 
-        List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles()));
-        List<File> filteredList = files.parallelStream().filter((file) ->
-                file.getPath().contains("@@" + guildID)).collect(Collectors.toList());
+        List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles(File::isFile)));
 
         Profile[] profiles = new Profile[size];
-        for (int i = 0; i < filteredList.size() || i < size; i++)
-            profiles[i] = readFromFile(filteredList.get(i));
+        for (int i = 0; i < files.size() || i < size; i++)
+            profiles[i] = readFromFile(files.get(i));
         return profiles;
     }
 
@@ -169,8 +167,8 @@ public class Profile implements Serializable {
                 new FileWriter(
                         new File(
                                 "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/@" +
-                                        guild.getId() + ID + ".txt"
+                                        "/src/main/java/data/files/" +
+                                        guild.getId() + "/@" + ID + ".txt"
                         )
                 );
         fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
@@ -183,8 +181,8 @@ public class Profile implements Serializable {
                         new FileOutputStream(
                                 new File(
                                         "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                                "/src/main/java/data/files/@@" +
-                                        guild.getId()
+                                                "/src/main/java/data/files/" +
+                                        guild.getId() + "/@@"
                                         + ID+ ".txt")
                         )
                 );
@@ -203,9 +201,8 @@ public class Profile implements Serializable {
                 new FileWriter(
                         new File(
                                 "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/@" +
-                                        guild.getId()
-                                        + ID + ".txt"
+                                        "/src/main/java/data/files/" +
+                                        guild.getId() + "/@" + ID + ".txt"
                         ),
                         false
                 );
@@ -219,13 +216,13 @@ public class Profile implements Serializable {
                 new ObjectOutputStream(
                         new FileOutputStream(
                                 new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/@@" +
-                                        guild.getId()
+                                        "/src/main/java/data/files/" +
+                                        guild.getId() + "/@@"
                                         + ID+ ".txt")
                         )
                 );
         assert new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/@'" + guild.getId()
+                "/src/main/java/data/files/" + guild.getId() + "/@@"
                 + ID+ ".txt").delete();
         try {
             objectOutputStream.writeObject(this);
@@ -243,13 +240,13 @@ public class Profile implements Serializable {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
                         new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                "/src/main/java/data/files/@@" +
-                                event.getGuild().getId()
+                                "/src/main/java/data/files/" +
+                                event.getGuild().getId() + "/@@"
                                 + event.getAuthor().getId() + ".txt")
                 ));
         if(!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/@@" +
-                event.getGuild().getId()
+                "/src/main/java/data/files/" +
+                event.getGuild().getId() + "/@@"
                 + event.getAuthor().getName() + ".txt").exists()){
             objectInputStream.close();
             throw new ProfileNotFoundException(" The user does not have a created profile");
@@ -267,13 +264,13 @@ public class Profile implements Serializable {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
                         new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                "/src/main/java/data/files/@@" +
-                                event.getGuild().getId()
+                                "/src/main/java/data/files/" +
+                                event.getGuild().getId() + "/@@"
                                 + author.getId() + ".txt"
                 )));
         if (!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/@@" +
-                event.getGuild().getId()
+                "/src/main/java/data/files/" +
+                event.getGuild().getId() + "/@@"
                 + author.getName() + ".txt").exists()) {
             objectInputStream.close();
             throw new ProfileNotFoundException(" The user does not have a created profile");
@@ -289,13 +286,13 @@ public class Profile implements Serializable {
 
     public static void eraseProfile(User erasedUser, GuildMessageReceivedEvent event){
         File toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/@" +
-                event.getGuild().getId()
+                "/src/main/java/data/files/" +
+                event.getGuild().getId() + "/@"
                 + erasedUser.getId() + ".txt");
         if (toBeDeleted.delete()){
             toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                    "/src/main/java/data/files/@'" +
-                    event.getGuild().getId()
+                    "/src/main/java/data/files/" +
+                    event.getGuild().getId() + "/@@"
                     + erasedUser.getId() + ".txt");
             assert toBeDeleted.delete();
         }
@@ -308,8 +305,8 @@ public class Profile implements Serializable {
         try {
             ArrayList<String> profileInfo = new ArrayList<>();
             File myObj = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                    "/src/main/java/data/files/@" +
-                    event.getGuild().getId()
+                    "/src/main/java/data/files/" +
+                    event.getGuild().getId() + "/@"
                     + author.getName() + ".txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) profileInfo.add(myReader.nextLine());
@@ -320,6 +317,19 @@ public class Profile implements Serializable {
         } catch (FileNotFoundException e) {
             throw new ProfileNotFoundException("Profile not found");
         }
+    }
+    private void pauseUntilAvailable(File file){
+        System.out.println("Requesting to read " + file.getName());
+        while(!file.canRead()) {
+            try {
+                System.out.println("Failed to read " + file.getName() + "... Requesting to read again");
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted Exception");
+                return;
+            }
+        }
+        System.out.println(file.getName() + " is available");
     }
     @Override
     public String toString() {

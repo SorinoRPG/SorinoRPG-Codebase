@@ -8,36 +8,41 @@ import game.characters.Sorino;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 enum FileCommand{
     CMD(ignored -> {
         System.out.println(
                 "GUILDS: returns the number of guilds\n" +
                 "USERS: returns the number of users\n" +
-                "AWARD_COINS guildID-userID: awards (username) 100,000 coins\n" +
-                "AWARD_SORINO guildID-userID sorino: awards (sorino) to (userID)"
+                "AWARD_COINS guildID userID: awards (username) 100,000 coins\n" +
+                "AWARD_SORINO guildID userID sorino: awards (sorino) to (userID)\n" +
+                "DELETE_ACCOUNT guildID userID: deletes account in a certain guild\n" +
+                "DELETE_SPEC_ACCOUNT userID: deletes all instances of an account in SorinoRPG" +
+                "DELETE_GUILD guildID: deletes the guild specified\n" +
+                "UPDATE: updates every account to the latest version\n" +
+                "SEE_USER: guildID userID: displays the users info\n" +
+                        "Enter in correct syntax."
         );
     }),
     GUILDS(ignored -> {
-        List<File> files = new ArrayList<>(Arrays.asList(
-                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                        "/src/main/java/data/files").listFiles()));
-        List<File> filteredList = files.parallelStream().filter((file) ->
-                file.getPath().contains("&")).collect(Collectors.toList());
+        System.out.println("Counting guilds...");
 
-        System.out.println("GUILDS: " + filteredList.size());
+        String[] directories = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files").list((current, name) -> new File(current, name).isDirectory());
+        System.out.println("GUILDS: " + directories.length);
     }),
     USERS(ignored -> {
-        List<File> files = new ArrayList<>(Arrays.asList(
-                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                        "/src/main/java/data/files").listFiles()));
-        List<File> filteredList = files.parallelStream().filter((file) ->
-                file.getPath().contains("@@")).collect(Collectors.toList());
+        int users = 0;
+        System.out.println("Counting users....");
 
-        System.out.println("USERS: " + filteredList.size());
+        String[] directories = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files").list((current, name) -> new File(current, name).isDirectory());
+        for (String directory : directories) {
+            File guild = new File(directory);
+            users += guild.listFiles((file) -> file.getName().startsWith("@@")).length;
+        }
+
+        System.out.println("USERS: " + users);
     }),
     AWARD_COINS(input -> {
         try {
@@ -63,9 +68,28 @@ enum FileCommand{
             System.out.println("Sorino does not exist!");
         }
     }),
-    ERROR((string) -> {
-        System.out.println(string + "\n was an invalid command, assuming process end...");
-        System.exit(0);
+    DELETE_ACCOUNT((input) -> {
+        System.out.println("Deleting account...\n");
+    })
+    ,
+    DELETE_SPEC_ACCOUNT((input) -> {
+        System.out.println("Deleting specific account...\n");
+    })
+    ,
+    DELETE_GUILD((input) -> {
+        System.out.println("Deleting guild...\n");
+    })
+    ,
+    UPDATE((input) -> {
+        System.out.println("Mass game update... Approximate time: 1 minute\n");
+    })
+    ,
+    SEE_USER((input) -> {
+        System.out.println("Displaying user...\n");
+    })
+    ,
+    ERROR((input) -> {
+        System.out.println(input + "\n was an invalid command, assuming process end...");
     });
 
     FileAction action;
@@ -81,6 +105,11 @@ enum FileCommand{
                 add(FileCommand.USERS);
                 add(FileCommand.AWARD_COINS);
                 add(FileCommand.AWARD_SORINO);
+                add(FileCommand.DELETE_ACCOUNT);
+                add(FileCommand.DELETE_GUILD);
+                add(FileCommand.DELETE_SPEC_ACCOUNT);
+                add(FileCommand.SEE_USER);
+                add(FileCommand.UPDATE);
             }
         };
         for (FileCommand fc : cmdList) {
