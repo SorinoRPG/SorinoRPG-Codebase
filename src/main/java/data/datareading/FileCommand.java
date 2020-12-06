@@ -8,6 +8,7 @@ import game.characters.Sorino;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 enum FileCommand{
     CMD(ignored -> {
@@ -70,24 +71,67 @@ enum FileCommand{
     }),
     DELETE_ACCOUNT((input) -> {
         System.out.println("Deleting account...\n");
-    })
-    ,
+        String guildId = input.substring(input.indexOf(" "), input.lastIndexOf(" ")).trim();
+        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        boolean fileDelete;
+
+        File file = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/" +
+                "files/" + guildId + "@" + userID + ".txt");
+        fileDelete = file.delete();
+        if (!fileDelete) System.out.println("Info file has already been deleted or does not exist");
+
+        file = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/" +
+                "files/" + guildId + "@@" + userID + ".txt");
+        fileDelete = file.delete();
+        if (!fileDelete) System.out.println("Object file has already been deleted or does not exist");
+
+        System.out.println(userID + " at " + guildId + " has been deleted");
+    }),
     DELETE_SPEC_ACCOUNT((input) -> {
-        System.out.println("Deleting specific account...\n");
-    })
-    ,
+        System.out.println("Searching for account instances...\n");
+
+        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        ArrayList<String> directories = new ArrayList<>(Arrays.asList(
+                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files").list((current, name) -> new File(current, name).isDirectory())));
+
+        directories.parallelStream().forEach(directory -> {
+            File guild = new File(directory + "\\");
+
+            ArrayList<File> guildFiles =
+                    new ArrayList<>(Arrays.asList(guild.listFiles(
+                            (file) -> file.getName().startsWith("@" + userID) ||
+                                    file.getName().startsWith("@@" + userID))));
+            if(guildFiles.size() == 2)
+                guildFiles.forEach(file -> {
+                    assert file.delete();
+                    System.out.println("Deleted instance");
+                });
+        });
+    }),
     DELETE_GUILD((input) -> {
         System.out.println("Deleting guild...\n");
-    })
-    ,
+
+        String guildID = input.substring(input.lastIndexOf(" ")).trim();
+        if (new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                "/src/main/java/data/files/" + guildID).delete()) System.out.println("Success");
+    }),
     UPDATE((input) -> {
         System.out.println("Mass game update... Approximate time: 1 minute\n");
-    })
-    ,
+    }),
     SEE_USER((input) -> {
         System.out.println("Displaying user...\n");
-    })
-    ,
+        String guildId = input.substring(input.indexOf(" "), input.lastIndexOf(" ")).trim();
+        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        try {
+            Profile profile = Profile.readFromFile(new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                    "/src/main/java/data/files/" +
+                    guildId + "/@" + userID + ".txt"));
+            System.out.println(profile.toString());
+        } catch (ClassNotFoundException | IOException ioException) {
+            System.out.println("File was not found!");
+        }
+    }),
     ERROR((input) -> {
         System.out.println(input + "\n was an invalid command, assuming process end...");
     });

@@ -461,11 +461,13 @@ public class FightManager {
             winner = Profile.getProfile(users.get(loserIndex+1), event);
         else
             winner = Profile.getProfile(users.get(loserIndex-1), event);
-        winner.setCoins(300);
+
+        int levelMultiplier = (int) Math.sqrt(((double) winner.getLevel() + loser.getLevel()) / 2);
+        winner.setCoins(100 * levelMultiplier);
         winner.incrementWin();
         winner.incrementXP(200, event.getChannel());
         loser.incrementLoss();
-        loser.setCoins(-300);
+        loser.setCoins(-100 * levelMultiplier);
 
         users = new ArrayList<>();
         currentFighters = new ArrayList<>();

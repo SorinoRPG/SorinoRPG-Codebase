@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <h1>MainBot</h1>
@@ -36,15 +38,14 @@ public class MainBot {
      * @see JDABuilder
      */
     public static void main(String[] args) throws LoginException {
-        if(args.length == 0){
-            System.out.print("You needed to specify the token in the arguments!");
-            return;
-        }
+        System.out.println("Started Execution: " + DateTimeFormatter
+                .ofPattern("dd/MM/yyyy HH:mm:ss")
+                .format(LocalDateTime.now()) + "\n\n");
 
-        JDABuilder.createLight(args[0],
+        JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
                 GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new GuildListener())
-                .setActivity(Activity.watching("-help for information"))
+                .setActivity(Activity.playing("-help for info"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build();
     }

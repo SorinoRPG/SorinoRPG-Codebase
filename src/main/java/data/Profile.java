@@ -24,7 +24,7 @@ public class Profile implements Serializable {
     private final String ID;
     private final String name;
     private final String imageUrl;
-    private final Guild guild;
+    private final String guildID;
     private int wins;
     private int loses;
     private int level = 0;
@@ -33,7 +33,7 @@ public class Profile implements Serializable {
 
 
     public Profile(ArrayList<Sorino> sorino, Coins coins,
-                   String id, String name, int wins, int loses, String imageUrl, Guild guild){
+                   String id, String name, int wins, int loses, String imageUrl, String guildID){
         this.userSorino = sorino;
         this.coins = coins;
         this.ID = id;
@@ -41,7 +41,7 @@ public class Profile implements Serializable {
         this.wins = wins;
         this.loses = loses;
         this.imageUrl = imageUrl;
-        this.guild = guild;
+        this.guildID = guildID;
     }
 
     public Sorino getSpecificSorino(String sorinoStr) throws SorinoNotFoundException {
@@ -115,17 +115,19 @@ public class Profile implements Serializable {
         }
     }
 
-    public static Profile[] getProfiles(int size, String guildID) throws IOException, ClassNotFoundException {
+    public static ArrayList<Profile> getProfiles(String guildID) throws IOException, ClassNotFoundException {
         File directory = new File
                 ("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/" + guildID);
 
         List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles(File::isFile)));
+        files = files.parallelStream().filter((file) -> file.getName().startsWith("@@"))
+                .collect(Collectors.toList());
+        Profile[] profiles = new Profile[files.toArray().length];
 
-        Profile[] profiles = new Profile[size];
-        for (int i = 0; i < files.size() || i < size; i++)
-            profiles[i] = readFromFile(files.get(i));
-        return profiles;
+        for(int i = 0; i < files.size(); i++){
+
+        }
     }
 
     public MessageEmbed showLevel(TextChannel channel){
@@ -168,7 +170,7 @@ public class Profile implements Serializable {
                         new File(
                                 "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                         "/src/main/java/data/files/" +
-                                        guild.getId() + "/@" + ID + ".txt"
+                                        guildID + "/@" + ID + ".txt"
                         )
                 );
         fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
@@ -182,7 +184,7 @@ public class Profile implements Serializable {
                                 new File(
                                         "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                                 "/src/main/java/data/files/" +
-                                        guild.getId() + "/@@"
+                                        guildID + "/@@"
                                         + ID+ ".txt")
                         )
                 );
@@ -202,7 +204,7 @@ public class Profile implements Serializable {
                         new File(
                                 "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                         "/src/main/java/data/files/" +
-                                        guild.getId() + "/@" + ID + ".txt"
+                                        guildID + "/@" + ID + ".txt"
                         ),
                         false
                 );
@@ -217,12 +219,12 @@ public class Profile implements Serializable {
                         new FileOutputStream(
                                 new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                         "/src/main/java/data/files/" +
-                                        guild.getId() + "/@@"
+                                        guildID + "/@@"
                                         + ID+ ".txt")
                         )
                 );
         assert new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" + guild.getId() + "/@@"
+                "/src/main/java/data/files/" + guildID + "/@@"
                 + ID+ ".txt").delete();
         try {
             objectOutputStream.writeObject(this);
@@ -247,7 +249,7 @@ public class Profile implements Serializable {
         if(!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/" +
                 event.getGuild().getId() + "/@@"
-                + event.getAuthor().getName() + ".txt").exists()){
+                + event.getAuthor().getId() + ".txt").exists()){
             objectInputStream.close();
             throw new ProfileNotFoundException(" The user does not have a created profile");
         }
@@ -271,7 +273,7 @@ public class Profile implements Serializable {
         if (!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/" +
                 event.getGuild().getId() + "/@@"
-                + author.getName() + ".txt").exists()) {
+                + author.getId() + ".txt").exists()) {
             objectInputStream.close();
             throw new ProfileNotFoundException(" The user does not have a created profile");
         }

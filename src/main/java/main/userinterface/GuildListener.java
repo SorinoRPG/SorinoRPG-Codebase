@@ -74,17 +74,8 @@ public class GuildListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        Optional<Role> userRole = Objects
-                .requireNonNull(event
-                        .getMember())
-                .getRoles()
-                .stream()
-                .filter(role -> role.getName().equalsIgnoreCase("Developer-In-Training")
-                || role.getName().equalsIgnoreCase("Developers")
-                || role.getName().equalsIgnoreCase("Testers"))
-                .findFirst();
         if(event.getAuthor().isBot() ||
-                !Prefix.assertPrefix(event.getMessage()) || userRole.isEmpty())
+                !Prefix.assertPrefix(event.getMessage()))
             return;
 
         Command command =

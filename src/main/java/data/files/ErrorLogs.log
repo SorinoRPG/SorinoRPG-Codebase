@@ -1678,3 +1678,161 @@ Disconnected>>Happened at>> 18/11/2020 20:55:01
 
 Disconnected>>Happened at>> 18/11/2020 21:43:12
 
+Error in creating profile + 
+java.io.NotSerializableException: net.dv8tion.jda.internal.entities.GuildImpl
+	at java.base/java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1193)
+	at java.base/java.io.ObjectOutputStream.defaultWriteFields(ObjectOutputStream.java:1579)
+	at java.base/java.io.ObjectOutputStream.writeSerialData(ObjectOutputStream.java:1536)
+	at java.base/java.io.ObjectOutputStream.writeOrdinaryObject(ObjectOutputStream.java:1444)
+	at java.base/java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1187)
+	at java.base/java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:353)
+	at data.Profile.createProfile(Profile.java:190)
+	at main.userinterface.Command.lambda$static$12(Command.java:485)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 05/12/2020 17:18:12
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 18:03:13
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:251)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:08:01
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:255)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:10:40
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:259)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:21:06
+
+Error in finding Profile due to IO and Classes 
+java.io.StreamCorruptedException: invalid stream header: 536F7269
+	at java.base/java.io.ObjectInputStream.readStreamHeader(ObjectInputStream.java:946)
+	at java.base/java.io.ObjectInputStream.<init>(ObjectInputStream.java:385)
+	at data.Profile.readFromFile(Profile.java:159)
+	at data.Profile.getProfiles(Profile.java:126)
+	at main.userinterface.Command.lambda$static$2(Command.java:84)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 05/12/2020 19:07:35
+
+Disconnected>>Happened at>> 05/12/2020 19:18:56
+
+Error in finding Profile due to IO and Classes 
+java.io.StreamCorruptedException: invalid stream header: 536F7269
+	at java.base/java.io.ObjectInputStream.readStreamHeader(ObjectInputStream.java:946)
+	at java.base/java.io.ObjectInputStream.<init>(ObjectInputStream.java:385)
+	at data.Profile.readFromFile(Profile.java:159)
+	at data.Profile.getProfiles(Profile.java:126)
+	at main.userinterface.Command.lambda$static$2(Command.java:84)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 05/12/2020 20:47:29
+
+Error in finding Profile due to IO and Classes 
+java.io.StreamCorruptedException: invalid stream header: 536F7269
+	at java.base/java.io.ObjectInputStream.readStreamHeader(ObjectInputStream.java:946)
+	at java.base/java.io.ObjectInputStream.<init>(ObjectInputStream.java:385)
+	at data.Profile.readFromFile(Profile.java:160)
+	at data.Profile.getProfiles(Profile.java:127)
+	at main.userinterface.Command.lambda$static$2(Command.java:84)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 05/12/2020 20:54:17
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 21:03:57
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 22:27:09
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 23:12:44
+
+Disconnected>>Happened at>> 05/12/2020 23:55:18
+
+Error in finding Profile due to IO and Classes 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\734428711906050119\@@770219957022883862.txt (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:154)
+	at data.Profile.getProfile(Profile.java:248)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 23:58:59
+

@@ -5138,3 +5138,318 @@ Checked profile>>Happened at>> 18/11/2020 19:34:28
 
 Checked profile>>Happened at>> 18/11/2020 19:34:33
 
+Incorrect usage of syntax>>Happened at>> 05/12/2020 18:03:14
+
+Created profile>>Happened at>> 05/12/2020 18:07:36
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:251)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:08:01
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:255)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:10:40
+
+Error in finding Profile 
+Profile was not found because:  The user does not have a created profile
+	at data.Profile.getProfile(Profile.java:259)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 05/12/2020 18:21:06
+
+Checked profile>>Happened at>> 05/12/2020 18:24:42
+
+Re-Created profile>>Happened at>> 05/12/2020 19:05:50
+
+Shown rank>>Happened at>> 05/12/2020 19:06:01
+
+Search>>Happened at>> 05/12/2020 19:06:35
+
+Re-Created profile>>Happened at>> 05/12/2020 19:06:43
+
+Re-Created profile>>Happened at>> 05/12/2020 19:06:43
+
+Search>>Happened at>> 05/12/2020 19:06:43
+
+Re-Created profile>>Happened at>> 05/12/2020 19:06:49
+
+Shown rank>>Happened at>> 05/12/2020 19:06:49
+
+Search>>Happened at>> 05/12/2020 19:06:58
+
+Re-Created profile>>Happened at>> 05/12/2020 19:07:00
+
+Re-Created profile>>Happened at>> 05/12/2020 19:07:00
+
+Search>>Happened at>> 05/12/2020 19:07:00
+
+Search>>Happened at>> 05/12/2020 19:07:03
+
+Re-Created profile>>Happened at>> 05/12/2020 19:07:04
+
+Re-Created profile>>Happened at>> 05/12/2020 19:07:04
+
+Search>>Happened at>> 05/12/2020 19:07:04
+
+Checked profile>>Happened at>> 05/12/2020 19:07:07
+
+Shown rank>>Happened at>> 05/12/2020 19:07:36
+
+Shown rank>>Happened at>> 05/12/2020 20:47:29
+
+Shown rank>>Happened at>> 05/12/2020 20:54:17
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 21:03:57
+
+Shown rank>>Happened at>> 05/12/2020 22:25:51
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 22:27:09
+
+Shown rank>>Happened at>> 05/12/2020 22:27:11
+
+Incorrect usage of syntax>>Happened at>> 05/12/2020 23:12:44
+
+Shown rank>>Happened at>> 05/12/2020 23:13:38
+
+Checked profile>>Happened at>> 05/12/2020 23:58:59
+
+Created profile>>Happened at>> 05/12/2020 23:59:09
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:17
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:17
+
+Search>>Happened at>> 05/12/2020 23:59:17
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:20
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:20
+
+Search>>Happened at>> 05/12/2020 23:59:20
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:23
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:23
+
+Search>>Happened at>> 05/12/2020 23:59:23
+
+Search>>Happened at>> 05/12/2020 23:59:30
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:39
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:39
+
+Search>>Happened at>> 05/12/2020 23:59:40
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:42
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:42
+
+Search>>Happened at>> 05/12/2020 23:59:42
+
+Search>>Happened at>> 05/12/2020 23:59:45
+
+Search>>Happened at>> 05/12/2020 23:59:47
+
+Search>>Happened at>> 05/12/2020 23:59:49
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:51
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:51
+
+Search>>Happened at>> 05/12/2020 23:59:51
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:53
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:53
+
+Search>>Happened at>> 05/12/2020 23:59:53
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:55
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:55
+
+Search>>Happened at>> 05/12/2020 23:59:55
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:58
+
+Re-Created profile>>Happened at>> 05/12/2020 23:59:58
+
+Search>>Happened at>> 05/12/2020 23:59:58
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:01
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:01
+
+Search>>Happened at>> 06/12/2020 00:00:01
+
+Search>>Happened at>> 06/12/2020 00:00:03
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:05
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:05
+
+Search>>Happened at>> 06/12/2020 00:00:05
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:07
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:07
+
+Search>>Happened at>> 06/12/2020 00:00:07
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:09
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:09
+
+Search>>Happened at>> 06/12/2020 00:00:09
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:10
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:10
+
+Search>>Happened at>> 06/12/2020 00:00:10
+
+Search>>Happened at>> 06/12/2020 00:00:13
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:14
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:14
+
+Search>>Happened at>> 06/12/2020 00:00:14
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:16
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:16
+
+Search>>Happened at>> 06/12/2020 00:00:16
+
+Search>>Happened at>> 06/12/2020 00:00:19
+
+Search>>Happened at>> 06/12/2020 00:00:22
+
+Search>>Happened at>> 06/12/2020 00:00:23
+
+Search>>Happened at>> 06/12/2020 00:00:25
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:27
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:27
+
+Search>>Happened at>> 06/12/2020 00:00:28
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:29
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:29
+
+Search>>Happened at>> 06/12/2020 00:00:29
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:31
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:31
+
+Search>>Happened at>> 06/12/2020 00:00:31
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:32
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:32
+
+Search>>Happened at>> 06/12/2020 00:00:32
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:33
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:33
+
+Search>>Happened at>> 06/12/2020 00:00:33
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:40
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:40
+
+Search>>Happened at>> 06/12/2020 00:00:40
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:42
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:42
+
+Search>>Happened at>> 06/12/2020 00:00:42
+
+Search>>Happened at>> 06/12/2020 00:00:45
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:47
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:47
+
+Search>>Happened at>> 06/12/2020 00:00:47
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:51
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:51
+
+Search>>Happened at>> 06/12/2020 00:00:51
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:53
+
+Re-Created profile>>Happened at>> 06/12/2020 00:00:53
+
+Search>>Happened at>> 06/12/2020 00:00:53
+

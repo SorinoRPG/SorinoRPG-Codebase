@@ -44,34 +44,26 @@ public enum Command {
     }),
     LEADERBOARD(event -> {
         class Sorting {
-            void quickSort(Profile[] arr, int begin, int end) {
-                if (begin < end) {
-                    int partitionIndex = partition(arr, begin, end);
+            boolean sorted = false;
+            Profile temp;
+                public void sort(List<Profile> a) {
+                if(a.size() == 1) return;
 
-                    quickSort(arr, begin, partitionIndex-1);
-                    quickSort(arr, partitionIndex+1, end);
-                }
-            }
-
-            private int partition(Profile[] arr, int begin, int end) {
-                int pivot = arr[end].getLevel();
-                int i = (begin - 1);
-
-                for (int j = begin; j < end; j++) {
-                    if (arr[j].getLevel() <= pivot) {
-                        i++;
-
-                        Profile swapTemp = arr[i];
-                        arr[i] = arr[j];
-                        arr[j] = swapTemp;
+                while(!sorted) {
+                    sorted = true;
+                    for (int i = 0; i < a.size() - 1; i++) {
+                        try {
+                            if (a.get(i).getLevel() > a.get(i + 1).getLevel()) {
+                                temp = a.get(i);
+                                a.set(i, a.get(i + 1));
+                                a.set(i + 1, temp);
+                                sorted = false;
+                            }
+                        } catch (NullPointerException ignored){
+                            return;
+                        }
                     }
                 }
-
-                Profile swapTemp = arr[i + 1];
-                arr[i + 1] = arr[end];
-                arr[end] = swapTemp;
-                
-                return i+1;
             }
         }
 
@@ -81,12 +73,19 @@ public enum Command {
                 builder.setTitle("Leaderboard");
                 builder.setDescription("The leaderboard for the server");
 
-                Profile[] profileArr = Profile.getProfiles(10, event.getGuild().getId());
-                new Sorting().quickSort(profileArr, 0, profileArr.length);
+                ArrayList<Profile> profileArr = Profile.getProfiles(event.getGuild().getId());
+                new Sorting().sort(profileArr);
 
-                for(int i = 0; i < profileArr.length; i++)
-                    builder.addField(i+1 + profileArr[i].getName() + " -- Level " + profileArr[i].getLevel(),
-                            "", false);
+                for(int i = 0; i < 10; i++) {
+                    try {
+                        builder.addField(i + 1 + ". " +
+                                        profileArr.get(i).getName() +
+                                        " -- Level " + profileArr.get(i).getLevel(),
+                                "", false);
+                    } catch (NullPointerException ignored){
+                        break;
+                    }
+                }
 
                 event.getChannel().sendMessage(builder.build()).queue();
             } catch (IOException | ClassNotFoundException e) {
@@ -480,7 +479,7 @@ public enum Command {
                             new Coins(50),
                             event.getAuthor().getId(), event.getAuthor().getName()
                             ,0, 0, event.getAuthor().getAvatarUrl(),
-                            event.getGuild());
+                            event.getGuild().getId());
             try {
                 userProfile.createProfile();
             } catch(IOException e){
@@ -623,7 +622,7 @@ public enum Command {
                     event.getAuthor().getName(),
                     Integer.parseInt(userInfo.get(2).substring(6)),
                     Integer.parseInt(userInfo.get(3).substring(7)),
-                    event.getAuthor().getAvatarUrl(), event.getGuild());
+                    event.getAuthor().getAvatarUrl(), event.getGuild().getId());
             newProfile.createProfile();
 
             event.getChannel().sendMessage("Update successful!").queue();
@@ -701,6 +700,8 @@ public enum Command {
         System.out.println(prefix);
         if(Prefix.PrefixString.getPrefix(prefix).isPresent())
             return commandHashMap.get(Prefix.PrefixString.getPrefix(prefix).get());
+        else if (prefix.equalsIgnoreCase("-h"))
+            return Command.HELP;
         return Command.ERROR;
     }
 }

@@ -1,5 +1,0 @@
-Ignatiamon: [Gray: Starter type]
-Coins: 105
-Wins: 0
-Loses: 0
-Level: 0	 XP -- 55/100

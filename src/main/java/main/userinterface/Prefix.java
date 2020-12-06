@@ -105,7 +105,7 @@ public class Prefix {
         ERASE_PROFILE() {
             @Override
             public String prefix() {
-                return "-$";
+                return "-X";
             }
         },
         SEE_RANK() {
@@ -123,7 +123,7 @@ public class Prefix {
         UPDATE_PROFILE(){
             @Override
             public String prefix() {
-                return "-*";
+                return "-$";
             }
         },
         SEARCH() {
