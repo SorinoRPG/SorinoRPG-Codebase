@@ -21,7 +21,7 @@ public class Calkanor extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 22;
+        return 1000;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Calkanor extends Smart implements Sorino {
 
     @Override
     public String getName() {
-        return "Calkanor: Smart type";
+        return "Calkanor: Smart type | Uncommon";
     }
 
     @Override

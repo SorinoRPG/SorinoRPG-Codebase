@@ -41,7 +41,8 @@ public class GuildListener extends ListenerAdapter {
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
         embedBuilder.setTitle("SorinoRPG has just landed!");
-        embedBuilder.setDescription("Thank you for inviting SorinoRPG to " + event.getGuild().getName());
+        embedBuilder.setDescription("Thank you for inviting SorinoRPG to " + event.getGuild().getName() + "\n" +
+                "I will need the DELETE_MESSAGE permission to prevent spam.");
         embedBuilder.addField("Invite SorinoRPG to your server",
                 "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
                 true);

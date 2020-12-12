@@ -7,22 +7,26 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Fight {
-    public static ArrayList<Sorino> currentFighters = new ArrayList<>();
-    public static ArrayList<Sorino.DeadSorino> deadSorino = new ArrayList<>();
-    public static ArrayList<User> users = new ArrayList<>();
-    public static ArrayList<Opponent> opponents = new ArrayList<>();
 
-    void saveFight() throws FileNotFoundException {
-        try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(
-                    new FileOutputStream(
-                            new File("")
-                    )
-            );
-            objectOutputStream.writeObject(this);
-            objectOutputStream.close();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-    }
 }
+
+/*
+
+UserAction info = event1 -> {
+              EmbedBuilder embed  = new EmbedBuilder();
+              embed.setTitle("Health of the Fighters!");
+
+              embed.addField(fight.users.get(0).getName() + "'s Health \t\t\t ",
+                      "HEALTH: " + fight.opponents.get(0).getHealth() + "\n" +
+                              "ENERGY: " + fight.opponents.get(0).getEnergy() + "\n" +
+                              "DEFENCE: " + fight.opponents.get(0).getDecrease() + " drop-off",
+                      true);
+              embed.addField(fight.users.get(1).getName() + "'s Health",
+                      "HEALTH: " + fight.opponents.get(1).getHealth() + "\n" +
+                              "ENERGY: " + fight.opponents.get(1).getEnergy() + "\n" +
+                              "DEFENCE: " + fight.opponents.get(1).getDecrease() + " drop-off",
+                      true);
+
+              event1.getChannel().sendMessage(embed.build()).queue();
+        };
+ */

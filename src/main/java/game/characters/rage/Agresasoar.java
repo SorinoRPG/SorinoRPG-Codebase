@@ -21,7 +21,7 @@ public class Agresasoar extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 380;
+        return 1000;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Agresasoar extends Rage implements Sorino {
 
     //Reckless
     private final Move reckless = new Move(29, "Performed a reckless attack",
-            false, 4,
+            false, 29,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636306397298708/d4ngiyr-c99998eb-3b87-4c57-8a67-ddf320cbb08d.png");
     @Override
     public Move customRageMove(Sorino initiator) {
@@ -69,7 +69,7 @@ public class Agresasoar extends Rage implements Sorino {
 
     @Override
     public String getName() {
-        return "Agresasoar: Rage type";
+        return "Agresasoar: Rage type | Uncommon";
     }
 
     @Override

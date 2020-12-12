@@ -21,7 +21,7 @@ public class Imprada extends Nature implements Sorino {
 
     @Override
     public int getRarity() {
-        return 410;
+        return 1110;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Imprada extends Nature implements Sorino {
 
     @Override
     public String getName() {
-        return "Imprada: Nature type";
+        return "Imprada: Nature type | Uncommon";
     }
 
     @Override

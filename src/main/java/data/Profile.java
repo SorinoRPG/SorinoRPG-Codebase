@@ -5,7 +5,6 @@ import game.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -60,8 +59,10 @@ public class Profile implements Serializable {
         return userSorino;
     }
     public void addSorino(Sorino sorino){
-        if(userSorino.contains(sorino))
-            return;
+        for (Sorino sor:
+             userSorino) {
+            if(sor.getName().equals(sorino.getName())) return;
+        }
         this.userSorino.add(sorino);
     }
     public void setCoins(int amount){
@@ -123,11 +124,12 @@ public class Profile implements Serializable {
         List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles(File::isFile)));
         files = files.parallelStream().filter((file) -> file.getName().startsWith("@@"))
                 .collect(Collectors.toList());
-        Profile[] profiles = new Profile[files.toArray().length];
+        ArrayList<Profile> profiles = new ArrayList<>();
 
-        for(int i = 0; i < files.size(); i++){
-
+        for (File file : files) {
+            profiles.add(Profile.readFromFile(file));
         }
+        return profiles;
     }
 
     public MessageEmbed showLevel(TextChannel channel){
@@ -143,15 +145,22 @@ public class Profile implements Serializable {
                     new Logger("Error in recreating profile \n" +
                             Logger.exceptionAsString(ioException));
             channel.sendMessage(
-                    "Could not find profile due to IO and Classes "
+                    "Could not find profile due to a SorinoRPG server error." +
+                            " These could have been the causes:\n\n" +
+                            "1. Your account is being used in something else," +
+                            " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                            " you can use your account.\n\n" +
+                            "2. Your account is currently being reviewed or processed, this could be due" +
+                            " to suspicious activity or receiving an award of some sort. For the latter," +
+                            " you will be able to use your account in a minute or so. For the former," +
+                            " this may happen regularly on and off until we can take further action.\n\n" +
+                            "3. There was a server issue, please report this to our email " +
+                            "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
             ).queue();
             try{
                 logger.logError();
             } catch (IOException excI){
-                channel.sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue();
+                excI.printStackTrace();
             }
         }
 
@@ -319,19 +328,6 @@ public class Profile implements Serializable {
         } catch (FileNotFoundException e) {
             throw new ProfileNotFoundException("Profile not found");
         }
-    }
-    private void pauseUntilAvailable(File file){
-        System.out.println("Requesting to read " + file.getName());
-        while(!file.canRead()) {
-            try {
-                System.out.println("Failed to read " + file.getName() + "... Requesting to read again");
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                System.out.println("Interrupted Exception");
-                return;
-            }
-        }
-        System.out.println(file.getName() + " is available");
     }
     @Override
     public String toString() {

@@ -43,15 +43,7 @@ public class Prefix {
      * @see Command
      */
     public static boolean assertPrefix(Message command){
-        return command.getContentRaw().startsWith(PrefixString.FIGHT.prefix())
-                || command.getContentRaw().startsWith(PrefixString.SEARCH.prefix())
-                || command.getContentRaw().startsWith(PrefixString.SEE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.CREATE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.UPDATE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.ERASE_PROFILE.prefix())
-                || command.getContentRaw().startsWith(PrefixString.SEE_RANK.prefix())
-                || command.getContentRaw().startsWith(PrefixString.LEADERBOARD.prefix())
-                || command.getContentRaw().startsWith(PrefixString.HELP.prefix());
+        return command.getContentRaw().startsWith("-");
     }
 
     /**
@@ -90,10 +82,10 @@ public class Prefix {
     }
 
     enum PrefixString implements PrefixGetter {
-        LEADERBOARD() {
+        LEADERBOARD() { // FIXME: 06/12/2020 
             @Override
             public String prefix() {
-                return "-L";
+                return "";
             }
         },
         HELP(){
@@ -120,7 +112,7 @@ public class Prefix {
                 return "-=";
             }
         },
-        UPDATE_PROFILE(){
+        UPDATE_PROFILE(){ // FIXME: 06/12/2020 
             @Override
             public String prefix() {
                 return "-$";

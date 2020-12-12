@@ -21,7 +21,7 @@ public class Bundlebeast extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 420;
+        return 1780;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Bundlebeast extends Rage implements Sorino {
 
     //Bundle Run
     private final Move bundleRun = new Move(32, "Runs and hits into opponent",
-            false, 4,
+            false, 20,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636582127042580/c8e882ed12a4e9165ed40165ee9a28b0.png");
     @Override
     public Move customRageMove(Sorino initiator) {
@@ -69,7 +69,7 @@ public class Bundlebeast extends Rage implements Sorino {
 
     @Override
     public String getName() {
-        return "Bundlebeast: Rage type";
+        return "Bundlebeast: Rage type | Common";
     }
 
     @Override

@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -37,7 +39,7 @@ public class MainBot {
      * @throws LoginException If there is an error in logging into discord
      * @see JDABuilder
      */
-    public static void main(String[] args) throws LoginException {
+    public static void main(String[] args) throws LoginException, IOException {
         System.out.println("Started Execution: " + DateTimeFormatter
                 .ofPattern("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now()) + "\n\n");
@@ -45,7 +47,7 @@ public class MainBot {
         JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
                 GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new GuildListener())
-                .setActivity(Activity.playing("-help for info"))
+                .setActivity(Activity.playing("-help"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build();
     }

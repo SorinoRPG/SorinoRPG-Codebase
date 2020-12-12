@@ -7,9 +7,6 @@ import data.files.Logger;
 import game.SorinoNotFoundException;
 import game.characters.element.*;
 import game.characters.nature.*;
-import game.characters.op.DementedBone;
-import game.characters.op.DentedDemented;
-import game.characters.op.DiseaseRiddenBackHead;
 import game.characters.rage.*;
 import game.characters.smart.*;
 import game.characters.starter.Gray;
@@ -24,7 +21,6 @@ import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Arrays;
 import java.util.Random;
 
 public interface Sorino extends Serializable{
@@ -39,6 +35,8 @@ public interface Sorino extends Serializable{
     List<Move> getAllMoves();
     String getName();
 
+
+    @SuppressWarnings("unused")
     class DeadSorino {
         private final Sorino sorino;
         Opponent opponent;
@@ -63,6 +61,24 @@ public interface Sorino extends Serializable{
 
     @SuppressWarnings("unused")
     enum AllSorino implements GetSorino {
+        ANNO {
+            @Override
+            public Sorino getSorino() {
+                return new Anno();
+            }
+        },
+        EGOTIST {
+            @Override
+            public Sorino getSorino() {
+                return new Egotist();
+            }
+        },
+        INTESAIR {
+            @Override
+            public Sorino getSorino() {
+                return new Intesair();
+            }
+        },
         GRAY {
             @Override
             public Sorino getSorino() {
@@ -146,24 +162,6 @@ public interface Sorino extends Serializable{
             public Sorino getSorino() {
                 return new Rundasoar();
             }
-        },
-        DEMENTEDBONE {
-            @Override
-            public Sorino getSorino() {
-                return new DementedBone();
-            }
-        },
-        DENTEDDEMENTED {
-            @Override
-            public Sorino getSorino() {
-                return new DentedDemented();
-            }
-        },
-        DISEASERIDDENBACKHEAD{
-            @Override
-            public Sorino getSorino() {
-                return new DiseaseRiddenBackHead();
-            }
         };
         public static boolean isSorino(String command){
             command = command.replace("-=", "");
@@ -174,19 +172,6 @@ public interface Sorino extends Serializable{
                     return true;
             }
             return false;
-        }
-
-        public static Sorino getOP(String op) throws SorinoNotFoundException {
-            List<Sorino> opSorino =
-                    new ArrayList<>(Arrays.asList(DENTEDDEMENTED.getSorino(),
-                            DISEASERIDDENBACKHEAD.getSorino(),
-                            DEMENTEDBONE.getSorino()));
-            for (Sorino sorino :
-                    opSorino) {
-                if(sorino.getSorino(op).isPresent())
-                    return sorino;
-            }
-            throw new SorinoNotFoundException("String was incorrect") ;
         }
         public static Sorino getSorino(String sor) throws SorinoNotFoundException {
             List<AllSorino> opSorino =
@@ -204,41 +189,6 @@ public interface Sorino extends Serializable{
 
             for (AllSorino allSorino : sorino) {
                 Sorino currSorino = allSorino.getSorino();
-                try {
-                    if (Profile.getProfile(event).getSorinoAsList().contains(currSorino))
-                        continue;
-                } catch (IOException | ClassNotFoundException e) {
-                    Logger logger =
-                            new Logger("Error in finding Profile due to IO and Classes \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "Could not find profile due to IO and Classes "
-                    ).queue();
-                    try{
-                        logger.logError();
-                    } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
-                    }
-                } catch (ProfileNotFoundException e) {
-                    Logger logger =
-                            new Logger("Error in finding Profile \n" +
-                                    Logger.exceptionAsString(e));
-
-                    event.getChannel().sendMessage(
-                            "Could not find profile!"
-                    ).queue();
-                    try{
-                        logger.logError();
-                    } catch (IOException excI){
-                        event.getChannel().sendMessage(
-                                "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                        Logger.exceptionAsString(excI)
-                        ).queue();
-                    }
-                }
                 for(int i = 0; i < currSorino.getRarity(); i++)
                     randomSorino.add(currSorino);
             }

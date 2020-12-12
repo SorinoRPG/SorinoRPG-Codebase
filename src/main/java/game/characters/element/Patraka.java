@@ -21,7 +21,7 @@ public class Patraka extends Element implements Sorino {
 
     @Override
     public int getRarity() {
-        return 520;
+        return 1620;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Patraka extends Element implements Sorino {
 
     @Override
     public String getName() {
-        return "Patraka: Element type";
+        return "Patraka: Element type | Common";
     }
 
     @Override

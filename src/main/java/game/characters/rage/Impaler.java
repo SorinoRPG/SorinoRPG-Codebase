@@ -21,7 +21,7 @@ public class Impaler extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 250;
+        return 1100;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Impaler extends Rage implements Sorino {
 
     //Impale
     private final Move impale = new Move(50, "Impaled the opponent",
-             false, 5,
+             false, 35,
             "https://cdn.discordapp.com/attachments/768534237493985291/777636770866659428/rsz_1derelict_dragons_teeth_5262.png");
     @Override
     public Move customRageMove(Sorino initiator) {
@@ -69,7 +69,7 @@ public class Impaler extends Rage implements Sorino {
 
     @Override
     public String getName() {
-        return "Impaler: Rage type";
+        return "Impaler: Rage type | Uncommon";
     }
 
     @Override

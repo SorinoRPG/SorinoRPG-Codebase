@@ -21,7 +21,7 @@ public class Traolter extends Nature implements Sorino {
 
     @Override
     public int getRarity() {
-        return 108;
+        return 860;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Traolter extends Nature implements Sorino {
 
     @Override
     public String getName() {
-        return "Traolter: Nature type";
+        return "Traolter: Nature type | Rare";
     }
 
     @Override

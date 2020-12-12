@@ -49,7 +49,7 @@ enum FileCommand{
         try {
             Profile profile = Profile.readFromFile(new File(
                     "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/files/@@" +
-                            input.substring(0, input.lastIndexOf(" ")) + ".txt"));
+                            input.substring(0, input.lastIndexOf(' ')) + ".txt"));
             profile.setCoins(Integer.parseInt(input.substring(input.lastIndexOf(" ")+1)));
             profile.recreateProfile();
         } catch (IOException | ClassNotFoundException ioException) {
@@ -60,8 +60,8 @@ enum FileCommand{
         try {
             Profile profile = Profile.readFromFile(new File(
                     "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/files/@@" +
-                            input.substring(0, input.lastIndexOf(" ")) + ".txt"));
-            profile.addSorino(Sorino.AllSorino.getSorino(input.substring(input.lastIndexOf(" ")+1)));
+                            input.substring(0, input.lastIndexOf(' ')) + ".txt"));
+            profile.addSorino(Sorino.AllSorino.getSorino(input.substring(input.lastIndexOf(' ')+1)));
             profile.recreateProfile();
         } catch (IOException | ClassNotFoundException ioException) {
             System.out.println("Could not find profile!");
@@ -71,8 +71,8 @@ enum FileCommand{
     }),
     DELETE_ACCOUNT((input) -> {
         System.out.println("Deleting account...\n");
-        String guildId = input.substring(input.indexOf(" "), input.lastIndexOf(" ")).trim();
-        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        String guildId = input.substring(input.indexOf(' '), input.lastIndexOf(' ')).trim();
+        String userID = input.substring(input.lastIndexOf(' ')).trim();
         boolean fileDelete;
 
         File file = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/" +
@@ -90,7 +90,7 @@ enum FileCommand{
     DELETE_SPEC_ACCOUNT((input) -> {
         System.out.println("Searching for account instances...\n");
 
-        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        String userID = input.substring(input.lastIndexOf(' ')).trim();
         ArrayList<String> directories = new ArrayList<>(Arrays.asList(
                 new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files").list((current, name) -> new File(current, name).isDirectory())));
@@ -112,7 +112,7 @@ enum FileCommand{
     DELETE_GUILD((input) -> {
         System.out.println("Deleting guild...\n");
 
-        String guildID = input.substring(input.lastIndexOf(" ")).trim();
+        String guildID = input.substring(input.lastIndexOf(' ')).trim();
         if (new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                 "/src/main/java/data/files/" + guildID).delete()) System.out.println("Success");
     }),
@@ -121,8 +121,11 @@ enum FileCommand{
     }),
     SEE_USER((input) -> {
         System.out.println("Displaying user...\n");
-        String guildId = input.substring(input.indexOf(" "), input.lastIndexOf(" ")).trim();
-        String userID = input.substring(input.lastIndexOf(" ")).trim();
+        System.out.println(input);
+
+        String guildId = input.substring(input.indexOf(' '),
+                input.lastIndexOf(' ')).trim();
+        String userID = input.substring(input.lastIndexOf(' ')).trim();
         try {
             Profile profile = Profile.readFromFile(new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                     "/src/main/java/data/files/" +
@@ -157,7 +160,7 @@ enum FileCommand{
             }
         };
         for (FileCommand fc : cmdList) {
-            if (fc.toString().equals(command.trim()))
+            if (command.contains(fc.toString()))
                 return fc;
         }
 

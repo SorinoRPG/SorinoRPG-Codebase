@@ -1836,3 +1836,238 @@ java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Cod
 	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
 >>Happened at>> 05/12/2020 23:58:59
 
+Disconnected>>Happened at>> 06/12/2020 03:36:34
+
+Disconnected>>Happened at>> 06/12/2020 03:56:37
+
+Disconnected>>Happened at>> 06/12/2020 07:45:33
+
+Disconnected>>Happened at>> 06/12/2020 08:30:42
+
+Disconnected>>Happened at>> 06/12/2020 09:21:52
+
+Disconnected>>Happened at>> 06/12/2020 09:29:37
+
+Error in finding Profile due to IO and Classes 
+java.io.InvalidClassException: data.Profile; local class incompatible: stream classdesc serialVersionUID = 7191582201021295756, local class serialVersionUID = 2742316208047238105
+	at java.base/java.io.ObjectStreamClass.initNonProxy(ObjectStreamClass.java:715)
+	at java.base/java.io.ObjectInputStream.readNonProxyDesc(ObjectInputStream.java:1999)
+	at java.base/java.io.ObjectInputStream.readClassDesc(ObjectInputStream.java:1868)
+	at java.base/java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2161)
+	at java.base/java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1685)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:499)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:457)
+	at data.Profile.readFromFile(Profile.java:165)
+	at data.Profile.getProfiles(Profile.java:129)
+	at main.userinterface.Command.lambda$static$2(Command.java:76)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 10:46:56
+
+Error in finding Profile due to IO and Classes 
+java.io.InvalidClassException: data.Profile; local class incompatible: stream classdesc serialVersionUID = 7191582201021295756, local class serialVersionUID = 2742316208047238105
+	at java.base/java.io.ObjectStreamClass.initNonProxy(ObjectStreamClass.java:715)
+	at java.base/java.io.ObjectInputStream.readNonProxyDesc(ObjectInputStream.java:1999)
+	at java.base/java.io.ObjectInputStream.readClassDesc(ObjectInputStream.java:1868)
+	at java.base/java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2161)
+	at java.base/java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1685)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:499)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:457)
+	at data.Profile.readFromFile(Profile.java:166)
+	at data.Profile.getProfiles(Profile.java:129)
+	at main.userinterface.Command.lambda$static$2(Command.java:76)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 10:51:09
+
+Error in finding Profile due to IO and Classes 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\734428711906050119\@@672883208811184166.txt (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:154)
+	at data.Profile.getProfile(Profile.java:249)
+	at main.userinterface.Command.lambda$static$14(Command.java:524)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:84)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 06/12/2020 10:51:24
+
+Error in finding Profile due to IO and Classes 
+java.io.InvalidClassException: data.Profile; local class incompatible: stream classdesc serialVersionUID = 7191582201021295756, local class serialVersionUID = 2742316208047238105
+	at java.base/java.io.ObjectStreamClass.initNonProxy(ObjectStreamClass.java:715)
+	at java.base/java.io.ObjectInputStream.readNonProxyDesc(ObjectInputStream.java:1999)
+	at java.base/java.io.ObjectInputStream.readClassDesc(ObjectInputStream.java:1868)
+	at java.base/java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2161)
+	at java.base/java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1685)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:499)
+	at java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:457)
+	at data.Profile.readFromFile(Profile.java:166)
+	at data.Profile.getProfiles(Profile.java:129)
+	at main.userinterface.Command.lambda$static$2(Command.java:76)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 10:52:31
+
+Error in finding Profile due to IO and Classes 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\784891397584060456\@@672883208811184166.txt (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:154)
+	at data.Profile.getProfile(Profile.java:256)
+	at main.userinterface.Command.lambda$static$8(Command.java:226)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 12:38:12
+
+Error in creating profile + 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\785120607494602813\@770219957022883862.txt (The system cannot find the path specified)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:291)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:234)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+	at java.base/java.io.FileWriter.<init>(FileWriter.java:96)
+	at data.Profile.createProfile(Profile.java:177)
+	at main.userinterface.Command.lambda$static$12(Command.java:485)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 12:39:26
+
+Error in creating profile + 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\785120607494602813\@770219957022883862.txt (The system cannot find the path specified)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:291)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:234)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+	at java.base/java.io.FileWriter.<init>(FileWriter.java:96)
+	at data.Profile.createProfile(Profile.java:177)
+	at main.userinterface.Command.lambda$static$12(Command.java:485)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 12:39:29
+
+Error in creating profile + 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\785120607494602813\@535910392648564736.txt (The system cannot find the path specified)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:291)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:234)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+	at java.base/java.io.FileWriter.<init>(FileWriter.java:96)
+	at data.Profile.createProfile(Profile.java:177)
+	at main.userinterface.Command.lambda$static$12(Command.java:485)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 12:39:38
+
+Error in finding Profile due to IO and Classes 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\785120607494602813\@@770219957022883862.txt (The system cannot find the path specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:154)
+	at data.Profile.getProfile(Profile.java:256)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:85)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 06/12/2020 12:39:41
+
+Error in creating profile + 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\785120607494602813\@770219957022883862.txt (The system cannot find the path specified)
+	at java.base/java.io.FileOutputStream.open0(Native Method)
+	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:291)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:234)
+	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+	at java.base/java.io.FileWriter.<init>(FileWriter.java:96)
+	at data.Profile.createProfile(Profile.java:177)
+	at main.userinterface.Command.lambda$static$12(Command.java:485)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+>>Happened at>> 06/12/2020 12:39:46
+
+Error in finding Profile due to IO and Classes 
+java.io.FileNotFoundException: \Users\Emman\IdeaProjects\SorinoRPG\SorinoRPG-Codebase\src\main\java\data\files\784891397584060456\@@770219957022883862.txt (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:154)
+	at data.Profile.getProfile(Profile.java:256)
+	at main.userinterface.Command.lambda$static$14(Command.java:525)
+	at main.userinterface.GuildListener.onGuildMessageReceived(GuildListener.java:85)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:396)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:82)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:69)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:150)
+	at net.dv8tion.jda.internal.handle.MessageCreateHandler.handleInternally(MessageCreateHandler.java:97)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:956)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:843)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:821)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:994)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+>>Happened at>> 06/12/2020 12:39:53
+
+Failure in creating fight>>Happened at>> 06/12/2020 16:25:04
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:09
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:15
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:20
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:31
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:43
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:51
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:25:58
+
+Disconnected>>Happened at>> 06/12/2020 16:26:51
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:53:14
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:53:51
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:53:59
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:54:01
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:54:05
+
+Incorrect usage of syntax>>Happened at>> 06/12/2020 16:54:12
+
+Disconnected>>Happened at>> 06/12/2020 16:54:33
+
+Disconnected>>Happened at>> 06/12/2020 17:26:34
+
+Failure in creating fight>>Happened at>> 06/12/2020 17:47:49
+

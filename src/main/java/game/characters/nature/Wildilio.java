@@ -21,7 +21,7 @@ public class Wildilio extends Nature implements Sorino {
 
     @Override
     public int getRarity() {
-        return 78;
+        return 560;
     }
 
     @Override
@@ -35,8 +35,8 @@ public class Wildilio extends Nature implements Sorino {
     }
 
     // Wild Punch
-    private final Move wildPunch = new Move(33, "Inaccurate, but effective punch",
-            false, 40,
+    private final Move wildPunch = new Move(50, "Inaccurate punch",
+            false, 30,
             "https://cdn.discordapp.com/attachments/768534237493985291/777631480373444628/Kr6KcnVN1S6a1hmF3xNYDqV14p95Vp68bIJRzue3eMk18xn0Tr6LkzXyv3eTXEbH2ev8XRgzdBSg47alV17ylvy6I2KP3BWtS5cu.png");
     @Override
     public Move customNatureMove(Sorino initiator) {
@@ -70,7 +70,7 @@ public class Wildilio extends Nature implements Sorino {
 
     @Override
     public String getName() {
-        return "Wildilio: Nature type";
+        return "Wildilio: Nature type | Rare";
     }
 
     @Override

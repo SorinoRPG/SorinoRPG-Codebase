@@ -22,7 +22,7 @@ public class Gray extends Starter implements Sorino {
 
     @Override
     public int getRarity() {
-        return 600;
+        return 0;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Gray extends Starter implements Sorino {
 
     @Override
     public String getName() {
-        return "Gray: Starter type";
+        return "Gray: Starter type | Starter";
     }
 
     @Override

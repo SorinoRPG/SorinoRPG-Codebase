@@ -21,7 +21,7 @@ public class Zookratar extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 12;
+        return 1050;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Zookratar extends Smart implements Sorino {
 
     @Override
     public String getName() {
-        return "Zookratar: Smart type";
+        return "Zookratar: Smart type | Uncommon";
     }
 
 

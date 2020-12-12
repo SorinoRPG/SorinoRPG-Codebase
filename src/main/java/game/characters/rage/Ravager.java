@@ -21,7 +21,7 @@ public class Ravager extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 320;
+        return 1520;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Ravager extends Rage implements Sorino {
 
     @Override
     public String getName() {
-        return "Ravager: Rage type";
+        return "Ravager: Rage type | Common";
     }
 
     @Override

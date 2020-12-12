@@ -8,6 +8,7 @@ import game.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
+import game.fight.Fight;
 import game.fight.FightManager;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -76,13 +77,13 @@ public enum Command {
                 ArrayList<Profile> profileArr = Profile.getProfiles(event.getGuild().getId());
                 new Sorting().sort(profileArr);
 
-                for(int i = 0; i < 10; i++) {
+                for(int i = 0; i < profileArr.size() || i < 10; i++) {
                     try {
                         builder.addField(i + 1 + ". " +
                                         profileArr.get(i).getName() +
-                                        " -- Level " + profileArr.get(i).getLevel(),
+                                        " -- Trainer Level " + profileArr.get(i).getLevel(),
                                 "", false);
-                    } catch (NullPointerException ignored){
+                    } catch (NullPointerException | IndexOutOfBoundsException ignored){
                         break;
                     }
                 }
@@ -94,14 +95,14 @@ public enum Command {
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG server error." +
-                                "These could have been the causes:\n" +
+                                " These could have been the causes:\n\n" +
                                 "1. Your account is being used in something else," +
                                 " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                "you can use your account.\n" +
+                                " you can use your account.\n\n" +
                                 "2. Your account is currently being reviewed or processed, this could be due" +
-                                "to suspicious activity or receiving an award of some sort. For the latter," +
-                                "you will be able to use your account in a minute or so. For the former," +
-                                "this may happen regularly on and off until we can take further action.\n" +
+                                " to suspicious activity or receiving an award of some sort. For the latter," +
+                                " you will be able to use your account in a minute or so. For the former," +
+                                " this may happen regularly on and off until we can take further action.\n\n" +
                                 "3. There was a server issue, please report this to our email " +
                                 "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                 ).queue();
@@ -137,6 +138,12 @@ public enum Command {
         new Thread(() -> {
             Logger logger;
             try {
+                if(event.getMessage().getMentionedUsers().size() == 1){
+                    event.getChannel().sendMessage(
+                            Profile.getProfile((event.getMessage().getMentionedUsers().get(0)), event)
+                            .showLevel(event
+                                    .getChannel())).queue();
+                }
                 event.getChannel().sendMessage(Profile.getProfile(event)
                         .showLevel(event
                                 .getChannel())).queue();
@@ -146,14 +153,14 @@ public enum Command {
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG server error." +
-                                "These could have been the causes:\n" +
+                                " These could have been the causes:\n\n" +
                                 "1. Your account is being used in something else," +
                                 " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                "you can use your account.\n" +
+                                " you can use your account.\n\n" +
                                 "2. Your account is currently being reviewed or processed, this could be due" +
-                                "to suspicious activity or receiving an award of some sort. For the latter," +
-                                "you will be able to use your account in a minute or so. For the former," +
-                                "this may happen regularly on and off until we can take further action.\n" +
+                                " to suspicious activity or receiving an award of some sort. For the latter," +
+                                " you will be able to use your account in a minute or so. For the former," +
+                                " this may happen regularly on and off until we can take further action.\n\n" +
                                 "3. There was a server issue, please report this to our email " +
                                 "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                 ).queue();
@@ -191,11 +198,8 @@ public enum Command {
         Logger logger = new Logger("Erased profile");
 
         event.getChannel().sendMessage("Erasing " + event.getAuthor().getName() + " profile...").queue();
-        String message = event.getMessage().getContentRaw();
         event.getAuthor().openPrivateChannel()
-                .flatMap(channel -> channel.sendMessage("You have been deleted for: " + message.substring(2,
-                        message.indexOf(" "))))
-                .queue();
+                .flatMap(channel -> channel.sendMessage("You erased your profile.")).queue();
         Profile.eraseProfile(event.getAuthor(), event);
         event.getChannel().sendMessage("The user has been erased successfully!")
                     .queue();
@@ -233,14 +237,14 @@ public enum Command {
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
                             "Could not find profile due to a SorinoRPG server error." +
-                                    "These could have been the causes:\n" +
+                                    " These could have been the causes:\n\n" +
                                     "1. Your account is being used in something else," +
                                     " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                    "you can use your account.\n" +
+                                    " you can use your account.\n\n" +
                                     "2. Your account is currently being reviewed or processed, this could be due" +
-                                    "to suspicious activity or receiving an award of some sort. For the latter," +
-                                    "you will be able to use your account in a minute or so. For the former," +
-                                    "this may happen regularly on and off until we can take further action.\n" +
+                                    " to suspicious activity or receiving an award of some sort. For the latter," +
+                                    " you will be able to use your account in a minute or so. For the former," +
+                                    " this may happen regularly on and off until we can take further action.\n\n" +
                                     "3. There was a server issue, please report this to our email " +
                                     "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                     ).queue();
@@ -266,7 +270,7 @@ public enum Command {
                 }
             }
             else {
-                boolean didCatch = new Random().nextInt(100) > 85;
+                boolean didCatch = new Random().nextInt(100) > 5;
                 Sorino sorino = Sorino.AllSorino.getRandom(event);
                 if(didCatch){
                     EmbedBuilder message = new EmbedBuilder();
@@ -286,14 +290,14 @@ public enum Command {
                                         Logger.exceptionAsString(e));
                         event.getChannel().sendMessage(
                                 "Could not find profile due to a SorinoRPG server error." +
-                                        "These could have been the causes:\n" +
+                                        " These could have been the causes:\n\n" +
                                         "1. Your account is being used in something else," +
                                         " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                        "you can use your account.\n" +
+                                        " you can use your account.\n\n" +
                                         "2. Your account is currently being reviewed or processed, this could be due" +
-                                        "to suspicious activity or receiving an award of some sort. For the latter," +
-                                        "you will be able to use your account in a minute or so. For the former," +
-                                        "this may happen regularly on and off until we can take further action.\n" +
+                                        " to suspicious activity or receiving an award of some sort. For the latter," +
+                                        " you will be able to use your account in a minute or so. For the former," +
+                                        " this may happen regularly on and off until we can take further action.\n\n" +
                                         "3. There was a server issue, please report this to our email " +
                                         "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                         ).queue();
@@ -332,12 +336,15 @@ public enum Command {
     }),
     FIGHT(event -> {
         Logger logger;
+        long sum = event.getAuthor().getIdLong() + event.getMessage().getMentionedUsers().get(0).getIdLong();
+        Fight fight;
+        fight = Fight.getFight(String.valueOf(sum), event.getGuild().getId());
         String rawMess = event.getMessage().getContentRaw();
         if(rawMess.endsWith("!!")){
             try {
                 FightManager.addSwitchOut(Sorino.AllSorino.getSorino(
                         rawMess.substring(2, rawMess.indexOf("!"))
-                ), event);
+                ), event, fight);
             } catch(SorinoNotFoundException e){
                 logger =
                         new Logger("Error in finding Sorino\n" +
@@ -355,27 +362,25 @@ public enum Command {
         else if(rawMess.startsWith(
                 Prefix.PrefixString.FIGHT.prefix()
         ) && event.getMessage().getMentionedUsers().size() == 1) {
-
-            FightManager.users =
-                    FightManager.fightPhase1(event);
+                    FightManager.fightPhase1(event, fight);
         }else if(Sorino.AllSorino.isSorino(rawMess)){
             try {
                 FightManager.fightPhase2(event,
-                        Profile.getProfile(event));
+                        Profile.getProfile(event), fight);
             } catch (IOException | ClassNotFoundException e) {
                 Logger logger1 =
                         new Logger("Error in finding Profile due to IO and Classes \n" +
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG server error." +
-                                "These could have been the causes:\n" +
+                                " These could have been the causes:\n\n" +
                                 "1. Your account is being used in something else," +
                                 " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                "you can use your account.\n" +
+                                " you can use your account.\n\n" +
                                 "2. Your account is currently being reviewed or processed, this could be due" +
-                                "to suspicious activity or receiving an award of some sort. For the latter," +
-                                "you will be able to use your account in a minute or so. For the former," +
-                                "this may happen regularly on and off until we can take further action.\n" +
+                                " to suspicious activity or receiving an award of some sort. For the latter," +
+                                " you will be able to use your account in a minute or so. For the former," +
+                                " this may happen regularly on and off until we can take further action.\n\n" +
                                 "3. There was a server issue, please report this to our email " +
                                 "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                 ).queue();
@@ -399,13 +404,19 @@ public enum Command {
                     excI.printStackTrace();
                 }
             }
-        }else if(FightManager.currentFighters.get(
-                FightManager.currentFighter).getMove(Prefix.removeFightPrefix(rawMess),
-                FightManager.currentFighters.get(FightManager.currentFighter)).isPresent()) {
+        }else if(fight.currentFighters.get(fight.currentFighter).getMove(Prefix.removeFightPrefix(rawMess),
+                fight.currentFighters.get(fight.currentFighter)).isPresent()) {
 
-            Optional<FightManager.GameInfo> didWin = FightManager.fightPhase3(FightManager.currentFighters
-                    .get(FightManager.currentFighter).getMove(Prefix.removeFightPrefix(rawMess),
-                    FightManager.currentFighters.get(FightManager.currentFighter)).get(), event);
+            Optional<Fight.GameInfo> didWin = FightManager
+                    .fightPhase3(fight
+                                    .currentFighters
+                                    .get(fight
+                                            .currentFighter)
+                                    .getMove(Prefix
+                                            .removeFightPrefix(rawMess),
+                                            fight.currentFighters
+                                                    .get(fight.currentFighter)).get(),
+                    event, fight);
             didWin.ifPresent(s ->{
                 EmbedBuilder message = new EmbedBuilder();
                 message.setTitle("WINNER");
@@ -421,21 +432,21 @@ public enum Command {
                         s.getLoser().getAvatarUrl());
                 event.getChannel().sendMessage(message.build()).queue();
                 try {
-                    FightManager.fightPhase4(event);
+                    FightManager.fightPhase4(event, fight, String.valueOf(sum));
                 } catch (IOException | ClassNotFoundException e) {
                     Logger logger1 =
                             new Logger("Error in finding Profile due to IO and Classes \n" +
                                     Logger.exceptionAsString(e));
                     event.getChannel().sendMessage(
                             "Could not find profile due to a SorinoRPG server error." +
-                                    "These could have been the causes:\n" +
+                                    " These could have been the causes:\n\n" +
                                     "1. Your account is being used in something else," +
                                     " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                    "you can use your account.\n" +
+                                    " you can use your account.\n\n" +
                                     "2. Your account is currently being reviewed or processed, this could be due" +
-                                    "to suspicious activity or receiving an award of some sort. For the latter," +
-                                    "you will be able to use your account in a minute or so. For the former," +
-                                    "this may happen regularly on and off until we can take further action.\n" +
+                                    " to suspicious activity or receiving an award of some sort. For the latter," +
+                                    " you will be able to use your account in a minute or so. For the former," +
+                                    " this may happen regularly on and off until we can take further action.\n\n" +
                                     "3. There was a server issue, please report this to our email " +
                                     "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
                     ).queue();
@@ -463,6 +474,7 @@ public enum Command {
         }
 
         try {
+            if(fight.save) fight.saveFight(event.getGuild().getId(), String.valueOf(sum));
             logger = new Logger("Started fight");
             logger.logAction();
         } catch (IOException e) {
@@ -536,14 +548,14 @@ public enum Command {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile due to a SorinoRPG server error." +
-                            "These could have been the causes:\n" +
+                            " These could have been the causes:\n\n" +
                             "1. Your account is being used in something else," +
                             " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                            "you can use your account.\n" +
+                            " you can use your account.\n\n" +
                             "2. Your account is currently being reviewed or processed, this could be due" +
-                            "to suspicious activity or receiving an award of some sort. For the latter," +
-                            "you will be able to use your account in a minute or so. For the former," +
-                            "this may happen regularly on and off until we can take further action.\n" +
+                            " to suspicious activity or receiving an award of some sort. For the latter," +
+                            " you will be able to use your account in a minute or so. For the former," +
+                            " this may happen regularly on and off until we can take further action.\n\n" +
                             "3. There was a server issue, please report this to our email " +
                             "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
             ).queue();
@@ -697,7 +709,6 @@ public enum Command {
         };
 
         String prefix = Prefix.cutPrefix(message.getContentRaw());
-        System.out.println(prefix);
         if(Prefix.PrefixString.getPrefix(prefix).isPresent())
             return commandHashMap.get(Prefix.PrefixString.getPrefix(prefix).get());
         else if (prefix.equalsIgnoreCase("-h"))
