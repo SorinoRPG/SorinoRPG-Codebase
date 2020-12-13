@@ -1,0 +1,6 @@
+Sorino: [Gray: Starter type | Starter]
+Coins: 50
+Wins: 0
+Loses: 0
+Trainer Level: 0
+ XP -- 0/250

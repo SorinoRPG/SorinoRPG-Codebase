@@ -11,6 +11,7 @@ import game.characters.starter.Gray;
 import game.fight.Fight;
 import game.fight.FightManager;
 
+import game.fight.Move;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -33,11 +34,15 @@ public enum Command {
             embedBuilder.addField("Website containing the command information",
                     "[Website](https://sorinorpg.github.io/SorinoRPG/)",
                     true);
-            embedBuilder.addField("Follow Us on Twitter",
+            embedBuilder.addField("Follow Us on Twitter | Tweet us about the items you want in the " +
+                            "upcoming shop!",
                     "[Twitter](https://twitter.com/RpgSorino)",
                     true);
             embedBuilder.addField("Become a Patron",
                     "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
+                    true);
+            embedBuilder.addField("Email us!",
+                    "SorinoRPG@gmail.com",
                     true);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -335,62 +340,117 @@ public enum Command {
         }).start();
     }),
     FIGHT(event -> {
-        Logger logger;
-        long sum = event.getAuthor().getIdLong() + event.getMessage().getMentionedUsers().get(0).getIdLong();
-        Fight fight;
-        fight = Fight.getFight(String.valueOf(sum), event.getGuild().getId());
-        String rawMess = event.getMessage().getContentRaw();
-        if(rawMess.endsWith("!!")){
-            try {
-                FightManager.addSwitchOut(Sorino.AllSorino.getSorino(
-                        rawMess.substring(2, rawMess.indexOf("!"))
-                ), event, fight);
-            } catch(SorinoNotFoundException e){
-                logger =
-                        new Logger("Error in finding Sorino\n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "Sorino does not exist!"
-                ).queue();
-                try{
-                    logger.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
+        String rawMessage = Prefix.removeFightPrefix(event.getMessage().getContentRaw());
+        class CheckMove {
+            boolean checkMove(String input){
+                try {
+                    long idSum = event.getAuthor().getIdLong() +
+                            event.getMessage().getMentionedUsers().get(0).getIdLong();
+                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+
+                    return fight.fighters.get(fight.currFighter).getMove(input,
+                            fight.fighters.get(fight.currFighter)).isPresent();
+                } catch (IOException | ClassNotFoundException e) {
+                    Logger logger = new Logger("Error in getting fight + \n" +
+                            Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "There was a server error in getting your fight.." +
+                                    "tweet us @Rpgsorino to get it fixed ASAP"
+                    ).queue();
+                    System.out.println(Logger.exceptionAsString(e));
+                    try {
+                        logger.logError();
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                    return false;
+                }
+            }
+            Move getMove(String input){
+                try {
+                    long idSum = event.getAuthor().getIdLong() +
+                            event.getMessage().getMentionedUsers().get(0).getIdLong();
+                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+
+                    if (fight.fighters.get(fight.currFighter).getMove(input,
+                            fight.fighters.get(fight.currFighter)).isPresent())
+                        return fight.fighters.get(fight.currFighter).getMove(input,
+                                fight.fighters.get(fight.currFighter)).get();
+                    else return null;
+                } catch (IOException | ClassNotFoundException e) {
+                    Logger logger = new Logger("Error in getting fight + \n" +
+                            Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "There was a server error in getting your fight.." +
+                                    "tweet us @Rpgsorino to get it fixed ASAP"
+                    ).queue();
+                    System.out.println(Logger.exceptionAsString(e));
+                    try {
+                        logger.logError();
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
+                    return null;
                 }
             }
         }
-        else if(rawMess.startsWith(
-                Prefix.PrefixString.FIGHT.prefix()
-        ) && event.getMessage().getMentionedUsers().size() == 1) {
-                    FightManager.fightPhase1(event, fight);
-        }else if(Sorino.AllSorino.isSorino(rawMess)){
+        if(rawMessage.toUpperCase().contains("START")){
             try {
-                FightManager.fightPhase2(event,
-                        Profile.getProfile(event), fight);
-            } catch (IOException | ClassNotFoundException e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
+                Fight fight = new Fight();
+                long idSum = event.getAuthor().getIdLong() + event.getMessage().getMentionedUsers().get(0).getIdLong();
+                FightManager.fightPhase1(event, fight, String.valueOf(idSum));
+
+                fight.saveFight(event.getGuild().getId(), String.valueOf(idSum));
+            } catch (IOException e) {
+                Logger logger = new Logger("Error in creating fight + \n" +
+                        Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
-                        "Could not find profile due to a SorinoRPG server error." +
-                                " These could have been the causes:\n\n" +
-                                "1. Your account is being used in something else," +
-                                " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                " you can use your account.\n\n" +
-                                "2. Your account is currently being reviewed or processed, this could be due" +
-                                " to suspicious activity or receiving an award of some sort. For the latter," +
-                                " you will be able to use your account in a minute or so. For the former," +
-                                " this may happen regularly on and off until we can take further action.\n\n" +
-                                "3. There was a server issue, please report this to our email " +
-                                "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
+                        "There was a server error in creating your fight, please try again."
                 ).queue();
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
+                System.out.println(Logger.exceptionAsString(e));
+                try {
+                    logger.logError();
+                } catch (IOException exc){
+                    exc.printStackTrace();
+                }
+            }
+        } else if(Sorino.AllSorino.isSorino(
+                rawMessage.substring(0, rawMessage.indexOf(" ")))){
+            try {
+                Profile profile = Profile.getProfile(event);
+                Sorino sorino = profile.getSpecificSorino(rawMessage.substring(0, rawMessage.indexOf(" ")));
+
+                long idSum = event.getAuthor().getIdLong() +
+                        event.getMessage().getMentionedUsers().get(0).getIdLong();
+                Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+                FightManager.fightPhase2(event, sorino, fight, String.valueOf(idSum));
+            } catch (SorinoNotFoundException e) {
+                try {
+                    Logger logger = new Logger("System sorino bypass, check source code");
+                    logger.logError();
+                } catch (IOException exc){
+                    Logger logger = new Logger("Error in saving fight" +
+                            Logger.exceptionAsString(exc));
+                    event.getChannel().sendMessage("There was a server error in saving the " +
+                            "fight! Please end it!").queue();
+                    try {
+                        logger.logError();
+                    } catch (IOException ex){
+                        ex.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                Logger logger = new Logger("Error in saving fight" +
+                        Logger.exceptionAsString(e));
+                event.getChannel().sendMessage("There was a server error in saving the " +
+                        "fight! Please end it!").queue();
+                try {
+                    logger.logError();
+                } catch (IOException ex){
+                    ex.printStackTrace();
                 }
             } catch (ProfileNotFoundException e) {
-                logger =
+                Logger logger =
                         new Logger("Error in finding Profile \n" +
                                 Logger.exceptionAsString(e));
                 event.getChannel().sendMessage(
@@ -403,82 +463,72 @@ public enum Command {
                 } catch (IOException excI){
                     excI.printStackTrace();
                 }
-            }
-        }else if(fight.currentFighters.get(fight.currentFighter).getMove(Prefix.removeFightPrefix(rawMess),
-                fight.currentFighters.get(fight.currentFighter)).isPresent()) {
-
-            Optional<Fight.GameInfo> didWin = FightManager
-                    .fightPhase3(fight
-                                    .currentFighters
-                                    .get(fight
-                                            .currentFighter)
-                                    .getMove(Prefix
-                                            .removeFightPrefix(rawMess),
-                                            fight.currentFighters
-                                                    .get(fight.currentFighter)).get(),
-                    event, fight);
-            didWin.ifPresent(s ->{
-                EmbedBuilder message = new EmbedBuilder();
-                message.setTitle("WINNER");
-                message.setImage(s.getWinner().getAvatarUrl());
-                message.setFooter("has won 300 coins for beating " + s.getLoser().getName(),
-                        s.getWinner().getAvatarUrl());
-                event.getChannel().sendMessage(message.build()).queue();
-
-                message = new EmbedBuilder();
-                message.setTitle("LOSER");
-                message.setImage(s.getLoser().getAvatarUrl());
-                message.setFooter("has lost 50 coins for losing to " + s.getWinner().getName(),
-                        s.getLoser().getAvatarUrl());
-                event.getChannel().sendMessage(message.build()).queue();
+            } catch (ClassNotFoundException e) {
                 try {
-                    FightManager.fightPhase4(event, fight, String.valueOf(sum));
-                } catch (IOException | ClassNotFoundException e) {
-                    Logger logger1 =
-                            new Logger("Error in finding Profile due to IO and Classes \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "Could not find profile due to a SorinoRPG server error." +
-                                    " These could have been the causes:\n\n" +
-                                    "1. Your account is being used in something else," +
-                                    " most likely in a fight. You can end a fight with this command, (-=END) so" +
-                                    " you can use your account.\n\n" +
-                                    "2. Your account is currently being reviewed or processed, this could be due" +
-                                    " to suspicious activity or receiving an award of some sort. For the latter," +
-                                    " you will be able to use your account in a minute or so. For the former," +
-                                    " this may happen regularly on and off until we can take further action.\n\n" +
-                                    "3. There was a server issue, please report this to our email " +
-                                    "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
-                    ).queue();
-                    try{
-                        logger1.logError();
-                    } catch (IOException excI){
-                        excI.printStackTrace();
-                    }
-                } catch (ProfileNotFoundException e) {
-                    Logger logger1 =
-                            new Logger("Error in finding Profile \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "Could not find profile. Have you created a profile? If so, try the Update Profile" +
-                                    " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
-                                    "mention us on twitter @Rpgsorino"
-                    ).queue();
-                    try{
-                        logger1.logError();
-                    } catch (IOException excI){
-                        excI.printStackTrace();
-                    }
+                    Logger logger = new Logger("Class change failure");
+                    event.getChannel().sendMessage("There was a server error, tweet us " +
+                            "@Rpgsorino to fix this ASAP")
+                            .queue();
+                    logger.logError();
+                } catch (IOException exception){
+                    exception.printStackTrace();
                 }
-            });
-        }
+            }
+        } else if (rawMessage.toUpperCase().contains("END")){
+            try {
+                long idSum = event.getAuthor().getIdLong() +
+                        event.getMessage().getMentionedUsers().get(0).getIdLong();
+                Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+                assert fight.endFight(event.getGuild().getId(), String.valueOf(idSum));
+            } catch (ClassNotFoundException | IOException e) {
+                try {
+                    Logger logger = new Logger("Class change failure");
+                    event.getChannel().sendMessage("There was a server error, tweet us " +
+                            "@Rpgsorino to fix this ASAP")
+                            .queue();
+                    logger.logError();
+                } catch (IOException exception){
+                    exception.printStackTrace();
+                }
+            }
+        } else if(new CheckMove().checkMove(rawMessage.substring(0, rawMessage.indexOf(" ")))){
+            try {
+                long idSum = event.getAuthor().getIdLong() +
+                        event.getMessage().getMentionedUsers().get(0).getIdLong();
+                Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+                if(FightManager.fightPhase3(new CheckMove().getMove(rawMessage.substring(0,
+                        rawMessage.indexOf(" "))), event, fight).isPresent()){
+                    FightManager.fightPhase3(new CheckMove().getMove(rawMessage.substring(0,
+                            rawMessage.indexOf(" "))), event, fight)
+                            .ifPresent((s) -> {
+                                EmbedBuilder message = new EmbedBuilder();
+                                message.setTitle("WINNER");
+                                message.setImage(s.getWinner().getAvatarUrl());
+                                message.setFooter("has won 300 coins for beating " + s.getLoser().getName(),
+                                        s.getWinner().getAvatarUrl());
+                                event.getChannel().sendMessage(message.build()).queue();
 
-        try {
-            if(fight.save) fight.saveFight(event.getGuild().getId(), String.valueOf(sum));
-            logger = new Logger("Started fight");
-            logger.logAction();
-        } catch (IOException e) {
-            e.printStackTrace();
+                                message = new EmbedBuilder();
+                                message.setTitle("LOSER");
+                                message.setImage(s.getLoser().getAvatarUrl());
+                                message.setFooter("has lost 50 coins for losing to " + s.getWinner().getName(),
+                                        s.getLoser().getAvatarUrl());
+                                event.getChannel().sendMessage(message.build()).queue();
+
+                                FightManager.fightPhase4(event.getChannel(), s);
+                            });
+                }
+            } catch (ClassNotFoundException | IOException e) {
+                try {
+                    Logger logger = new Logger("Class change failure");
+                    event.getChannel().sendMessage("There was a server error, tweet us " +
+                            "@Rpgsorino to fix this ASAP")
+                            .queue();
+                    logger.logError();
+                } catch (IOException exception){
+                    exception.printStackTrace();
+                }
+            }
         }
     }),
     CREATE_PROFILE(event -> {
@@ -604,7 +654,7 @@ public enum Command {
             int occurrences = 0;
             while(matcher.find()) occurrences++;
 
-            //Adds each element of the "list" as an Sorino
+            //Adds each element of the "list" as a Sorino
             for(int i = 0; i < occurrences; i++){
                 try {
                     userSorino.add(Sorino.AllSorino.getSorino(listBuild

@@ -1,9 +1,5 @@
 package game.characters;
 
-
-import data.Profile;
-import data.ProfileNotFoundException;
-import data.files.Logger;
 import game.SorinoNotFoundException;
 import game.characters.element.*;
 import game.characters.nature.*;
@@ -14,7 +10,6 @@ import game.fight.Move;
 import game.fight.Opponent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import java.util.Optional;

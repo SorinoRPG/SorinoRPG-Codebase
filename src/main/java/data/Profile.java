@@ -331,7 +331,8 @@ public class Profile implements Serializable {
     }
     @Override
     public String toString() {
-        return "Sorino: " + userSorino.toString() + "\n" +
+        return "Sorino: " + new StringBuilder(userSorino.toString()).deleteCharAt(0).deleteCharAt(
+                userSorino.toString().length()-1).toString() + "\n" +
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +
