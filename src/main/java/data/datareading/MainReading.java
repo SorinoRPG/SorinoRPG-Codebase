@@ -11,7 +11,8 @@ class MainReading {
             String input = scanner.nextLine();
             FileCommand fileCommand = FileCommand.getCmd(input);
             if(fileCommand.equals(FileCommand.ERROR)) return;
-            fileCommand.action.action(input);
+            System.out.println(input);
+            fileCommand.action.action(input.substring(input.indexOf(" ")+1));
         }
     }
 }

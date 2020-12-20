@@ -33,7 +33,7 @@ public abstract class Rage {
 
     final Move gouge = new Move(35, "Gouged the opponent",
             false, 20,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777635540551598100/14-144676_flying-rocks-png-kuiper-belt-png-transparent-png.png");
+            "https://img.redbull.com/images/c_crop,x_473,y_0,h_1414,w_1131/c_fill,w_860,h_1075/q_auto,f_auto/redbullcom/2017/12/18/897034a0-ce37-40f9-9327-f3df7b051405/hitting-the-wall");
     Move gouge(Sorino initiator){
         gouge.addSorino(initiator);
         return gouge;

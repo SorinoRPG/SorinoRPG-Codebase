@@ -43,7 +43,7 @@ public class Prefix {
      * @see Command
      */
     public static boolean assertPrefix(Message command){
-        return command.getContentRaw().startsWith("-");
+        return command.getContentRaw().startsWith(".");
     }
 
     /**
@@ -61,7 +61,7 @@ public class Prefix {
      * @see PrefixString
      */
     public static String removeFightPrefix(String command){
-        return command.replace("-=", "");
+        return command.replace(".F", "");
     }
 
     /**
@@ -78,7 +78,11 @@ public class Prefix {
      * @return The prefix as a string
      */
     public static String cutPrefix(String command){
-        return command.substring(0, 2);
+        try {
+            return command.substring(0, 2);
+        } catch (StringIndexOutOfBoundsException e){
+            return "---";
+        }
     }
 
     enum PrefixString implements PrefixGetter {
@@ -91,49 +95,37 @@ public class Prefix {
         HELP(){
             @Override
             public String prefix() {
-                return "-help";
-            }
-        },
-        ERASE_PROFILE() {
-            @Override
-            public String prefix() {
-                return "-X";
+                return ".help";
             }
         },
         SEE_RANK() {
             @Override
             public String prefix() {
-                return "-R";
+                return ".R";
             }
         },
         FIGHT() {
             @Override
             public String prefix() {
-                return "-=";
-            }
-        },
-        UPDATE_PROFILE(){ // FIXME: 06/12/2020 
-            @Override
-            public String prefix() {
-                return "-$";
+                return ".F";
             }
         },
         SEARCH() {
             @Override
             public String prefix() {
-                return "--";
+                return ".S";
             }
         },
         CREATE_PROFILE(){
             @Override
             public String prefix(){
-                return "-(";
+                return ".C";
             }
         },
         SEE_PROFILE() {
             @Override
             public String prefix(){
-                return "-)";
+                return ".P";
             }
         };
 

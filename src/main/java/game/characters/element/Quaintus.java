@@ -21,7 +21,7 @@ public class Quaintus extends Element implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1650;
+        return 2650;
     }
 
     @Override

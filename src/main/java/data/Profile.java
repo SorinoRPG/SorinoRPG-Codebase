@@ -14,7 +14,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Profile implements Serializable {
@@ -27,9 +27,8 @@ public class Profile implements Serializable {
     private int wins;
     private int loses;
     private int level = 0;
-    private int xpLevelThresh = 250;
+    private int xpLevelThresh = 500;
     private int xp = 0;
-
 
     public Profile(ArrayList<Sorino> sorino, Coins coins,
                    String id, String name, int wins, int loses, String imageUrl, String guildID){
@@ -86,7 +85,7 @@ public class Profile implements Serializable {
 
         if(xp >= xpLevelThresh){
             level++;
-            xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.5);
+            xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.25);
             xp = 0;
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -104,14 +103,18 @@ public class Profile implements Serializable {
                             Logger.exceptionAsString(ioException));
             channel.sendMessage(
                     "Could not find profile due to IO and Classes "
-            ).queue();
+            ).queue(message ->
+                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
             try{
                 logger.logError();
             } catch (IOException excI){
                 channel.sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
                                 Logger.exceptionAsString(excI)
-                ).queue();
+                ).queue(message ->
+                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                );
             }
         }
     }
@@ -156,7 +159,9 @@ public class Profile implements Serializable {
                             " this may happen regularly on and off until we can take further action.\n\n" +
                             "3. There was a server issue, please report this to our email " +
                             "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
-            ).queue();
+            ).queue(message ->
+                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
             try{
                 logger.logError();
             } catch (IOException excI){
@@ -174,19 +179,6 @@ public class Profile implements Serializable {
     }
 
     public void createProfile() throws IOException {
-        FileWriter fileWriter =
-                new FileWriter(
-                        new File(
-                                "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/" +
-                                        guildID + "/@" + ID + ".txt"
-                        )
-                );
-        fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
-                "Coins: " + coins.getCoins() + "\n" +
-                "Wins: " + wins + "\n" +
-                "Loses: " + loses + "\n" +
-                "Trainer Level: " + level + "\n XP -- " + xp + "/" + xpLevelThresh);
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
                         new FileOutputStream(
@@ -199,8 +191,18 @@ public class Profile implements Serializable {
                 );
         try {
             objectOutputStream.writeObject(this);
+
+            objectOutputStream = new ObjectOutputStream(
+                    new FileOutputStream(
+                            new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                    "/src/main/java/data/files/" +
+                                    guildID + "/UPDATE_STORE/$"
+                                    + ID+ ".txt")
+                    )
+            );
+            objectOutputStream.writeObject(new ProfileStore(userSorino, coins, ID, name, wins, loses,
+                    imageUrl, guildID, xp, xpLevelThresh, level));
             objectOutputStream.close();
-            fileWriter.close();
         } catch (IOException e){
             objectOutputStream.close();
             throw e;
@@ -208,20 +210,6 @@ public class Profile implements Serializable {
     }
     public void recreateProfile() throws IOException {
         Logger logger = new Logger("Re-Created profile");
-        FileWriter fileWriter =
-                new FileWriter(
-                        new File(
-                                "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/" +
-                                        guildID + "/@" + ID + ".txt"
-                        ),
-                        false
-                );
-        fileWriter.write("Sorino: " + userSorino.toString() + "\n" +
-                "Coins: " + coins.getCoins() + "\n" +
-                "Wins: " + wins + "\n" +
-                "Loses: " + loses + "\n" +
-                "Trainer Level: " + level + "\n XP -- " + xp + "/" + xpLevelThresh);
         logger.logAction();
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
@@ -229,16 +217,22 @@ public class Profile implements Serializable {
                                 new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
                                         "/src/main/java/data/files/" +
                                         guildID + "/@@"
-                                        + ID+ ".txt")
+                                        + ID+ ".txt"), false
                         )
                 );
-        assert new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" + guildID + "/@@"
-                + ID+ ".txt").delete();
         try {
             objectOutputStream.writeObject(this);
+            objectOutputStream = new ObjectOutputStream(
+                    new FileOutputStream(
+                            new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
+                                    "/src/main/java/data/files/" +
+                                    guildID + "/UPDATE_STORE/$"
+                                    + ID+ ".txt")
+                    )
+            );
+            objectOutputStream.writeObject(new ProfileStore(userSorino, coins, ID, name, wins, loses,
+                    imageUrl, guildID, xp, xpLevelThresh, level));
             objectOutputStream.close();
-            fileWriter.close();
         } catch (IOException ioException){
             objectOutputStream.close();
             throw ioException;
@@ -270,7 +264,7 @@ public class Profile implements Serializable {
             throw e;
         }
     }
-    public static Profile getProfile(User author, GuildMessageReceivedEvent event)throws IOException,
+    public static Profile getProfile(User author, GuildMessageReceivedEvent event) throws IOException,
             ProfileNotFoundException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
@@ -295,44 +289,15 @@ public class Profile implements Serializable {
         }
     }
 
-    public static void eraseProfile(User erasedUser, GuildMessageReceivedEvent event){
-        File toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" +
-                event.getGuild().getId() + "/@"
-                + erasedUser.getId() + ".txt");
-        if (toBeDeleted.delete()){
-            toBeDeleted = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                    "/src/main/java/data/files/" +
-                    event.getGuild().getId() + "/@@"
-                    + erasedUser.getId() + ".txt");
-            assert toBeDeleted.delete();
-        }
+    public Profile storeToProfile(ProfileStore profileStore){
+        return new Profile(profileStore.userSorino, profileStore.coins, profileStore.ID,
+                profileStore.name, profileStore.wins, profileStore.loses, profileStore.imageUrl,
+                profileStore.guildID);
     }
 
-
-    // TODO Fix algorithm
-    public static ArrayList<String> getProfileAsString(User author, GuildMessageReceivedEvent event)
-            throws ProfileNotFoundException {
-        try {
-            ArrayList<String> profileInfo = new ArrayList<>();
-            File myObj = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                    "/src/main/java/data/files/" +
-                    event.getGuild().getId() + "/@"
-                    + author.getName() + ".txt");
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) profileInfo.add(myReader.nextLine());
-            profileInfo.set(0, profileInfo.get(0).strip().substring(0, profileInfo.get(0).length()-1));
-            System.out.println(profileInfo.get(0).strip().substring(0, profileInfo.get(0).length()-1));
-
-            return profileInfo;
-        } catch (FileNotFoundException e) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-    }
     @Override
     public String toString() {
-        return "Sorino: " + new StringBuilder(userSorino.toString()).deleteCharAt(0).deleteCharAt(
-                userSorino.toString().length()-1).toString() + "\n" +
+        return "Sorino: " + userSorino.toString() + "\n" +
                 "Coins: " + coins.getCoins() + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +

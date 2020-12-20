@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
 
-public interface Sorino extends Serializable{
+public interface Sorino extends Serializable {
     int getHealth(int level);
     int getEnergy(int level);
     int getRarity();
@@ -50,7 +50,7 @@ public interface Sorino extends Serializable{
         }
     }
 
-    interface GetSorino {
+   interface GetSorino {
         Sorino getSorino();
     }
 

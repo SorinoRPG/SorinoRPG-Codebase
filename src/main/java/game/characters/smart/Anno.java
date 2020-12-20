@@ -55,7 +55,7 @@ public class Anno extends Smart implements Sorino{
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "CONFUSE": return Optional.of(confuse(initiator));
-            case "MIND TAP": return Optional.of(mindTap(initiator));
+            case "MIND": return Optional.of(mindTap(initiator));
             case "LEARN": return Optional.of(learn(initiator));
             case "CREATE" : return Optional.of(customSmartMove(initiator));
             default: return Optional.empty();

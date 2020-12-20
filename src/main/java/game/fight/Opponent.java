@@ -8,14 +8,14 @@ import game.characters.Sorino;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-public class Opponent {
+public class Opponent implements Serializable {
     private final Sorino sorino;
     private int health;
     private int energy;
-    private boolean conceded = false;
-    private int switchOut = 3;
 
     Opponent(Sorino sorino, GuildMessageReceivedEvent event){
         this.sorino = sorino;
@@ -28,14 +28,18 @@ public class Opponent {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile due to IO and Classes "
-            ).queue();
+            ).queue(message ->
+                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
             try {
                 logger.logError();
             } catch (IOException excI) {
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
                                 Logger.exceptionAsString(excI)
-                ).queue();
+                ).queue(message ->
+                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                );
             }
         } catch (ProfileNotFoundException e) {
             Logger logger =
@@ -43,21 +47,25 @@ public class Opponent {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile!"
-            ).queue();
+            ).queue(message ->
+                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
             try{
                 logger.logError();
             } catch (IOException excI){
                 event.getChannel().sendMessage(
                         "Error in logging, mention a dev to get it fixed! @Developers\n" +
                                 Logger.exceptionAsString(excI)
-                ).queue();
+                ).queue(message ->
+                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                );
             }
         }
     }
     private double damageDecrease = 0;
 
     public boolean hasConceded() {
-        return conceded || energy < 0;
+        return this.health <= 0 || energy <= 0;
     }
     public int getHealth() {
         return health;
@@ -67,10 +75,6 @@ public class Opponent {
     }
     public double getDecrease(){
         return damageDecrease;
-    }
-    public boolean switchOut(){
-        switchOut--;
-        return switchOut == 0;
     }
 
     public Optional<String> takeDamage(Move move, GuildMessageReceivedEvent event){
@@ -84,8 +88,9 @@ public class Opponent {
 
         event.getChannel().sendMessage(
                 move.getDesc()
-        ).queue();
-        conceded = this.health < 0;
+        ).queue(message ->
+                message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+        );
         return Optional.empty();
     }
     public Optional<String> defenseUp(Move move, GuildMessageReceivedEvent event){
@@ -95,7 +100,9 @@ public class Opponent {
         energy -= move.getEnergy();
         event.getChannel().sendMessage(
                 move.getDesc()
-        ).queue();
+        ).queue(message ->
+                message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+        );
         return Optional.empty();
     }
     public void dropEnergy(Move move){

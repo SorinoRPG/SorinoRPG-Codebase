@@ -1,13 +1,14 @@
 package main;
 
 import main.userinterface.GuildListener;
+
+import javax.security.auth.login.LoginException;
+
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,11 +16,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * <h1>MainBot</h1>
  * <p>
- *     <b>Ignatiamon</b>
- *     This is a discord interactive text based game that was
- *     made for the purposes of making the Sti links discord more
- *     fun. However, I have plans to take this beyond the server and into
- *     many others!
+ *     <b>SorinoRPG</b>
  *     See this website
  *              https://real-eokafor.github.io/Ignatiamon/
  *     To learn more
@@ -47,7 +44,7 @@ public class MainBot {
         JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
                 GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new GuildListener())
-                .setActivity(Activity.playing("-help"))
+                .setActivity(Activity.playing(".help"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build();
     }

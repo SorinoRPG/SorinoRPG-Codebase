@@ -21,7 +21,7 @@ public class Bundlebeast extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1780;
+        return 2780;
     }
 
     @Override

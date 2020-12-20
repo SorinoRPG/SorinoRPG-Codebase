@@ -55,7 +55,7 @@ public class Imprada extends Nature implements Sorino {
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "ENHANCE": return Optional.ofNullable(customNatureMove(initiator));
-            case "POISON IVY": return Optional.ofNullable(super.poisonIvy(initiator));
+            case "POISON": return Optional.ofNullable(super.poisonIvy(initiator));
             case "GROW": return Optional.ofNullable(super.grow(initiator));
             case "UPROOT": return Optional.ofNullable(super.uproot(initiator));
             default: return Optional.empty();

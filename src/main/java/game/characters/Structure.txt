@@ -4,3 +4,5 @@ Rage >> Nature
 Rage << Smart
 Smart >> Element
 Smart << Nature
+
+17 Sorino in Total

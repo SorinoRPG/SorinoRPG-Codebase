@@ -21,7 +21,7 @@ public class Rundasoar extends Element implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1380;
+        return 2380;
     }
 
     @Override

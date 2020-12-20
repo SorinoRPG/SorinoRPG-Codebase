@@ -36,8 +36,8 @@ public class Egotist extends Smart implements Sorino {
 
     //Ego
     private final Move ego = new Move(120, "Attacked the opponent with the power of ego!",
-            false, 36,
-            "https://www.callcentrehelper.com/images/stories/2019/04/mind-control-hand-puppet-760.jpg");
+            false, 70,
+            "https://img.huffingtonpost.com/asset/5d037370210000a718f316ad.jpeg?ops=1200_630");
     @Override
     public Move customSmartMove(Sorino initiator) {
         ego.addSorino(initiator);
@@ -55,7 +55,7 @@ public class Egotist extends Smart implements Sorino {
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
             case "CONFUSE": return Optional.of(confuse(initiator));
-            case "MIND TAP": return Optional.of(mindTap(initiator));
+            case "MIND": return Optional.of(mindTap(initiator));
             case "LEARN": return Optional.of(learn(initiator));
             case "EGO" : return Optional.of(customSmartMove(initiator));
             default: return Optional.empty();
