@@ -3,8 +3,6 @@ package game.characters.smart;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Calkanor extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1000;
+        return 1700;
     }
 
     @Override
@@ -61,11 +59,6 @@ public class Calkanor extends Smart implements Sorino {
             case "TACTICAL" : return Optional.of(customSmartMove(initiator));
             default: return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.confuse, super.mindTap, super.learn, tactical));
     }
 
     @Override

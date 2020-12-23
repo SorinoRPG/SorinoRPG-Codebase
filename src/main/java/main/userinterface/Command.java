@@ -4,7 +4,7 @@ import data.Profile;
 import data.ProfileNotFoundException;
 import data.files.Logger;
 
-import game.Coins;
+import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
@@ -13,6 +13,7 @@ import game.fight.FightManager;
 
 import game.fight.FightNotFoundException;
 import game.fight.Move;
+import game.value.Wrap;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -29,7 +30,7 @@ public enum Command {
             embedBuilder.setTitle("HELP");
             embedBuilder.setDescription("SorinoRPG Help and Information");
             embedBuilder.addField("Invite SorinoRPG to your server",
-                    "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
+                    "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=392256)",
                     true);
             embedBuilder.addField("Website containing the command information",
                     "[Website](https://sorinorpg.github.io/SorinoRPG/)",
@@ -43,6 +44,9 @@ public enum Command {
                     true);
             embedBuilder.addField("Email us!",
                     "SorinoRPG@gmail.com",
+                    true);
+            embedBuilder.addField("Vote for us on top.gg!",
+                    "[Our Page](https://top.gg/bot/764566349543899149)",
                     true);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -101,9 +105,9 @@ public enum Command {
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG error." +
                                 " These could have been the causes:\n\n" +
-                                "1. You simply have not created an account, use the -help command to find out how \n\n" +
+                                "1. You simply have not created an account, use the .help command to find out how \n\n" +
                                 "2. Your account is being used in something else," +
-                                " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                " most likely in a fight. You can end a fight with this command, (.FEND) so" +
                                 " you can use your account.\n\n" +
                                 "3. Your account is currently being reviewed or processed, this could be due" +
                                 " to suspicious activity or receiving an award of some sort. For the latter," +
@@ -168,9 +172,9 @@ public enum Command {
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG error." +
                                 " These could have been the causes:\n\n" +
-                                "1. You simply have not created an account, use the -help command to find out how \n\n" +
+                                "1. You simply have not created an account, use the .help command to find out how \n\n" +
                                 "2. Your account is being used in something else," +
-                                " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                " most likely in a fight. You can end a fight with this command, (.FEND) so" +
                                 " you can use your account.\n\n" +
                                 "3. Your account is currently being reviewed or processed, this could be due" +
                                 " to suspicious activity or receiving an award of some sort. For the latter," +
@@ -220,7 +224,7 @@ public enum Command {
             try {
                 Profile profile = Profile.getProfile(event);
                 int probabilityResult = new Random().nextInt(100);
-                if (probabilityResult < 75) {
+                if (probabilityResult < 85) {
                     EmbedBuilder message = new EmbedBuilder();
 
                     int coins = new Random().nextInt(100);
@@ -231,14 +235,36 @@ public enum Command {
                     message.setFooter(event.getMessage().getAuthor().getName()
                             + " found " + coins + " coins!", event.getAuthor().getAvatarUrl());
                     event.getChannel().sendMessage(message.build()).queue(message1 ->
-                            message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                            message1.delete().queueAfter(5, TimeUnit.SECONDS)
                     );
                     profile.setCoins(coins);
-                    profile.incrementXP(coins, event.getChannel());
+                    profile.incrementXP(coins / 2, event.getChannel());
                     profile.recreateProfile();
                 } else {
-                    boolean didCatch = new Random().nextInt(100) > 80;
-                    Sorino sorino = Sorino.AllSorino.getRandom(event);
+                    boolean didCatch = new Random().nextInt(100) > 93;
+                    Sorino sorino = Sorino.AllSorino.getRandom();
+                    if(profile.getLevel() < 7 && sorino.getName().contains("Hidden")){
+                        event.getChannel().sendMessage("You cannot collect Hidden " +
+                                "Sorino since you haven't reached Level 7").queue(
+                                        message -> message.delete().queueAfter(5,
+                                                TimeUnit.SECONDS)
+                        );
+                        return;
+                    } else if(profile.getLevel() < 14 && sorino.getName().contains("Lost")){
+                        event.getChannel().sendMessage("You cannot collect Lost " +
+                                "Sorino since you haven't reached Level 14").queue(
+                                message -> message.delete().queueAfter(5,
+                                        TimeUnit.SECONDS)
+                        );
+                        return;
+                    } else if (profile.getLevel() < 21 && sorino.getName().contains("Extinct")){
+                        event.getChannel().sendMessage("You cannot collect Extinct " +
+                                "Sorino since you haven't reached Level 21").queue(
+                                message -> message.delete().queueAfter(5,
+                                        TimeUnit.SECONDS)
+                        );
+                        return;
+                    }
                     if (didCatch) {
                         EmbedBuilder message = new EmbedBuilder();
                         message.setTitle(event.getAuthor().getName() + " found something!");
@@ -246,7 +272,7 @@ public enum Command {
                         message.setFooter(" successfully found a " + sorino.getName(),
                                 event.getAuthor().getAvatarUrl());
                         event.getChannel().sendMessage(message.build()).queue(message1 ->
-                                message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                                message1.delete().queueAfter(5, TimeUnit.SECONDS)
                         );
                         profile.addSorino(sorino);
                         profile.incrementXP(50, event.getChannel());
@@ -255,7 +281,7 @@ public enum Command {
                         event.getChannel().sendMessage(event.getAuthor().getName() +
                                 " attempted to catch a " + sorino.getName() +
                                 " but failed!").queue(message ->
-                                message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                                message.delete().queueAfter(5, TimeUnit.SECONDS)
                         );
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -265,9 +291,9 @@ public enum Command {
                 event.getChannel().sendMessage(
                         "Could not find profile due to a SorinoRPG error." +
                                 " These could have been the causes:\n\n" +
-                                "1. You simply have not created an account, use the -help command to find out how \n\n" +
+                                "1. You simply have not created an account, use the .help command to find out how \n\n" +
                                 "2. Your account is being used in something else," +
-                                " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                                " most likely in a fight. You can end a fight with this command, (.FEND) so" +
                                 " you can use your account.\n\n" +
                                 "3. Your account is currently being reviewed or processed, this could be due" +
                                 " to suspicious activity or receiving an award of some sort. For the latter," +
@@ -384,8 +410,10 @@ public enum Command {
                             event.getMessage().getMentionedUsers().get(0).getIdLong();
                     Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
                     if (fight.endFight(event.getGuild().getId(), String.valueOf(idSum)))
-                        System.out.println("Fight with " + event.getAuthor().getName() + " and " +
-                                event.getMessage().getMentionedUsers().get(0).getName());
+                        event.getChannel().sendMessage("Fight with " + event.getAuthor().getName() + " and " +
+                                event.getMessage().getMentionedUsers().get(0).getName() + " has ended").queue(
+                                        message -> message.delete().queueAfter(5, TimeUnit.SECONDS)
+                        );
                 }catch (FightNotFoundException e) {
                     event.getChannel().sendMessage("You did not create a fight!").queue(message ->
                             message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
@@ -590,7 +618,9 @@ public enum Command {
             event.getChannel()
                     .sendMessage(
                             message.build())
-                    .queue();
+                    .queue(message1 -> message1.delete().queueAfter(
+                            7, TimeUnit.SECONDS
+                    ));
             try {
                 logger.logAction();
             } catch (IOException e) {
@@ -611,7 +641,9 @@ public enum Command {
             message.setDescription(profile.toString());
             message.setFooter("Requested to see their profile", event.getAuthor().getAvatarUrl());
 
-            event.getChannel().sendMessage(message.build()).queue();
+            event.getChannel().sendMessage(message.build()).queue(message1 -> message1.delete().queueAfter(
+                    7, TimeUnit.SECONDS
+            ));
         } catch (IOException | ClassNotFoundException e) {
             Logger logger1 =
                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -619,9 +651,9 @@ public enum Command {
             event.getChannel().sendMessage(
                     "Could not find profile due to a SorinoRPG error." +
                             " These could have been the causes:\n\n" +
-                            "1. You simply have not created an account, use the -help command to find out how \n\n" +
+                            "1. You simply have not created an account, use the .help command to find out how \n\n" +
                             "2. Your account is being used in something else," +
-                            " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                            " most likely in a fight. You can end a fight with this command, (.FEND) so" +
                             " you can use your account.\n\n" +
                             "3. Your account is currently being reviewed or processed, this could be due" +
                             " to suspicious activity or receiving an award of some sort. For the latter," +
@@ -661,8 +693,88 @@ public enum Command {
         }
 
     }),
+    WRAP(event -> {
+        String message = event.getMessage().getContentRaw();
+        try {
+            Profile userProfile = Profile.getProfile(event);
+
+            if(message.toUpperCase().contains(Wrap.CHAMPIONS.toString())){
+                Wrap.CHAMPIONS.action(userProfile, event);
+                userProfile.recreateProfile();
+                return;
+            } else if(message.toUpperCase().contains(Wrap.PREMIUM.toString())){
+                Wrap.PREMIUM.action(userProfile, event);
+                userProfile.recreateProfile();
+                return;
+            } else if(message.toUpperCase().contains(Wrap.STANDARD.toString())){
+                Wrap.STANDARD.action(userProfile, event);
+                userProfile.recreateProfile();
+                return;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Logger logger1 =
+                    new Logger("Error in finding Profile due to IO and Classes \n" +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "Could not find profile due to a SorinoRPG error." +
+                            " These could have been the causes:\n\n" +
+                            "1. You simply have not created an account, use the .help command to find out how \n\n" +
+                            "2. Your account is being used in something else," +
+                            " most likely in a fight. You can end a fight with this command, (.FEND) so" +
+                            " you can use your account.\n\n" +
+                            "3. Your account is currently being reviewed or processed, this could be due" +
+                            " to suspicious activity or receiving an award of some sort. For the latter," +
+                            " you will be able to use your account in a minute or so. For the former," +
+                            " this may happen regularly on and off until we can take further action.\n\n" +
+                            "4. There was a server issue, please report this to our email " +
+                            "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
+            ).queue(message1 ->
+                    message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
+            try{
+                logger1.logError();
+            } catch (IOException excI){
+                excI.printStackTrace();
+            }
+        } catch (ProfileNotFoundException e) {
+            Logger logger =
+                    new Logger("Error in finding Profile \n" +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "Could not find profile. Have you created a profile? If so, try the Update Profile" +
+                            " (-$) command. If the problem still persists, email SorinoRPG@gmail.com or " +
+                            "mention us on twitter @Rpgsorino"
+            ).queue(message1 ->
+                    message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+            );
+            try{
+                logger.logError();
+            } catch (IOException excI){
+                excI.printStackTrace();
+            }
+        }
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+
+        embedBuilder.setTitle("Wraps");
+        embedBuilder.setDescription("Enter .WWRAP_NAME to buy a package, \n" +
+                "For example to buy the Standard package one would type: .WStandard");
+        embedBuilder.addField("STANDARD: 5,000 coins",
+                "Contains a mix of 2 Common or Uncommon Sorino",
+                true);
+        embedBuilder.addField("PREMIUM: 15,000 coins",
+                "Contains a mix of 3 Uncommon or Rare Sorino",
+                true);
+        embedBuilder.addField("CHAMPIONS: 50,000 coins",
+                "Contains a mix of 3 Hidden or Lost Sorino",
+                true);
+
+        event.getChannel().sendMessage(embedBuilder.build()).queue(
+                message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS)
+        );
+    }),
     ERROR(event -> {
-        event.getChannel().sendMessage("Error in command, your syntax was incorrect," +
+        event.getChannel().sendMessage("Error in command, your syntax was incorrect, " +
                 "check the syntax on the website!").queue(message ->
                 message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
         );
@@ -699,6 +811,7 @@ public enum Command {
                 put(Prefix.PrefixString.SEE_RANK, Command.SEE_RANK);
                 put(Prefix.PrefixString.LEADERBOARD, Command.LEADERBOARD);
                 put(Prefix.PrefixString.HELP, Command.HELP);
+                put(Prefix.PrefixString.WRAP, Command.WRAP);
             }
         };
 

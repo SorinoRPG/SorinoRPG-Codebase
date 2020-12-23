@@ -6,25 +6,25 @@ import game.fight.Move;
 import java.util.List;
 import java.util.Optional;
 
-public class Patraka extends Element implements Sorino {
+public class Quake extends Element implements Sorino {
     @Override
     public int getHealth(int level) {
-        return 295 + (level * 10);
+        return 850 + (level * 10);
     }
 
     @Override
     public int getEnergy(int level) {
-        return 400 + (level * 10);
+        return 725 + (level * 10);
     }
 
     @Override
     public int getRarity() {
-        return 3620;
+        return 280;
     }
 
     @Override
     public Optional<Sorino> getSorino(String sorino) {
-        return sorino.equalsIgnoreCase("Patraka") ? Optional.of(this) : Optional.empty();
+        return sorino.equalsIgnoreCase("Quake") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
@@ -32,20 +32,20 @@ public class Patraka extends Element implements Sorino {
         return super.getIfWeakness(sorino);
     }
 
-    //Recycle
-    private final Move recycle = new Move(0.1, "Recycled defense!",
-            true, 35,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777624443618459698/IMG_E2375.JPG");
+    //Train
+    private final Move earthquake = new Move(70, "Shook the ground!",
+            false, 30,
+            "https://cdn.discordapp.com/attachments/784891397584060459/790571329232830464/R3UVMCRFLVGL3ETTKP2VFMBO54.png");
     @Override
     public Move customElementMove(Sorino initiator) {
-        recycle.addSorino(initiator);
-        return recycle;
+        earthquake.addSorino(initiator);
+        return earthquake;
     }
 
     @Override
     public List<String> getMoves() {
         List<String> moves = getMovesAbs();
-        moves.add("Recycle");
+        moves.add("Earthquake");
         return moves;
     }
 
@@ -55,14 +55,15 @@ public class Patraka extends Element implements Sorino {
             case "HARNESS": return Optional.ofNullable(harness(initiator));
             case "BURN": return Optional.ofNullable(burn(initiator));
             case "FREEZE": return Optional.ofNullable(freeze(initiator));
-            case "RECYCLE": return Optional.ofNullable(customElementMove(initiator));
+            case "EARTHQUAKE": return Optional.ofNullable(customElementMove(initiator));
             default: return Optional.empty();
         }
     }
 
+
     @Override
     public String getName() {
-        return "Patraka: Element type | Common";
+        return "Quake: Element type | Hidden";
     }
 
     @Override

@@ -6,25 +6,25 @@ import game.fight.Move;
 import java.util.List;
 import java.util.Optional;
 
-public class Ravager extends Rage implements Sorino {
+public class Destrukto extends Rage implements Sorino {
     @Override
     public int getHealth(int level) {
-        return 330 + (level * 10);
+        return 640 + (level * 10);
     }
 
     @Override
     public int getEnergy(int level) {
-        return 500 + (level * 10);
+        return 380 + (level * 10);
     }
 
     @Override
     public int getRarity() {
-        return 3520;
+        return 180;
     }
 
     @Override
     public Optional<Sorino> getSorino(String sorino) {
-        return sorino.equalsIgnoreCase("Ravager") ? Optional.of(this) : Optional.empty();
+        return sorino.equalsIgnoreCase("Destrukto") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
@@ -32,38 +32,37 @@ public class Ravager extends Rage implements Sorino {
         return super.getIfWeakness(sorino);
     }
 
-    // Scavenge
-    private final Move scavenge = new Move(0.1, "Scavenged armour",
-            true, 50,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777637163776344064/9k.png");
+    //Bundle Run
+    private final Move demolition = new Move(72, "Demolishes the battle ground!",
+            false, 40,
+            "https://cdn.discordapp.com/attachments/784891397584060459/790527260729147402/Screenshot_20201221-103220_Photos.jpg");
     @Override
     public Move customRageMove(Sorino initiator) {
-        scavenge.addSorino(initiator);
-        return scavenge;
+        demolition.addSorino(initiator);
+        return demolition;
     }
 
     @Override
     public List<String> getMoves() {
         List<String> moves = super.getMovesAbs();
-        moves.add("Scavenge");
+        moves.add("DEMOLITION");
         return moves;
     }
 
     @Override
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
-            case "SCAVENGE": return Optional.of(customRageMove(initiator));
-            case "GOUGE": return Optional.of(gouge(initiator));
-            case "BALLISTIC": return Optional.of(ballistic(initiator));
-            case "CHARGE": return Optional.of(charge(initiator));
+            case "DEMOLITION": return Optional.ofNullable(customRageMove(initiator));
+            case "GOUGE": return Optional.ofNullable(super.gouge(initiator));
+            case "BALLISTIC": return Optional.ofNullable(super.ballistic(initiator));
+            case "CHARGE": return Optional.ofNullable(super.charge(initiator));
             default: return Optional.empty();
         }
     }
 
-
     @Override
     public String getName() {
-        return "Ravager: Rage type | Common";
+        return "Destrukto: Rage type | Hidden";
     }
 
     @Override

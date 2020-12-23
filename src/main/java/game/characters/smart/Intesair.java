@@ -3,8 +3,6 @@ package game.characters.smart;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Intesair extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 312;
+        return 100;
     }
 
     @Override
@@ -61,12 +59,6 @@ public class Intesair extends Smart implements Sorino {
             default: return Optional.empty();
         }
     }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.confuse, super.mindTap, super.learn, control));
-    }
-
     @Override
     public String getName() {
         return "Intesair: Smart type | Hidden";

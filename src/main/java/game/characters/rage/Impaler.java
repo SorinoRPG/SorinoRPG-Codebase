@@ -3,8 +3,6 @@ package game.characters.rage;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Impaler extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1100;
+        return 1800;
     }
 
     @Override
@@ -62,10 +60,6 @@ public class Impaler extends Rage implements Sorino {
         }
     }
 
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.gouge, super.ballistic, super.charge, impale));
-    }
 
     @Override
     public String getName() {

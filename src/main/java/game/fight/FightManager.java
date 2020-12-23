@@ -291,7 +291,7 @@ public class FightManager {
                                 double coinMultiplier = Math.sqrt((double) (winnerProfile.getLevel() +
                                         loserProfile.getLevel()) / 2);
 
-                                winnerProfile.setCoins((int) Math.floor((100) * coinMultiplier));
+                                winnerProfile.setCoins((int) Math.floor((300) * coinMultiplier));
                                 winnerProfile.incrementWin();
                                 winnerProfile.incrementXP(200, event.getChannel());
                                 loserProfile.incrementLoss();
@@ -343,7 +343,7 @@ public class FightManager {
             double coinMultiplier = Math.sqrt((double) (p1.getLevel() + p2.getLevel()) /2);
 
             return new int[] {
-                    (int) Math.floor((100) *  coinMultiplier), (int) Math.floor((-100) *  coinMultiplier)
+                    (int) Math.floor((300) *  coinMultiplier), (int) Math.floor((-100) *  coinMultiplier)
             };
         } catch (IOException | ClassNotFoundException e) {
             Logger logger1 =

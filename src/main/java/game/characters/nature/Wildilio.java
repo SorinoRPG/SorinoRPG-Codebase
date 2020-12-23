@@ -3,8 +3,6 @@ package game.characters.nature;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Wildilio extends Nature implements Sorino {
 
     @Override
     public int getRarity() {
-        return 560;
+        return 760;
     }
 
     @Override
@@ -63,10 +61,6 @@ public class Wildilio extends Nature implements Sorino {
         }
     }
 
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.poisonIvy, super.uproot, super.grow, wildPunch));
-    }
 
     @Override
     public String getName() {

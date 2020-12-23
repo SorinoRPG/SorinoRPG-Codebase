@@ -55,11 +55,6 @@ public class Gray extends Starter implements Sorino {
     }
 
     @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.punch, super.eat, super.scratch));
-    }
-
-    @Override
     public String getName() {
         return "Gray: Starter type | Starter";
     }

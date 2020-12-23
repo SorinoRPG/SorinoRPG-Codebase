@@ -3,8 +3,6 @@ package game.characters.smart;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Logito extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 980;
+        return 1680;
     }
 
     @Override
@@ -35,9 +33,9 @@ public class Logito extends Smart implements Sorino {
     }
 
     //Adapt
-    private final Move adapt = new Move(0.25, "Adapted to environment",
+    private final Move adapt = new Move(0.25, "Adapted to harsh environment",
             true, 40,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777638669531873290/Z.png");
+            "https://cdn.discordapp.com/attachments/784891397584060459/790529717841297438/harsh-landscape_1426-1569.png");
     @Override
     public Move customSmartMove(Sorino initiator) {
         adapt.addSorino(initiator);
@@ -62,10 +60,6 @@ public class Logito extends Smart implements Sorino {
         }
     }
 
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.confuse, super.mindTap, super.learn, adapt));
-    }
 
     @Override
     public String getName() {

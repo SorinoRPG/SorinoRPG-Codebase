@@ -6,25 +6,25 @@ import game.fight.Move;
 import java.util.List;
 import java.util.Optional;
 
-public class Anno extends Smart implements Sorino{
+public class Intellekta extends Smart implements Sorino {
     @Override
     public int getHealth(int level) {
-        return 360 + (level * 10);
+        return 750 + (level * 10);
     }
 
     @Override
     public int getEnergy(int level) {
-        return 420 + (level * 10);
+        return 820 + (level * 10);
     }
 
     @Override
     public int getRarity() {
-        return 112;
+        return 79;
     }
 
     @Override
     public Optional<Sorino> getSorino(String sorino) {
-        return sorino.equalsIgnoreCase("Anno") ? Optional.of(this) : Optional.empty();
+        return sorino.equalsIgnoreCase("Intellekta") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
@@ -32,20 +32,20 @@ public class Anno extends Smart implements Sorino{
         return super.getIfWeakness(sorino);
     }
 
-    //Create
-    private final Move create = new Move(0.34, "Creates a defensive barrier!",
-            true, 50,
-            "https://cdn.discordapp.com/attachments/784891397584060459/790529015768154112/2016-700-red-brick-wall-half-built.png");
+    //Control
+    private final Move intellekt = new Move(86, "Made an intellectual move!",
+            false, 36,
+            "https://cdn.discordapp.com/attachments/784891397584060459/790534451314294814/untitled-design16.png");
     @Override
     public Move customSmartMove(Sorino initiator) {
-        create.addSorino(initiator);
-        return create;
+        intellekt.addSorino(initiator);
+        return intellekt;
     }
 
     @Override
     public List<String> getMoves() {
         List<String> moves = super.getMovesAbs();
-        moves.add("Create");
+        moves.add("Intellekt");
         return moves;
     }
 
@@ -55,14 +55,13 @@ public class Anno extends Smart implements Sorino{
             case "CONFUSE": return Optional.of(confuse(initiator));
             case "MIND": return Optional.of(mindTap(initiator));
             case "LEARN": return Optional.of(learn(initiator));
-            case "CREATE" : return Optional.of(customSmartMove(initiator));
+            case "INTELLEKT" : return Optional.of(customSmartMove(initiator));
             default: return Optional.empty();
         }
     }
-
     @Override
     public String getName() {
-        return "Anno: Smart type | Hidden";
+        return "Intellekta: Smart type | Hidden";
     }
 
 
@@ -71,4 +70,5 @@ public class Anno extends Smart implements Sorino{
     public String toString() {
         return getName();
     }
+
 }

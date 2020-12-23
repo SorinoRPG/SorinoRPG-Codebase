@@ -1,7 +1,7 @@
 package data;
 
 import data.files.Logger;
-import game.Coins;
+import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -51,9 +51,6 @@ public class Profile implements Serializable {
         throw new SorinoNotFoundException(
                 sorinoStr + " was not found in the Profile!");
     }
-    public String getSorino(){
-        return userSorino.toString();
-    }
     public ArrayList<Sorino> getSorinoAsList(){
         return userSorino;
     }
@@ -66,6 +63,9 @@ public class Profile implements Serializable {
     }
     public void setCoins(int amount){
         coins.setCoins(amount);
+    }
+    public boolean spend(int amount){
+        return !coins.spend(amount);
     }
     public void incrementWin(){
         this.wins++;
@@ -93,7 +93,8 @@ public class Profile implements Serializable {
             embedBuilder.setDescription("XP: " + xp + "/" + xpLevelThresh);
             embedBuilder.setImage(imageUrl);
 
-            channel.sendMessage(embedBuilder.build()).queue();
+            channel.sendMessage(embedBuilder.build()).queue(message ->
+                    message.delete().queueAfter(5, TimeUnit.SECONDS));
         }
         try {
             recreateProfile();
@@ -121,8 +122,7 @@ public class Profile implements Serializable {
 
     public static ArrayList<Profile> getProfiles(String guildID) throws IOException, ClassNotFoundException {
         File directory = new File
-                ("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" + guildID);
+                ("/db/" + guildID);
 
         List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles(File::isFile)));
         files = files.parallelStream().filter((file) -> file.getName().startsWith("@@"))
@@ -151,7 +151,7 @@ public class Profile implements Serializable {
                     "Could not find profile due to a SorinoRPG server error." +
                             " These could have been the causes:\n\n" +
                             "1. Your account is being used in something else," +
-                            " most likely in a fight. You can end a fight with this command, (-=END) so" +
+                            " most likely in a fight. You can end a fight with this command, (.FEND) so" +
                             " you can use your account.\n\n" +
                             "2. Your account is currently being reviewed or processed, this could be due" +
                             " to suspicious activity or receiving an award of some sort. For the latter," +
@@ -183,8 +183,7 @@ public class Profile implements Serializable {
                 new ObjectOutputStream(
                         new FileOutputStream(
                                 new File(
-                                        "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                                "/src/main/java/data/files/" +
+                                        "/db/" +
                                         guildID + "/@@"
                                         + ID+ ".txt")
                         )
@@ -194,8 +193,7 @@ public class Profile implements Serializable {
 
             objectOutputStream = new ObjectOutputStream(
                     new FileOutputStream(
-                            new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                    "/src/main/java/data/files/" +
+                            new File("/db/" +
                                     guildID + "/UPDATE_STORE/$"
                                     + ID+ ".txt")
                     )
@@ -214,8 +212,7 @@ public class Profile implements Serializable {
         ObjectOutputStream objectOutputStream =
                 new ObjectOutputStream(
                         new FileOutputStream(
-                                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                        "/src/main/java/data/files/" +
+                                new File("/db/" +
                                         guildID + "/@@"
                                         + ID+ ".txt"), false
                         )
@@ -224,8 +221,7 @@ public class Profile implements Serializable {
             objectOutputStream.writeObject(this);
             objectOutputStream = new ObjectOutputStream(
                     new FileOutputStream(
-                            new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                    "/src/main/java/data/files/" +
+                            new File("/db/" +
                                     guildID + "/UPDATE_STORE/$"
                                     + ID+ ".txt")
                     )
@@ -244,17 +240,15 @@ public class Profile implements Serializable {
             ProfileNotFoundException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
-                        new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                "/src/main/java/data/files/" +
+                        new File("/db/" +
                                 event.getGuild().getId() + "/@@"
                                 + event.getAuthor().getId() + ".txt")
                 ));
-        if(!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" +
+        if(!new File("/db/" +
                 event.getGuild().getId() + "/@@"
                 + event.getAuthor().getId() + ".txt").exists()){
             objectInputStream.close();
-            throw new ProfileNotFoundException(" The user does not have a created profile");
+            throw new ProfileNotFoundException();
         }
 
         try {
@@ -268,17 +262,15 @@ public class Profile implements Serializable {
             ProfileNotFoundException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(
-                        new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                                "/src/main/java/data/files/" +
+                        new File("/db/" +
                                 event.getGuild().getId() + "/@@"
                                 + author.getId() + ".txt"
                 )));
-        if (!new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" +
+        if (!new File("/db/" +
                 event.getGuild().getId() + "/@@"
                 + author.getId() + ".txt").exists()) {
             objectInputStream.close();
-            throw new ProfileNotFoundException(" The user does not have a created profile");
+            throw new ProfileNotFoundException();
         }
 
         try {
@@ -289,11 +281,14 @@ public class Profile implements Serializable {
         }
     }
 
-    public Profile storeToProfile(ProfileStore profileStore){
-        return new Profile(profileStore.userSorino, profileStore.coins, profileStore.ID,
-                profileStore.name, profileStore.wins, profileStore.loses, profileStore.imageUrl,
+    public static Profile storeToProfile(ProfileStore profileStore){
+        return new Profile(Sorino.AllSorino.strToList(profileStore.userSorino),
+                new Coins(profileStore.coins), profileStore.ID,
+                profileStore.name, profileStore.wins, profileStore.loses,
+                profileStore.imageUrl,
                 profileStore.guildID);
     }
+
 
     @Override
     public String toString() {

@@ -3,8 +3,6 @@ package game.characters.element;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Quaintus extends Element implements Sorino {
 
     @Override
     public int getRarity() {
-        return 2650;
+        return 3650;
     }
 
     @Override
@@ -37,7 +35,7 @@ public class Quaintus extends Element implements Sorino {
     // Quad Force
     private final Move quadForce = new Move(40, "Used the forces of quad!",
             false, 30,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777628950142648330/latest.png");
+            "https://cdn.discordapp.com/attachments/784891397584060459/790523890547163136/Untitled_12.jpg");
     @Override
     public Move customElementMove(Sorino initiator) {
         quadForce.addSorino(initiator);
@@ -60,11 +58,6 @@ public class Quaintus extends Element implements Sorino {
             case "QUAD FORCE": return Optional.ofNullable(customElementMove(initiator));
             default: return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.harness, super.burn, super.freeze, quadForce));
     }
 
     @Override

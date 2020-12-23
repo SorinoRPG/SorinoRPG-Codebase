@@ -36,7 +36,7 @@ public class MainBot {
      * @throws LoginException If there is an error in logging into discord
      * @see JDABuilder
      */
-    public static void main(String[] args) throws LoginException, IOException {
+    public static void main(String[] args) throws LoginException{
         System.out.println("Started Execution: " + DateTimeFormatter
                 .ofPattern("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now()) + "\n\n");

@@ -43,7 +43,7 @@ public class GuildListener extends ListenerAdapter {
         embedBuilder.setDescription("Thank you for inviting SorinoRPG to " + event.getGuild().getName() + "\n" +
                 "The Manage Message permission is HIGHLY recommended so SorinoRPG can prevent spam!");
         embedBuilder.addField("Invite SorinoRPG to your server",
-                "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
+                "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=392256)",
                 true);
         embedBuilder.addField("Website containing the command information",
                 "[Website](https://sorinorpg.github.io/SorinoRPG/)",
@@ -54,19 +54,20 @@ public class GuildListener extends ListenerAdapter {
         embedBuilder.addField("Become a Patron",
                 "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
                 true);
+        embedBuilder.addField("Vote for us on top.gg!",
+                "[Our Page](https://top.gg/bot/764566349543899149)",
+                true);
 
         Objects.requireNonNull(event.getGuild().getDefaultChannel()).sendMessage(embedBuilder.build()).queue();
 
-        File guild = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" + event.getGuild().getId() + "/fights");
+        File guild = new File("/db/" + event.getGuild().getId() + "/fights");
         if (!guild.mkdirs()) System.out.println(event.getGuild().getName() + " exists in directory");
-        guild = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files/" + event.getGuild().getId() + "/UPDATE_STORE");
+        guild = new File("/db/" + event.getGuild().getId() + "/UPDATE_STORE");
         if(!guild.mkdir()) System.out.println(event.getGuild().getName() + " exists in directory");
     }
 
 
-    Map<Long, Long> spamControl = ExpiringMap
+    Map<String, Long> spamControl = ExpiringMap
             .builder()
             .maxSize(10000)
             .expiration(2, TimeUnit.SECONDS)
@@ -89,43 +90,23 @@ public class GuildListener extends ListenerAdapter {
         if(event.getAuthor().isBot() ||
                 !Prefix.assertPrefix(event.getMessage()))
             return;
-        if(spamControl.containsKey(event.getAuthor().getIdLong())){
+        if(spamControl.containsKey(event.getAuthor().getId() + "//" + event.getGuild().getId())){
             event.getChannel().sendMessage("Calm down with the commands!").queue(message ->
                     message.delete().queueAfter(1500, TimeUnit.MILLISECONDS));
             if(event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE))
                 event.getMessage().delete().queue();
-            spamControl.replace(event.getAuthor().getIdLong(), System.currentTimeMillis());
+            spamControl.replace(event.getAuthor().getId() + "//" + event.getGuild().getId(),
+                    System.currentTimeMillis());
             return;
         }
         Command command = Command.getCommand(event.getMessage());
         command.userAction.action(event);
         if(event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_MANAGE))
-            event.getMessage().delete().queueAfter(3500, TimeUnit.MILLISECONDS);
+            event.getMessage().delete().queueAfter(3, TimeUnit.MILLISECONDS);
         else event.getChannel().sendMessage("It is HIGHLY recommended to give SorinoRPG" +
-                "the Manage Messages permission to prevent spam and irrelevant messages in your server!")
-        .queue(message -> message.delete().queueAfter(5, TimeUnit.MILLISECONDS));
-        spamControl.put(event.getAuthor().getIdLong(), System.currentTimeMillis());
-    }
-    @Override
-    public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(0xff0000);
-        embedBuilder.setTitle("HELP");
-        embedBuilder.setDescription("SorinoRPG Help and Information");
-        embedBuilder.addField("Invite SorinoRPG to your server",
-                "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot)",
-                true);
-        embedBuilder.addField("Website containing the command information",
-                "[Website](https://sorinorpg.github.io/SorinoRPG/)",
-                true);
-        embedBuilder.addField("Follow Us on Twitter",
-                "[Twitter](https://twitter.com/RpgSorino)",
-                true);
-        embedBuilder.addField("Become a Patron",
-                "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
-                true);
-
-        event.getAuthor().openPrivateChannel().queue(channel ->
-                channel.sendMessage(embedBuilder.build()).queue());
+                " the Manage Messages permission to prevent spam and irrelevant messages in your server!")
+        .queue(message -> message.delete().queueAfter(5, TimeUnit.SECONDS));
+        spamControl.put(event.getAuthor().getId() + "//" + event.getGuild().getId(),
+                System.currentTimeMillis());
     }
 }

@@ -19,8 +19,7 @@ public class Logger {
     }
     public void logAction() throws IOException {
         FileWriter fileWriter = new FileWriter(
-                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/" +
-                        "src/main/java/data/files/ActionLogs.log")
+                new File("/db/ActionLogs.log")
         , true);
         fileWriter.write(this.info + ">>Happened at>> " +
                 DateTimeFormatter
@@ -30,8 +29,7 @@ public class Logger {
     }
     public void logError() throws IOException {
         FileWriter fileWriter = new FileWriter(
-                new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/" +
-                        "src/main/java/data/files/ErrorLogs.log")
+                new File("/db/ErrorLogs.log")
         , true);
         fileWriter.write(this.info + ">>Happened at>> " +
                 DateTimeFormatter

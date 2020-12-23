@@ -2,6 +2,7 @@ package data.datareading;
 
 
 import data.Profile;
+import data.ProfileStore;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 
@@ -24,16 +25,14 @@ enum FileCommand{
     GUILDS(ignored -> {
         System.out.println("Counting guilds...");
 
-        String[] directories = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files").list((current, name) -> new File(current, name).isDirectory());
+        String[] directories = new File("/db").list((current, name) -> new File(current, name).isDirectory());
         System.out.println("GUILDS: " + directories.length);
     }),
     USERS(ignored -> {
         int users = 0;
         System.out.println("Counting users....");
 
-        File[] directories = new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                "/src/main/java/data/files").listFiles((current, name) -> new File(current, name).isDirectory());
+        File[] directories = new File("/db").listFiles((current, name) -> new File(current, name).isDirectory());
         for (File directory : directories) users += directory.listFiles((dir, name) -> name.endsWith(".txt")).length;
         System.out.println("USERS: " + users);
     }),
@@ -44,7 +43,7 @@ enum FileCommand{
             int coins = Integer.parseInt(input.substring(input.lastIndexOf(" ")+1));
 
             Profile profile = Profile.readFromFile(new File(
-                    "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/files/" +
+                    "/db/" +
                             guildID + "/@@" + userID + ".txt"));
             profile.setCoins(coins);
             profile.recreateProfile();
@@ -59,7 +58,7 @@ enum FileCommand{
             String userID = input.substring(input.indexOf(" ")+1, input.lastIndexOf(" "));
             String sorino = input.substring(input.lastIndexOf(" ")+1);
             Profile profile = Profile.readFromFile(new File(
-                    "/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase/src/main/java/data/files/" +
+                    "/db/" +
                             guildID + "/@@" + userID + ".txt"));
             profile.addSorino(Sorino.AllSorino.getSorino(sorino));
             profile.recreateProfile();
@@ -71,7 +70,28 @@ enum FileCommand{
     }),
     //TODO
     UPDATE((input) -> {
-        System.out.println("Mass game update... Approximate time: 1 minute\n");
+        System.out.println("Mass game update...\n");
+        long currTime = System.currentTimeMillis();
+
+        File[] directories = new File("/db").listFiles((current, name) -> new File(current, name).isDirectory());
+
+        for(File dir : directories){
+            File updateDir = new File(dir.getPath() + "/UPDATE_STORE");
+            File[] updateFiles = updateDir.listFiles((direc, name) -> name.startsWith("$"));
+            for (File updateFile : updateFiles) {
+                try {
+                    ProfileStore profileStore = ProfileStore.readFromFile(updateFile);
+                    Profile profile = Profile.storeToProfile(profileStore);
+                    profile.recreateProfile();
+                    System.out.println("Successfully updated: " + profile.getName());
+                } catch (Exception exc) {
+                    System.out.println("There was an error in updating...");
+                    exc.printStackTrace();
+                    return;
+                }
+            }
+        }
+        System.out.println("Successfully ran mass update: " + (System.currentTimeMillis() - currTime) + " ms");
     }),
     SEE_USER((input) -> {
         System.out.println("Displaying user...\n");
@@ -81,8 +101,7 @@ enum FileCommand{
         String userID = input.substring(input.lastIndexOf(" ")+1);
         try {
             Profile profile = Profile.readFromFile(
-                    new File("/Users/Emman/IdeaProjects/SorinoRPG/SorinoRPG-Codebase" +
-                    "/src/main/java/data/files/" +
+                    new File("/db/" +
                     guildID + "/@@" + userID + ".txt"));
             System.out.println(profile.toString());
         } catch (ClassNotFoundException | IOException ioException) {

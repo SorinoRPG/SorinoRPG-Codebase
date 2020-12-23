@@ -8,7 +8,6 @@ import game.characters.smart.*;
 import game.characters.starter.Gray;
 import game.fight.Move;
 import game.fight.Opponent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.Serializable;
 
@@ -27,7 +26,6 @@ public interface Sorino extends Serializable {
     double getIfWeakness(Sorino sorino);
     List<String> getMoves();
     Optional<Move> getMove(String move, Sorino initiator);
-    List<Move> getAllMoves();
     String getName();
 
 
@@ -56,6 +54,90 @@ public interface Sorino extends Serializable {
 
     @SuppressWarnings("unused")
     enum AllSorino implements GetSorino {
+        PATREONA {
+            @Override
+            public Sorino getSorino() {
+                return new Patreona();
+            }
+        },
+        ELEKTRA {
+            @Override
+            public Sorino getSorino() {
+                return new Elektra();
+            }
+        },
+        QUAKE {
+            @Override
+            public Sorino getSorino() {
+                return new Quake();
+            }
+        },
+        EVERGREEN {
+            @Override
+            public Sorino getSorino() {
+                return new Evergreen();
+            }
+        },
+        EWE {
+            @Override
+            public Sorino getSorino() {
+                return new Ewe();
+            }
+        },
+        PLANTIA {
+            @Override
+            public Sorino getSorino() {
+                return new Plantia();
+            }
+        },
+        URWALD {
+            @Override
+            public Sorino getSorino() {
+                return new Urwald();
+            }
+        },
+        DESTRUKTO {
+            @Override
+            public Sorino getSorino() {
+                return new Destrukto();
+            }
+        },
+        REEGAN {
+            @Override
+            public Sorino getSorino() {
+                return new Reegan();
+            }
+        },
+        IMORTOR {
+            @Override
+            public Sorino getSorino() {
+                return new Imortor();
+            }
+        },
+        DELTA {
+            @Override
+            public Sorino getSorino() {
+                return new Delta();
+            }
+        },
+        INTELLEKTA {
+            @Override
+            public Sorino getSorino() {
+                return new Intellekta();
+            }
+        },
+        ALPHA {
+            @Override
+            public Sorino getSorino() {
+                return new Alpha();
+            }
+        },
+        OMEGA {
+            @Override
+            public Sorino getSorino() {
+                return new Omega();
+            }
+        },
         ANNO {
             @Override
             public Sorino getSorino() {
@@ -178,7 +260,7 @@ public interface Sorino extends Serializable {
             }
             throw new SorinoNotFoundException("String was incorrect");
         }
-        public static Sorino getRandom(GuildMessageReceivedEvent event){
+        public static Sorino getRandom(){
             ArrayList<AllSorino> sorino = new ArrayList<>(EnumSet.allOf(AllSorino.class));
             ArrayList<Sorino> randomSorino = new ArrayList<>();
 
@@ -189,6 +271,27 @@ public interface Sorino extends Serializable {
             }
 
             return randomSorino.get(new Random().nextInt(randomSorino.size()));
+        }
+
+        public static ArrayList<String> listToStr(ArrayList<Sorino> sorino){
+            ArrayList<String> strings = new ArrayList<>();
+
+            for (Sorino sor : sorino)
+                strings.add(sor.getName());
+            return strings;
+        }
+        public static ArrayList<Sorino> strToList(ArrayList<String> strings){
+            ArrayList<Sorino> sorino = new ArrayList<>();
+
+
+            for(String str : strings){
+                try {
+                    sorino.add(getSorino(str.substring(0, str.indexOf(":"))));
+                } catch (Exception e){
+                    break;
+                }
+            }
+            return sorino;
         }
     }
 }

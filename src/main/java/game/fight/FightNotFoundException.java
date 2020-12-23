@@ -5,8 +5,8 @@ import data.files.Logger;
 public class FightNotFoundException extends Exception{
     String fightCauses;
 
-    FightNotFoundException(String fightCauses, Exception ... e){
-        StringBuilder fightCausesBuilder = new StringBuilder(fightCauses + "\n");
+    FightNotFoundException(Exception... e){
+        StringBuilder fightCausesBuilder = new StringBuilder("Fight was not created" + "\n");
         for (Exception exception : e)
             fightCausesBuilder.append(Logger.exceptionAsString(exception)).append("\n");
         this.fightCauses = fightCausesBuilder.toString();

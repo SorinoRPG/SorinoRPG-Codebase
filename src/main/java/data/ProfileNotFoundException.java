@@ -3,8 +3,8 @@ package data;
 public class ProfileNotFoundException extends Exception{
     private final String cause;
 
-    ProfileNotFoundException(String cause){
-        this.cause = cause;
+    ProfileNotFoundException(){
+        this.cause = " The user does not have a created profile";
     }
 
     @Override

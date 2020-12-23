@@ -33,9 +33,7 @@ public class Fight implements Serializable{
     public void saveFight(String guildID, String idSum) throws IOException {
          ObjectOutputStream objectStream =
                 new ObjectOutputStream(new FileOutputStream(
-                        new File("C:\\Users\\Emman\\" +
-                                "IdeaProjects\\SorinoRPG\\SorinoRPG-Codebase\\src\\" +
-                                "main\\java\\data\\files\\" + guildID + "\\fights\\" + idSum + ".txt")
+                        new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt")
                 ));
          objectStream.writeObject(this);
          objectStream.close();
@@ -44,22 +42,18 @@ public class Fight implements Serializable{
         try {
             ObjectInputStream objectInputStream =
                     new ObjectInputStream(new FileInputStream(
-                            new File("C:\\Users\\Emman\\" +
-                                    "IdeaProjects\\SorinoRPG\\SorinoRPG-Codebase\\src\\" +
-                                    "main\\java\\data\\files\\" + guildID + "\\fights\\" + idSum + ".txt")
+                            new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt")
                     ));
             Fight fight = (Fight) objectInputStream.readObject();
             objectInputStream.close();
 
             return fight;
         } catch (IOException | ClassNotFoundException e){
-            throw new FightNotFoundException("Fight was not created", e);
+            throw new FightNotFoundException(e);
         }
     }
     public boolean endFight(String guildID, String idSum){
-        return new File("C:\\Users\\Emman\\" +
-                "IdeaProjects\\SorinoRPG\\src\\" +
-                "main\\java\\data\\files\\" + guildID + "\\fights\\" + idSum + ".txt").delete();
+        return new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt").delete();
     }
 
 }

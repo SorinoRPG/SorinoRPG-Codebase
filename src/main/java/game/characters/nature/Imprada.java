@@ -3,8 +3,6 @@ package game.characters.nature;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Imprada extends Nature implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1110;
+        return 1610;
     }
 
     @Override
@@ -62,10 +60,6 @@ public class Imprada extends Nature implements Sorino {
         }
     }
 
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.poisonIvy, super.uproot, super.grow, enhance));
-    }
 
     @Override
     public String getName() {

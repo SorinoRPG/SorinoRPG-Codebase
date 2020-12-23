@@ -7,7 +7,7 @@ import game.fight.Move;
 
 import java.util.*;
 
-public abstract class Element {
+public abstract class  Element {
     double getIfWeakness(Sorino sorino){
         if(sorino instanceof Rage || sorino instanceof Smart)
             return 0.45;
@@ -28,7 +28,7 @@ public abstract class Element {
 
     final Move burn = new Move(33, "Burned the opponent",
             false, 30,
-            "https://cdn.discordapp.com/attachments/768534237493985291/777624484814520350/IMG_E2373.JPG");
+            "");
     Move burn(Sorino initiator){
         burn.addSorino(initiator);
         return burn;

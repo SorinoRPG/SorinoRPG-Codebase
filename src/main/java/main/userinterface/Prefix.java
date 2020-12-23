@@ -127,7 +127,14 @@ public class Prefix {
             public String prefix(){
                 return ".P";
             }
-        };
+        },
+        WRAP() {
+            @Override
+            public String prefix() {
+                return ".W";
+            }
+        }
+        ;
 
         /**
          * Used to convert a prefix in a {@link String} form to a {@link PrefixString}

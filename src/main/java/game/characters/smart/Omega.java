@@ -6,25 +6,25 @@ import game.fight.Move;
 import java.util.List;
 import java.util.Optional;
 
-public class Anno extends Smart implements Sorino{
+public class Omega extends Smart implements Sorino {
     @Override
     public int getHealth(int level) {
-        return 360 + (level * 10);
+        return 650 + (level * 10);
     }
 
     @Override
     public int getEnergy(int level) {
-        return 420 + (level * 10);
+        return 680 + (level * 10);
     }
 
     @Override
     public int getRarity() {
-        return 112;
+        return 50;
     }
 
     @Override
     public Optional<Sorino> getSorino(String sorino) {
-        return sorino.equalsIgnoreCase("Anno") ? Optional.of(this) : Optional.empty();
+        return sorino.equalsIgnoreCase("Omega") ? Optional.of(this) : Optional.empty();
     }
 
     @Override
@@ -32,20 +32,20 @@ public class Anno extends Smart implements Sorino{
         return super.getIfWeakness(sorino);
     }
 
-    //Create
-    private final Move create = new Move(0.34, "Creates a defensive barrier!",
-            true, 50,
-            "https://cdn.discordapp.com/attachments/784891397584060459/790529015768154112/2016-700-red-brick-wall-half-built.png");
+    //Ego
+    private final Move manipulate = new Move(142, "Manipulated the opponent!",
+            false, 100,
+            "https://cdn.discordapp.com/attachments/784891397584060459/790529149940531220/1y8AXJpQKxcIDFw1j9gCXCw.png");
     @Override
     public Move customSmartMove(Sorino initiator) {
-        create.addSorino(initiator);
-        return create;
+        manipulate.addSorino(initiator);
+        return manipulate;
     }
 
     @Override
     public List<String> getMoves() {
         List<String> moves = super.getMovesAbs();
-        moves.add("Create");
+        moves.add("Manipulate");
         return moves;
     }
 
@@ -55,14 +55,14 @@ public class Anno extends Smart implements Sorino{
             case "CONFUSE": return Optional.of(confuse(initiator));
             case "MIND": return Optional.of(mindTap(initiator));
             case "LEARN": return Optional.of(learn(initiator));
-            case "CREATE" : return Optional.of(customSmartMove(initiator));
+            case "MANIPULATE" : return Optional.of(customSmartMove(initiator));
             default: return Optional.empty();
         }
     }
 
     @Override
     public String getName() {
-        return "Anno: Smart type | Hidden";
+        return "Omega: Smart type | Lost";
     }
 
 

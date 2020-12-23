@@ -3,8 +3,6 @@ package game.characters.element;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Rundasoar extends Element implements Sorino {
 
     @Override
     public int getRarity() {
-        return 2380;
+        return 3380;
     }
 
     @Override
@@ -61,12 +59,6 @@ public class Rundasoar extends Element implements Sorino {
             default: return Optional.empty();
         }
     }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.harness, super.burn, super.freeze, train));
-    }
-
     @Override
     public String getName() {
         return "Rundasoar: Element type | Common";

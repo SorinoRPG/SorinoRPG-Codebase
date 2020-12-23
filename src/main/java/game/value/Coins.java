@@ -1,4 +1,4 @@
-package game;
+package game.value;
 
 import java.io.Serializable;
 
@@ -11,6 +11,11 @@ public class Coins implements Serializable {
 
     public void setCoins(int coins){
         amount += coins;
+    }
+    public boolean spend(int coins){
+        if(amount - coins < 0) return false;
+        amount -= coins;
+        return true;
     }
     public int getCoins(){
         return this.amount;

@@ -3,8 +3,6 @@ package game.characters.rage;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +19,7 @@ public class Bundlebeast extends Rage implements Sorino {
 
     @Override
     public int getRarity() {
-        return 2780;
+        return 3780;
     }
 
     @Override
@@ -60,11 +58,6 @@ public class Bundlebeast extends Rage implements Sorino {
             case "CHARGE": return Optional.ofNullable(super.charge(initiator));
             default: return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.gouge, super.ballistic, super.charge, bundleRun));
     }
 
     @Override

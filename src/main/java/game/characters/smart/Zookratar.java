@@ -3,8 +3,7 @@ package game.characters.smart;
 import game.characters.Sorino;
 import game.fight.Move;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +20,7 @@ public class Zookratar extends Smart implements Sorino {
 
     @Override
     public int getRarity() {
-        return 1050;
+        return 1850;
     }
 
     @Override
@@ -60,11 +59,6 @@ public class Zookratar extends Smart implements Sorino {
             case "LEARN": return Optional.of(learn(initiator));
             default: return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Move> getAllMoves() {
-        return new ArrayList<>(Arrays.asList(super.confuse, super.mindTap, super.learn, jungleBrain));
     }
 
     @Override
