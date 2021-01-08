@@ -15,11 +15,12 @@ enum FileCommand{
         System.out.println(
                 "GUILDS: returns the number of guilds\n" +
                 "USERS: returns the number of users\n" +
+                "NAMES: displays all users with names\n" +
                 "AWARD_COINS guildID userID coins: awards (username)  coins\n" +
                 "AWARD_SORINO guildID userID sorino: awards (sorino) to (userID)\n" +
                 "UPDATE: updates every account to the latest version\n" +
                 "SEE_USER: guildID userID: displays the users info\n" +
-                        "Enter in correct syntax."
+                "INCREMENT_XP: guildID userID XP: increments user XP\n"
         );
     }),
     GUILDS(ignored -> {
@@ -33,7 +34,7 @@ enum FileCommand{
         System.out.println("Counting users....");
 
         File[] directories = new File("/db").listFiles((current, name) -> new File(current, name).isDirectory());
-        for (File directory : directories) users += directory.listFiles((dir, name) -> name.endsWith(".txt")).length;
+        for (File directory : directories) users += directory.listFiles((dir, name) -> name.startsWith("@@")).length;
         System.out.println("USERS: " + users);
     }),
     AWARD_COINS(input -> {
@@ -64,11 +65,11 @@ enum FileCommand{
             profile.recreateProfile();
         } catch (IOException | ClassNotFoundException ioException) {
             System.out.println("Could not find profile!");
+            ioException.printStackTrace();
         } catch (SorinoNotFoundException e) {
             System.out.println("Sorino does not exist!");
         }
     }),
-    //TODO
     UPDATE((input) -> {
         System.out.println("Mass game update...\n");
         long currTime = System.currentTimeMillis();
@@ -87,7 +88,6 @@ enum FileCommand{
                 } catch (Exception exc) {
                     System.out.println("There was an error in updating...");
                     exc.printStackTrace();
-                    return;
                 }
             }
         }
@@ -103,13 +103,46 @@ enum FileCommand{
             Profile profile = Profile.readFromFile(
                     new File("/db/" +
                     guildID + "/@@" + userID + ".txt"));
-            System.out.println(profile.toString());
+            System.out.println("NAME: " + profile.getName() + "\n" + profile.toString());
         } catch (ClassNotFoundException | IOException ioException) {
             System.out.println("File was not found!");
+            ioException.printStackTrace();
+        }
+    }),
+    INCREMENT_XP(input -> {
+        String guildID = input.substring(0, input.indexOf(" "));
+        String userID = input.substring(input.indexOf(" ")+1, input.lastIndexOf(" "));
+        int increment =
+                Integer.parseInt(input.substring(input.lastIndexOf(" ")+1));
+
+        try {
+            Profile profile = Profile.readFromFile(
+                    new File("/db/" +
+                            guildID + "/@@" + userID + ".txt"));
+            profile.silentXPIncrement(increment);
+        } catch (ClassNotFoundException | IOException ioException) {
+            System.out.println("File was not found!");
+            ioException.printStackTrace();
+        }
+    }),
+    NAMES(ignored -> {
+        File[] directories = new File("/db").listFiles((current, name) -> new File(current, name).isDirectory());
+
+        for(File dir : directories){
+            File[] files = dir.listFiles((direc, name) -> name.startsWith("@@"));
+            for (File file : files) {
+                try {
+                    Profile profile = Profile.readFromFile(file);
+                    System.out.println(profile.getName());
+                } catch (Exception exc) {
+                    System.out.println("Reading");
+                    exc.printStackTrace();
+                }
+            }
         }
     }),
     ERROR((input) -> {
-        System.out.println(input + "\n was an invalid command, assuming process end...");
+        System.out.println(input + " BAD COMMAND");
     });
 
     FileAction action;
@@ -127,6 +160,8 @@ enum FileCommand{
                 add(FileCommand.AWARD_SORINO);
                 add(FileCommand.SEE_USER);
                 add(FileCommand.UPDATE);
+                add(FileCommand.INCREMENT_XP);
+                add(FileCommand.NAMES);
             }
         };
         for (FileCommand fc : cmdList) {

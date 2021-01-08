@@ -1,10 +1,13 @@
 package main.userinterface;
 
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Scanner;
 
 /**
  * A static class used for prefixes of commands
@@ -24,7 +27,7 @@ import java.util.Optional;
 public class Prefix {
 
     interface PrefixGetter{
-        String prefix();
+        String prefix(String serverPrefix);
     }
 
     /**
@@ -37,13 +40,13 @@ public class Prefix {
      *     of that object. Only 1 usage.
      * </p>
      *
-     * @param command The command that the user has given, notice that it is not an
+     * @param event The command that the user has given, notice that it is not an
      *                {@link Command} object.
      * @return If the command contains any prefixes in a boolean value
      * @see Command
      */
-    public static boolean assertPrefix(Message command){
-        return command.getContentRaw().startsWith(".");
+    public static boolean assertPrefix(GuildMessageReceivedEvent event){
+        return event.getMessage().getContentRaw().startsWith(Prefix.guildPrefix(event.getGuild().getId()));
     }
 
     /**
@@ -55,13 +58,17 @@ public class Prefix {
      *     with what the user is actually asking to do.
      * </p>
      *
-     * @param command What will be affected by the
+     * @param event What will be affected by the
      *                removing of the prefix
      * @return The new string without a prefix
      * @see PrefixString
      */
-    public static String removeFightPrefix(String command){
-        return command.replace(".F", "");
+    public static String removeFightPrefix(GuildMessageReceivedEvent event){
+        String message = event.getMessage()
+                .getContentRaw();
+        if(!message.contains(guildPrefix(event.getGuild().getId()) + "F")) return message;
+        return message.toUpperCase()
+                .replace(guildPrefix(event.getGuild().getId()) + "F", "");
     }
 
     /**
@@ -74,67 +81,81 @@ public class Prefix {
      *     utilized.
      * </p>
      *
-     * @param command The command that contains the prefix
+     * @param event The command that contains the prefix
      * @return The prefix as a string
      */
-    public static String cutPrefix(String command){
+    public static String cutPrefix(GuildMessageReceivedEvent event){
         try {
-            return command.substring(0, 2);
+            int prefixLength = Prefix.guildPrefix(event.getGuild().getId()).length() + 1;
+            return event.getMessage().getContentRaw().substring(0, prefixLength);
         } catch (StringIndexOutOfBoundsException e){
             return "---";
         }
     }
 
+    public static String guildPrefix(String guildID){
+        try(Scanner scanner = new Scanner(new File("/db/" + guildID + "/PREFIX.txt"))){
+            return scanner.nextLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     enum PrefixString implements PrefixGetter {
-        LEADERBOARD() { // FIXME: 06/12/2020 
-            @Override
-            public String prefix() {
-                return "";
-            }
-        },
         HELP(){
             @Override
-            public String prefix() {
-                return ".help";
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "H";
             }
         },
         SEE_RANK() {
             @Override
-            public String prefix() {
-                return ".R";
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "R";
             }
         },
         FIGHT() {
             @Override
-            public String prefix() {
-                return ".F";
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "F";
             }
         },
         SEARCH() {
             @Override
-            public String prefix() {
-                return ".S";
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "S";
             }
         },
         CREATE_PROFILE(){
             @Override
-            public String prefix(){
-                return ".C";
+            public String prefix(String serverPrefix){
+                return serverPrefix + "C";
             }
         },
         SEE_PROFILE() {
             @Override
-            public String prefix(){
-                return ".P";
+            public String prefix(String serverPrefix){
+                return serverPrefix + "P";
             }
         },
         WRAP() {
             @Override
-            public String prefix() {
-                return ".W";
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "W";
             }
-        }
-        ;
+        },
+        CHANGE() {
+            @Override
+            public String prefix(String serverPrefix){
+                return serverPrefix + "Q";
+            }
+        },
+        SLOT() {
+            @Override
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "G";
+            }
+        };
 
         /**
          * Used to convert a prefix in a {@link String} form to a {@link PrefixString}
@@ -149,11 +170,11 @@ public class Prefix {
          * @param prefix The prefix that will be determined
          * @return An optional value for a {@link PrefixString}
          */
-        public static Optional<PrefixString> getPrefix(String prefix) {
+        public static Optional<PrefixString> getPrefix(String prefix, String guildId) {
             ArrayList<PrefixString> prefixes =
                     new ArrayList<>(EnumSet.allOf(PrefixString.class));
             for(PrefixString prefixString: prefixes){
-                if(prefixString.prefix().equals(prefix))
+                if(prefixString.prefix(Prefix.guildPrefix(guildId)).equals(prefix))
                     return Optional.of(
                     prefixString);
             }

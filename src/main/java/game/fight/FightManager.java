@@ -4,7 +4,7 @@ package game.fight;
 import data.Profile;
 import data.ProfileNotFoundException;
 
-import data.files.Logger;
+import data.logging.Logger;
 
 import game.characters.Sorino;
 
@@ -27,6 +27,7 @@ public class FightManager {
 
     private static final ChooseMove chooseMove = (user, event, sorino) -> {
         EmbedBuilder message = new EmbedBuilder();
+        message.setColor(0x000dff);
 
         message.setTitle("Enter your move " + user.getName());
         message.setFooter("Needs to enter their move", user.getAvatarUrl());
@@ -36,6 +37,7 @@ public class FightManager {
     };
     private static final ChooseSorino chooseSorino = (user, event) ->{
         EmbedBuilder message = new EmbedBuilder();
+        message.setColor(0x000dff);
 
         message.setTitle("Specify your Sorino " + user.getName());
         message.setFooter("is choosing their Sorino", user.getAvatarUrl());
@@ -45,7 +47,7 @@ public class FightManager {
             for (Sorino sorino : Profile.getProfile(user, event).getSorinoAsList())
                 message.addField(sorino.getName(),
                         "HEALTH: " + sorino.getHealth(Profile.getProfile(user, event).getLevel()) +
-                                "\nENERGY: " + sorino.getHealth(Profile.getProfile(user, event).getLevel()),
+                                "\nENERGY: " + sorino.getEnergy(Profile.getProfile(user, event).getLevel()),
                         true);
 
             event.getChannel().sendMessage(message.build()).queue();
@@ -54,19 +56,12 @@ public class FightManager {
                     new Logger("Error in finding Profile due to IO and Classes \n" +
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue(message1 ->
-                    message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-            );
+                    "Could not find profile due to IO and Classes"
+            ).queue();
             try{
                 logger1.logError();
             } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue(message1 ->
-                        message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                );
+                excI.printStackTrace();
             }
         } catch (ProfileNotFoundException e) {
             Logger logger =
@@ -74,18 +69,11 @@ public class FightManager {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile!"
-            ).queue(message1 ->
-                    message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-            );
+            ).queue();
             try{
                 logger.logError();
             } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue(message1 ->
-                        message1.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                );
+                excI.printStackTrace();
             }
         }
     };
@@ -100,6 +88,7 @@ public class FightManager {
             fight.saveFight(event.getGuild().getId(), idSum);
         } catch(IndexOutOfBoundsException e){
             EmbedBuilder message = new EmbedBuilder();
+            message.setColor(0x000dff);
 
             message.setTitle("You did not tell me who you wish to fight!");
             event.getChannel().sendMessage(message.build()).queue();
@@ -109,7 +98,7 @@ public class FightManager {
             event.getChannel().sendMessage(
                     "There was a server error in creating your fight, please try again."
             ).queue(message ->
-                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                    message.delete().queueAfter(25, TimeUnit.SECONDS)
             );
             System.out.println(Logger.exceptionAsString(e));
             try {
@@ -136,7 +125,7 @@ public class FightManager {
                             Logger.exceptionAsString(e));
                     event.getChannel().sendMessage("There was a server error in saving the " +
                             "fight! Please end it!").queue(message ->
-                            message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                            message.delete().queueAfter(25, TimeUnit.SECONDS)
                     );
                     try {
                         logger.logError();
@@ -156,7 +145,7 @@ public class FightManager {
                             Logger.exceptionAsString(e));
                     event.getChannel().sendMessage("There was a server error in saving the " +
                             "fight! Please end it!").queue(message ->
-                            message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                            message.delete().queueAfter(25, TimeUnit.SECONDS)
                     );
                     try {
                         logger.logError();
@@ -180,6 +169,7 @@ public class FightManager {
         UserAction info = event1 -> {
             EmbedBuilder embed  = new EmbedBuilder();
             embed.setTitle("Health of the Fighters!");
+            embed.setColor(0x000dff);
 
             event.getJDA().retrieveUserById(fight.usersID.get(0)).queue(user -> {
                 embed.addField(user.getName() + "'s Health \t\t\t ",
@@ -205,11 +195,10 @@ public class FightManager {
             if(nextMove.isDefensive()) {
                 noUsage = fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
                 noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(message ->
-                                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                                ),
+                                event.getChannel().sendMessage(s).queue(),
                         () -> {
                             EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setColor(0x000dff);
                             event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
                                 embedBuilder.setImage(nextMove.getUrl());
                                 embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
@@ -221,11 +210,10 @@ public class FightManager {
                 noUsage = fight.opponents.get(fight.currFighter + 1).takeDamage(
                         nextMove, event);
                 noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(message ->
-                                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                                ),
+                                event.getChannel().sendMessage(s).queue(),
                         () -> {
                             EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setColor(0x000dff);
                             event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter + 1)).queue(user -> {
                                 embedBuilder.setImage(nextMove.getUrl());
                                 embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
@@ -242,11 +230,10 @@ public class FightManager {
             if(nextMove.isDefensive()) {
                 noUsage = fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
                 noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(message ->
-                                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                                ),
+                                event.getChannel().sendMessage(s).queue(),
                         () -> {
                             EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setColor(0x000dff);
                             event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
                                 embedBuilder.setImage(nextMove.getUrl());
                                 embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
@@ -259,11 +246,10 @@ public class FightManager {
                 noUsage = fight.opponents.get(fight.currFighter - 1).takeDamage(
                         nextMove, event);
                 noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(message ->
-                                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                                ),
+                                event.getChannel().sendMessage(s).queue(),
                         () -> {
                             EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setColor(0x000dff);
                             event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter - 1)).queue(user -> {
                                 embedBuilder.setImage(nextMove.getUrl());
                                 embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
@@ -276,6 +262,10 @@ public class FightManager {
             info.action(event);
             fight.currFighter = 0;
         }
+        if(fight.opponents.get(0).hasConceded())
+            return Optional.of(new Fight.GameInfo(fight.usersID.get(1), fight.usersID.get(0)));
+        else if(fight.opponents.get(1).hasConceded())
+            return Optional.of(new Fight.GameInfo(fight.usersID.get(0), fight.usersID.get(1)));
         event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user ->
             chooseMove.action(user, event, fight.fighters.get(fight.currFighter))
         );
@@ -283,56 +273,56 @@ public class FightManager {
     }
     public static int[] fightPhase4(GuildMessageReceivedEvent event,
                                     Fight.GameInfo gameInfo){
-        event.getJDA().retrieveUserById(gameInfo.getWinner()).queue(user -> {
+        event.getJDA().retrieveUserById(gameInfo.getWinner()).queue(user ->
                         event.getJDA().retrieveUserById(gameInfo.getLoser()).queue(user1 -> {
-                            try {
-                                Profile winnerProfile = Profile.getProfile(user, event);
-                                Profile loserProfile = Profile.getProfile(user1, event);
-                                double coinMultiplier = Math.sqrt((double) (winnerProfile.getLevel() +
-                                        loserProfile.getLevel()) / 2);
+            try {
+                Profile winnerProfile = Profile.getProfile(user, event);
+                Profile loserProfile = Profile.getProfile(user1, event);
+                double coinMultiplier = Math.sqrt((double) (winnerProfile.getLevel() +
+                        loserProfile.getLevel()) / 2);
 
-                                winnerProfile.setCoins((int) Math.floor((300) * coinMultiplier));
-                                winnerProfile.incrementWin();
-                                winnerProfile.incrementXP(200, event.getChannel());
-                                loserProfile.incrementLoss();
-                                loserProfile.setCoins((int) Math.floor((-100) * coinMultiplier));
+                winnerProfile.setCoins((int) Math.floor((600) * coinMultiplier));
+                winnerProfile.incrementWin();
 
-                                winnerProfile.recreateProfile();
-                                loserProfile.recreateProfile();
-                            } catch (IOException | ClassNotFoundException e) {
-                                try{
-                                    Logger logger1 =
-                                            new Logger("Error in finding Profile due to IO and Classes \n" +
-                                                    Logger.exceptionAsString(e));
-                                    event.getChannel().sendMessage(
-                                            "Could not find profile due to IO and Classes "
-                                    ).queue();
+                winnerProfile.incrementXP(600, event);
+                loserProfile.incrementLoss();
+                loserProfile.setCoins((int) Math.floor((-150) * coinMultiplier));
 
-                                    logger1.logError();
-                                } catch (IOException excI){
-                                    event.getChannel().sendMessage(
-                                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                                    Logger.exceptionAsString(excI)
-                                    ).queue();
-                                }
-                            } catch (ProfileNotFoundException e) {
-                                try{
-                                    Logger logger =
-                                            new Logger("Error in finding Profile \n" +
-                                                    Logger.exceptionAsString(e));
-                                    event.getChannel().sendMessage(
-                                            "Could not find profile!"
-                                    ).queue();
-                                    logger.logError();
-                                } catch (IOException excI){
-                                    event.getChannel().sendMessage(
-                                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                                    Logger.exceptionAsString(excI)
-                                    ).queue();
-                                }
-                            }
-                        });
+                winnerProfile.recreateProfile();
+                loserProfile.recreateProfile();
+            } catch (IOException | ClassNotFoundException e) {
+                try{
+                    Logger logger1 =
+                            new Logger("Error in finding Profile due to IO and Classes \n" +
+                                    Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "Could not find profile due to IO and Classes "
+                    ).queue();
+
+                    logger1.logError();
+                } catch (IOException excI){
+                    event.getChannel().sendMessage(
+                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
+                                    Logger.exceptionAsString(excI)
+                    ).queue();
                 }
+            } catch (ProfileNotFoundException e) {
+                try{
+                    Logger logger =
+                            new Logger("Error in finding Profile \n" +
+                                    Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "Could not find profile!"
+                    ).queue();
+                    logger.logError();
+                } catch (IOException excI){
+                    event.getChannel().sendMessage(
+                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
+                                    Logger.exceptionAsString(excI)
+                    ).queue();
+                }
+            }
+        })
         );
 
 
@@ -343,7 +333,7 @@ public class FightManager {
             double coinMultiplier = Math.sqrt((double) (p1.getLevel() + p2.getLevel()) /2);
 
             return new int[] {
-                    (int) Math.floor((300) *  coinMultiplier), (int) Math.floor((-100) *  coinMultiplier)
+                    (int) Math.floor((600) *  coinMultiplier), (int) Math.floor((-150) *  coinMultiplier)
             };
         } catch (IOException | ClassNotFoundException e) {
             Logger logger1 =

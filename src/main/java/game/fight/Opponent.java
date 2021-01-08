@@ -2,7 +2,7 @@ package game.fight;
 
 import data.Profile;
 import data.ProfileNotFoundException;
-import data.files.Logger;
+import data.logging.Logger;
 import game.characters.Sorino;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -28,18 +28,11 @@ public class Opponent implements Serializable {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile due to IO and Classes "
-            ).queue(message ->
-                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-            );
+            ).queue();
             try {
                 logger.logError();
             } catch (IOException excI) {
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue(message ->
-                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                );
+                excI.printStackTrace();
             }
         } catch (ProfileNotFoundException e) {
             Logger logger =
@@ -47,18 +40,11 @@ public class Opponent implements Serializable {
                             Logger.exceptionAsString(e));
             event.getChannel().sendMessage(
                     "Could not find profile!"
-            ).queue(message ->
-                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-            );
+            ).queue();
             try{
                 logger.logError();
             } catch (IOException excI){
-                event.getChannel().sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue(message ->
-                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                );
+                excI.printStackTrace();
             }
         }
     }
@@ -88,9 +74,7 @@ public class Opponent implements Serializable {
 
         event.getChannel().sendMessage(
                 move.getDesc()
-        ).queue(message ->
-                message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-        );
+        ).queue();
         return Optional.empty();
     }
     public Optional<String> defenseUp(Move move, GuildMessageReceivedEvent event){
@@ -100,9 +84,7 @@ public class Opponent implements Serializable {
         energy -= move.getEnergy();
         event.getChannel().sendMessage(
                 move.getDesc()
-        ).queue(message ->
-                message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-        );
+        ).queue();
         return Optional.empty();
     }
     public void dropEnergy(Move move){

@@ -150,10 +150,28 @@ public interface Sorino extends Serializable {
                 return new Egotist();
             }
         },
+        EKO {
+            @Override
+            public Sorino getSorino() {
+                return new Eko();
+            }
+        },
+        MANTRA {
+            @Override
+            public Sorino getSorino() {
+                return new Mantra();
+            }
+        },
         INTESAIR {
             @Override
             public Sorino getSorino() {
                 return new Intesair();
+            }
+        },
+        MOUNTITUDE {
+            @Override
+            public Sorino getSorino() {
+                return new Mountitude();
             }
         },
         GRAY {

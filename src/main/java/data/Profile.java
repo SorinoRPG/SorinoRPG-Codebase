@@ -1,6 +1,6 @@
 package data;
 
-import data.files.Logger;
+import data.logging.Logger;
 import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -21,14 +22,14 @@ public class Profile implements Serializable {
     private final ArrayList<Sorino> userSorino;
     private final Coins coins;
     private final String ID;
-    private final String name;
-    private final String imageUrl;
+    private String name;
+    private String imageUrl;
     private final String guildID;
     private int wins;
     private int loses;
-    private int level = 0;
-    private int xpLevelThresh = 500;
-    private int xp = 0;
+    private int level;
+    private int xpLevelThresh;
+    private int xp;
 
     public Profile(ArrayList<Sorino> sorino, Coins coins,
                    String id, String name, int wins, int loses, String imageUrl, String guildID){
@@ -40,6 +41,24 @@ public class Profile implements Serializable {
         this.loses = loses;
         this.imageUrl = imageUrl;
         this.guildID = guildID;
+        this.level = 0;
+        this.xpLevelThresh = 500;
+        this.xp = 0;
+    }
+    public Profile(ArrayList<Sorino> sorino, Coins coins,
+                   String id, String name, int wins, int loses, String imageUrl, String guildID,
+                   int level, int xpLevelThresh, int xp){
+        this.userSorino = sorino;
+        this.coins = coins;
+        this.ID = id;
+        this.name = name;
+        this.wins = wins;
+        this.loses = loses;
+        this.imageUrl = imageUrl;
+        this.guildID = guildID;
+        this.level = level;
+        this.xpLevelThresh = xpLevelThresh;
+        this.xp = xp;
     }
 
     public Sorino getSpecificSorino(String sorinoStr) throws SorinoNotFoundException {
@@ -80,21 +99,13 @@ public class Profile implements Serializable {
         return this.name;
     }
 
-    public void incrementXP(int increment, TextChannel channel){
+    public void silentXPIncrement(int increment){
         xp += increment;
 
         if(xp >= xpLevelThresh){
             level++;
             xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.25);
             xp = 0;
-
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle(this.name + " has advanced to trainer level " + level + "!");
-            embedBuilder.setDescription("XP: " + xp + "/" + xpLevelThresh);
-            embedBuilder.setImage(imageUrl);
-
-            channel.sendMessage(embedBuilder.build()).queue(message ->
-                    message.delete().queueAfter(5, TimeUnit.SECONDS));
         }
         try {
             recreateProfile();
@@ -102,20 +113,52 @@ public class Profile implements Serializable {
             Logger logger =
                     new Logger("Error in recreating profile \n" +
                             Logger.exceptionAsString(ioException));
-            channel.sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue(message ->
-                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-            );
             try{
                 logger.logError();
             } catch (IOException excI){
-                channel.sendMessage(
-                        "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                Logger.exceptionAsString(excI)
-                ).queue(message ->
-                        message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
-                );
+                excI.printStackTrace();
+            }
+        }
+    }
+    public void incrementXP(int increment, GuildMessageReceivedEvent event){
+        xp += increment;
+        try {
+            if(xp >= xpLevelThresh){
+                TextChannel channel = event.getChannel();
+                ArrayList<File> guild =
+                        (ArrayList<File>)
+                        Arrays.asList(new File("/db/" + event.getGuild().getId()).listFiles());
+                if(guild.contains(new File("/db/" + event.getGuild().getId() + "/CHANNEL.txt"))){
+                    Scanner scanner = new Scanner(
+                            new FileInputStream(
+                                    new File("/db/" + event.getGuild().getId() + "/CHANNEL.txt")
+                            )
+                    );
+                    channel = event.getJDA().getTextChannelById(scanner.nextLine());
+                }
+
+                level++;
+                xpLevelThresh = (int) Math.floor(xpLevelThresh * 1.25);
+                xp = 0;
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                embedBuilder.setTitle(this.name + " has advanced to trainer level " + level + "!");
+                embedBuilder.setDescription("XP: " + xp + "/" + xpLevelThresh);
+                embedBuilder.setImage(imageUrl);
+
+                assert channel != null;
+                channel.sendMessage(embedBuilder.build()).queue();
+            }
+            recreateProfile();
+        } catch (IOException ioException) {
+            Logger logger =
+                    new Logger("Error: " +
+                            Logger.exceptionAsString(ioException));
+            try{
+                logger.logError();
+            } catch (IOException excI){
+                excI.printStackTrace();
             }
         }
     }
@@ -138,6 +181,7 @@ public class Profile implements Serializable {
     public MessageEmbed showLevel(TextChannel channel){
         EmbedBuilder builder = new EmbedBuilder();
 
+        builder.setColor(0x000dff);
         builder.setTitle("XP: " + xp + "/" + xpLevelThresh + "\t Trainer Level: " + level);
         builder.setImage(imageUrl);
 
@@ -160,7 +204,7 @@ public class Profile implements Serializable {
                             "3. There was a server issue, please report this to our email " +
                             "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
             ).queue(message ->
-                    message.delete().queueAfter(7500, TimeUnit.MILLISECONDS)
+                    message.delete().queueAfter(25, TimeUnit.SECONDS)
             );
             try{
                 logger.logError();
@@ -252,7 +296,11 @@ public class Profile implements Serializable {
         }
 
         try {
-            return (Profile) objectInputStream.readObject();
+            Profile profile = (Profile) objectInputStream.readObject();
+            profile.name = event.getAuthor().getName();
+            profile.imageUrl = event.getAuthor().getAvatarUrl();
+
+            return profile;
         } catch (IOException | ClassNotFoundException e){
             objectInputStream.close();
             throw e;
@@ -274,7 +322,11 @@ public class Profile implements Serializable {
         }
 
         try {
-            return (Profile) objectInputStream.readObject();
+            Profile profile = (Profile) objectInputStream.readObject();
+            profile.name = event.getAuthor().getName();
+            profile.imageUrl = event.getAuthor().getAvatarUrl();
+
+            return profile;
         } catch (IOException | ClassNotFoundException e){
             objectInputStream.close();
             throw e;
@@ -286,7 +338,10 @@ public class Profile implements Serializable {
                 new Coins(profileStore.coins), profileStore.ID,
                 profileStore.name, profileStore.wins, profileStore.loses,
                 profileStore.imageUrl,
-                profileStore.guildID);
+                profileStore.guildID,
+                profileStore.level,
+                profileStore.xpLevelThresh,
+                profileStore.xp);
     }
 
 

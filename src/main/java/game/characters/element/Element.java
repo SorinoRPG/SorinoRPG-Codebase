@@ -28,7 +28,7 @@ public abstract class  Element {
 
     final Move burn = new Move(33, "Burned the opponent",
             false, 30,
-            "");
+            "https://cdn.discordapp.com/attachments/784891397584060459/793184489551036466/super-slow-motion-fire-blast-footage-121101453_iconl.png");
     Move burn(Sorino initiator){
         burn.addSorino(initiator);
         return burn;

@@ -1,6 +1,6 @@
 package game.fight;
 
-import data.files.Logger;
+import data.logging.Logger;
 
 public class FightNotFoundException extends Exception{
     String fightCauses;

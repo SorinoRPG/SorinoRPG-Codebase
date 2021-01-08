@@ -1,4 +1,4 @@
-package data.files;
+package data.logging;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -26,6 +26,11 @@ public class Logger {
                         .ofPattern("dd/MM/yyyy HH:mm:ss")
                         .format(LocalDateTime.now()) + "\n\n");
         fileWriter.close();
+    }
+    public void logAction(FileWriter fileWriter) throws IOException {
+        fileWriter.write(this.info + ">>Happened at>> " +
+                DateTimeFormatter
+                        .ofPattern("dd/MM/yyyy HH:mm:ss"));
     }
     public void logError() throws IOException {
         FileWriter fileWriter = new FileWriter(
