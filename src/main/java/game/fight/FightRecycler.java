@@ -1,6 +1,7 @@
 package game.fight;
 
 import data.logging.Logger;
+import game.fight.streetfight.StreetFight;
 import main.Task;
 
 import java.io.File;
@@ -47,8 +48,14 @@ public class FightRecycler implements Task {
                                 fight
                         )
                 );
-        Fight mainFight = (Fight) objectInputStream.readObject();
-        objectInputStream.close();
-        return mainFight.fightTime;
+        try {
+            Fight mainFight = (Fight) objectInputStream.readObject();
+            objectInputStream.close();
+            return mainFight.fightTime;
+        } catch (ClassCastException e) {
+            StreetFight mainFight = (StreetFight) objectInputStream.readObject();
+            objectInputStream.close();
+            return mainFight.fightTime;
+        }
     }
 }

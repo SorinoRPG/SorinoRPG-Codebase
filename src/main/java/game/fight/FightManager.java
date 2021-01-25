@@ -191,72 +191,57 @@ public class FightManager {
         };
 
         if(fight.currFighter == 0){
-            Optional<String> noUsage;
             if(nextMove.isDefensive()) {
-                noUsage = fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
-                noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(),
-                        () -> {
-                            EmbedBuilder embedBuilder = new EmbedBuilder();
-                            embedBuilder.setColor(0x000dff);
-                            event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
-                                embedBuilder.setImage(nextMove.getUrl());
-                                embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
-                                        user.getAvatarUrl());
-                                event.getChannel().sendMessage(embedBuilder.build()).queue();
-                            });
-                        });
+                fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
+                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
+                            user.getAvatarUrl());
+                    event.getChannel().sendMessage(embedBuilder.build()).queue();
+                });
             } else {
-                noUsage = fight.opponents.get(fight.currFighter + 1).takeDamage(
+                fight.opponents.get(fight.currFighter + 1).takeDamage(
                         nextMove, event);
-                noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(),
-                        () -> {
-                            EmbedBuilder embedBuilder = new EmbedBuilder();
-                            embedBuilder.setColor(0x000dff);
-                            event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter + 1)).queue(user -> {
-                                embedBuilder.setImage(nextMove.getUrl());
-                                embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
-                                        , user.getAvatarUrl());
-                                event.getChannel().sendMessage(embedBuilder.build()).queue();
-                            });
-                        });
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter + 1)).queue(user -> {
+                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
+                            , user.getAvatarUrl());
+                    event.getChannel().sendMessage(embedBuilder.build()).queue();
+                });
             }
             fight.opponents.get(fight.currFighter).dropEnergy(nextMove);
             info.action(event);
             fight.currFighter = 1;
         } else if(fight.currFighter == 1){
-            Optional<String> noUsage;
             if(nextMove.isDefensive()) {
-                noUsage = fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
-                noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(),
-                        () -> {
-                            EmbedBuilder embedBuilder = new EmbedBuilder();
-                            embedBuilder.setColor(0x000dff);
-                            event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
-                                embedBuilder.setImage(nextMove.getUrl());
-                                embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
-                                        user.getAvatarUrl());
+                fight.opponents.get(fight.currFighter).defenseUp(nextMove, event);
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
+                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
+                            user.getAvatarUrl());
 
-                                event.getChannel().sendMessage(embedBuilder.build()).queue();
-                            });
-                        });
+                    event.getChannel().sendMessage(embedBuilder.build()).queue();
+                });
+
             } else {
-                noUsage = fight.opponents.get(fight.currFighter - 1).takeDamage(
+                fight.opponents.get(fight.currFighter - 1).takeDamage(
                         nextMove, event);
-                noUsage.ifPresentOrElse(s ->
-                                event.getChannel().sendMessage(s).queue(),
-                        () -> {
-                            EmbedBuilder embedBuilder = new EmbedBuilder();
-                            embedBuilder.setColor(0x000dff);
-                            event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter - 1)).queue(user -> {
-                                embedBuilder.setImage(nextMove.getUrl());
-                                embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
-                                        , user.getAvatarUrl());
-                                event.getChannel().sendMessage(embedBuilder.build()).queue();
-                            });
-                        });
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter - 1)).queue(user -> {
+                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
+                            , user.getAvatarUrl());
+                    event.getChannel().sendMessage(embedBuilder.build()).queue();
+                });
             }
             fight.opponents.get(fight.currFighter).dropEnergy(nextMove);
             info.action(event);

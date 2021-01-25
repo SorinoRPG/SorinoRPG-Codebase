@@ -4,15 +4,14 @@ import data.Profile;
 import data.ProfileNotFoundException;
 import data.logging.Logger;
 
+import game.fight.*;
+import game.fight.streetfight.StreetFight;
+import game.fight.streetfight.StreetProtector;
 import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
-import game.fight.Fight;
-import game.fight.FightManager;
 
-import game.fight.FightNotFoundException;
-import game.fight.Move;
 import game.value.Slots;
 import game.value.Wrap;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 
 public enum Command {
@@ -282,6 +282,10 @@ public enum Command {
                     } catch (IOException e1){
                         e1.printStackTrace();
                     }
+                    return false;
+                } catch (IndexOutOfBoundsException e){
+                    event.getChannel().sendMessage("See, I can't really know who you are fighting if you" +
+                            " don't mention them at the end of your message!").queue();
                     return false;
                 }
             }
@@ -827,8 +831,332 @@ public enum Command {
                 "This will give you 4x your stake!",
                 true);
         event.getChannel().sendMessage(embedBuilder.build()).queue();
-    })
-    ,
+    }),
+    STREET_FIGHT(event -> {
+        String command = event.getMessage().getContentRaw().substring(
+                event.getMessage().getContentRaw().indexOf("B")+1
+        ).trim();
+        class MoveFight {
+            final Move move;
+            final StreetFight fight;
+
+            MoveFight(Move move, StreetFight fight){
+                this.move = move;
+                this.fight = fight;
+            }
+        }
+        Function<GuildMessageReceivedEvent, Optional<Move>> checkMove = event1 -> {
+            try{
+                StreetFight fight = StreetFight.readFight(event1.getGuild().getId(), event1.getAuthor().getId());
+                Sorino sorino = fight.userSorino.get(0);
+                return sorino.getMove(command, sorino);
+            } catch (FightNotFoundException e){
+                return Optional.empty();
+            }
+        };
+        Function<MoveFight, Optional<Fight.GameInfo>> moveFunction = moveFight -> {
+            StreetFight fight = moveFight.fight;
+            Move move = moveFight.move;
+
+            if(fight.opponents.get(1).hasConceded())
+                return Optional.of(new Fight.GameInfo("Protector", "User"));
+            else if(fight.opponents.get(0).hasConceded())
+                return Optional.of(new Fight.GameInfo("User", "Protector"));
+
+            if(move.isDefensive()){
+                fight.opponents.get(1).defenseUp(move, event);
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                embedBuilder.setImage(move.getUrl());
+                embedBuilder.setFooter(" gained " + move.getEffect() + " defence",
+                        event.getAuthor().getAvatarUrl());
+
+                event.getChannel().sendMessage(embedBuilder.build()).queue();
+                fight.protector.getGuardianSorino().getMove(
+                        fight.protector.getGuardianSorino().getMoves().get(new Random().nextInt(4)),
+                        fight.protector.getGuardianSorino()
+                ).ifPresent(protectorMove -> {
+                    if(protectorMove.isDefensive()){
+                        fight.opponents.get(0).defenseUp(protectorMove, event);
+                        EmbedBuilder embedBuilder1 = new EmbedBuilder();
+                        embedBuilder1.setColor(0x000dff);
+                        embedBuilder1.setImage(protectorMove.getUrl());
+                        embedBuilder1.setFooter(fight.protector.getName()
+                                + " gained " + protectorMove.getEffect() + " defence");
+
+                        event.getChannel().sendMessage(embedBuilder1.build()).queue();
+                    } else {
+                        fight.opponents.get(1).takeDamage(protectorMove, event);
+                        fight.opponents.get(0).dropEnergy(protectorMove);
+
+                        EmbedBuilder embedBuilder2 = new EmbedBuilder();
+                        embedBuilder2.setColor(0x000dff);
+                        embedBuilder2.setImage(protectorMove.getUrl());
+                        embedBuilder2.setFooter(" lost " + protectorMove.getEffect() + " health",
+                                event.getAuthor().getAvatarUrl());
+
+                        event.getChannel().sendMessage(embedBuilder2.build())
+                                .queue();
+                    }
+                });
+            } else {
+                fight.opponents.get(0).takeDamage(move, event);
+                fight.opponents.get(1).dropEnergy(move);
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+                embedBuilder.setImage(move.getUrl());
+                embedBuilder.setFooter(fight.protector.getName() + " lost " + move.getEffect() + " health");
+
+                event.getChannel().sendMessage(embedBuilder.build()).queue();
+                fight.protector.getGuardianSorino().getMove(
+                        fight.protector.getGuardianSorino().getMoves().get(new Random().nextInt(4)),
+                        fight.protector.getGuardianSorino()
+                ).ifPresent(protectorMove -> {
+                    if(protectorMove.isDefensive()){
+                        fight.opponents.get(0).defenseUp(protectorMove, event);
+                        EmbedBuilder embedBuilder1 = new EmbedBuilder();
+                        embedBuilder1.setColor(0x000dff);
+                        embedBuilder1.setImage(protectorMove.getUrl());
+                        embedBuilder1.setFooter(fight.protector.getName()
+                                + " gained " + protectorMove.getEffect() + " defence");
+
+                        event.getChannel().sendMessage(embedBuilder1.build()).queue();
+                    } else {
+                        fight.opponents.get(1).takeDamage(protectorMove, event);
+                        fight.opponents.get(0).dropEnergy(protectorMove);
+
+                        EmbedBuilder embedBuilder2 = new EmbedBuilder();
+                        embedBuilder2.setColor(0x000dff);
+                        embedBuilder2.setImage(protectorMove.getUrl());
+                        embedBuilder2.setFooter(" lost " + protectorMove.getEffect() + " health",
+                                event.getAuthor().getAvatarUrl());
+
+                        event.getChannel().sendMessage(embedBuilder2.build())
+                                .queue();
+                    }
+                });
+            }
+
+
+            if(fight.opponents.get(1).hasConceded())
+                return Optional.of(new Fight.GameInfo("Protector", "User"));
+            else if(fight.opponents.get(0).hasConceded())
+                return Optional.of(new Fight.GameInfo("User", "Protector"));
+
+            EmbedBuilder embed  = new EmbedBuilder();
+            embed.setTitle("Health of the Fighters!");
+            embed.setColor(0x000dff);
+            embed.addField(fight.protector.getName() + "'s Health \t\t\t ",
+                    "HEALTH: " + fight.opponents.get(0).getHealth() + "\n" +
+                            "ENERGY: " + fight.opponents.get(0).getEnergy() + "\n" +
+                            "DEFENCE: " + fight.opponents.get(0).getDecrease() + " drop-off",
+                    true);
+            embed.addField(event.getAuthor().getName() + "'s Health \t\t\t ",
+                    "HEALTH: " + fight.opponents.get(1).getHealth() + "\n" +
+                            "ENERGY: " + fight.opponents.get(1).getEnergy() + "\n" +
+                            "DEFENCE: " + fight.opponents.get(1).getDecrease() + " drop-off",
+                    true);
+            event.getChannel().sendMessage(embed.build())
+                    .queue();
+
+            EmbedBuilder message = new EmbedBuilder();
+            message.setColor(0x000dff);
+            message.setTitle("Enter your move " + event.getAuthor().getName());
+            message.setFooter("Needs to enter their move", event.getAuthor().getAvatarUrl());
+            message.addField("Moves: ", fight.userSorino.get(0).getMoves().toString(), false);
+            event.getChannel().sendMessage(message.build())
+                    .queue();
+
+            return Optional.empty();
+        };
+        try {
+            if(command.toUpperCase().contains("START")){
+                List<StreetProtector> protectors = StreetProtector.Protectors.getAllProtectors();
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setTitle("Choose a Street Protector to battle!");
+                embedBuilder.setColor(0x000dff);
+
+                for(StreetProtector protector : protectors)
+                    embedBuilder.addField(protector.getName() + ": " + protector.getStreetName(),
+                            "Guardian Sorino: " + protector.getGuardianSorino().getName() + "\n" +
+                                    "Enter: `" +
+                                    Prefix.guildPrefix(event.getGuild().getId()) + "B" + protector.getName() +
+                                            "` to battle " + protector.getName(),
+                                    true);
+                event.getChannel().sendMessage(embedBuilder.build()).queue();
+            } else if(StreetProtector.Protectors.containsProtector(command).isPresent()){
+                StreetProtector protector = StreetProtector.Protectors.containsProtector(command).get();
+                StreetFight streetFight =
+                        new StreetFight(protector);
+
+
+                EmbedBuilder message = new EmbedBuilder();
+                message.setTitle(protector.getName() + " says: " + protector.getSarcasticRemark());
+                message.setColor(0x000dff);
+                event.getChannel().sendMessage(message.build()).queue();
+
+                message = new EmbedBuilder();
+                message.setColor(0x000dff);
+
+                message.setTitle("Specify your Sorino " + event.getAuthor().getName());
+                message.setFooter("is choosing their Sorino", event.getAuthor().getAvatarUrl());
+                message.setDescription("Choose one of your Sorino");
+                try {
+                    for (Sorino sorino : Profile.getProfile(event).getSorinoAsList())
+                        message.addField(sorino.getName(),
+                                "HEALTH: " + sorino.getHealth(Profile.getProfile(event).getLevel()) +
+                                        "\nENERGY: " + sorino.getEnergy(Profile.getProfile(event).getLevel()),
+                                true);
+
+                    event.getChannel().sendMessage(message.build()).queue();
+                    streetFight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
+                } catch (IOException | ClassNotFoundException e) {
+                    Logger logger1 =
+                            new Logger("Error in finding Profile due to IO and Classes \n" +
+                                    Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "Could not find profile due to IO and Classes"
+                    ).queue();
+                    try{
+                        logger1.logError();
+                    } catch (IOException excI){
+                        excI.printStackTrace();
+                    }
+                } catch (ProfileNotFoundException e) {
+                    Logger logger =
+                            new Logger("Error in finding Profile \n" +
+                                    Logger.exceptionAsString(e));
+                    event.getChannel().sendMessage(
+                            "Could not find profile!"
+                    ).queue();
+                    try{
+                        logger.logError();
+                    } catch (IOException excI){
+                        excI.printStackTrace();
+                    }
+                }
+            } else if(Sorino.AllSorino.isSorino(command)){
+                StreetFight fight = StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId());
+                fight.userSorino.add(Sorino.AllSorino.getSorino(command));
+                fight.opponents.add(new Opponent(fight.protector.getGuardianSorino(), event));
+                fight.opponents.add(new Opponent(fight.userSorino.get(0), event));
+
+                EmbedBuilder message = new EmbedBuilder();
+                message.setColor(0x000dff);
+
+                message.setTitle("Enter your move " + event.getAuthor().getName());
+                message.setFooter("Needs to enter their move", event.getAuthor().getAvatarUrl());
+                message.addField("Moves: ", fight.userSorino.get(0).getMoves().toString(), false);
+                event.getChannel().sendMessage(message.build())
+                        .queue();
+                fight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
+            } else if(checkMove.apply(event).isPresent()){
+                Move move = checkMove.apply(event).get();
+                StreetFight fight = StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId());
+
+                Optional<Fight.GameInfo> gameInfo = moveFunction.apply(new MoveFight(move, fight));
+                gameInfo.ifPresent(gameInfo1 -> {
+                    if(gameInfo1.winner.equals("Protector")){
+                        try {
+                            EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setColor(0x000dff);
+                            embedBuilder.setTitle("You lost to: " + fight.protector.getName());
+                            embedBuilder.setDescription(fight.protector.getWinningRemark());
+                            event.getChannel().sendMessage(embedBuilder.build()).queue();
+
+                            Profile profile = Profile.getProfile(event);
+                            profile.incrementLoss();
+                            profile.incrementXP(50, event);
+                            profile.recreateProfile();
+                        } catch (IOException | ClassNotFoundException e) {
+                            Logger logger1 =
+                                    new Logger("Error in finding Profile due to IO and Classes \n" +
+                                            Logger.exceptionAsString(e));
+                            event.getChannel().sendMessage(
+                                    "Could not find profile due to IO and Classes"
+                            ).queue();
+                            try{
+                                logger1.logError();
+                            } catch (IOException excI){
+                                excI.printStackTrace();
+                            }
+                        } catch (ProfileNotFoundException e) {
+                            Logger logger =
+                                    new Logger("Error in finding Profile \n" +
+                                            Logger.exceptionAsString(e));
+                            event.getChannel().sendMessage(
+                                    "Could not find profile!"
+                            ).queue();
+                            try{
+                                logger.logError();
+                            } catch (IOException excI){
+                                excI.printStackTrace();
+                            }
+                        }
+                    } else {
+                        EmbedBuilder embedBuilder = new EmbedBuilder();
+                        embedBuilder.setColor(0x000dff);
+                        embedBuilder.setTitle("You beat: " + fight.protector.getName());
+                        embedBuilder.setDescription(fight.protector.getLosingRemark());
+                        embedBuilder.setFooter("You also received 10,000 coins!");
+                        event.getChannel().sendMessage(embedBuilder.build()).queue();
+
+                        try {
+                            Profile profile = Profile.getProfile(event);
+
+                            profile.incrementXP(400, event);
+                            profile.incrementWin();
+                            profile.setCoins(10000);
+                        }  catch (IOException | ClassNotFoundException e) {
+                            Logger logger1 =
+                                    new Logger("Error in finding Profile due to IO and Classes \n" +
+                                            Logger.exceptionAsString(e));
+                            event.getChannel().sendMessage(
+                                    "Could not find profile due to IO and Classes"
+                            ).queue();
+                            try{
+                                logger1.logError();
+                            } catch (IOException excI){
+                                excI.printStackTrace();
+                            }
+                        } catch (ProfileNotFoundException e) {
+                            Logger logger =
+                                    new Logger("Error in finding Profile \n" +
+                                            Logger.exceptionAsString(e));
+                            event.getChannel().sendMessage(
+                                    "Could not find profile!"
+                            ).queue();
+                            try{
+                                logger.logError();
+                            } catch (IOException excI){
+                                excI.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                fight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
+            } else if(command.toUpperCase().contains("END")){
+                event.getChannel().sendMessage(event.getAuthor().getName() + " has ended his Street Fight!")
+                        .queue();
+                StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId())
+                        .endFight(event.getGuild().getId(), event.getAuthor().getId());
+            }
+        } catch (Exception e) {
+            Logger logger1 =
+                    new Logger("Error: " +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "There was an error, please try again!"
+            ).queue();
+            try{
+                logger1.logError();
+            } catch (IOException excI){
+                excI.printStackTrace();
+            }
+        }
+    }),
     ERROR(event -> {
     });
 
@@ -849,6 +1177,7 @@ public enum Command {
                 put(Prefix.PrefixString.WRAP, Command.WRAP);
                 put(Prefix.PrefixString.CHANGE, Command.CHANGE);
                 put(Prefix.PrefixString.SLOT, Command.SLOT);
+                put(Prefix.PrefixString.STREET_FIGHT, Command.STREET_FIGHT);
             }
         };
 

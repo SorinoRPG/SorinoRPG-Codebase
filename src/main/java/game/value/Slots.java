@@ -103,8 +103,9 @@ public class Slots {
 
             @Override
             public void action(Profile profile, int stake, TextChannel channel){
-                channel.sendMessage(profile.getName() + " lost " + stake
-                        + " coins, 3 Pencil's does not give anything!").queue();
+                channel.sendMessage(profile.getName() + " gained 1000" +
+                        " coins!").queue();
+                profile.setCoins(1000);
             }
         },
         APPLE(){
@@ -115,8 +116,9 @@ public class Slots {
 
             @Override
             public void action(Profile profile, int stake, TextChannel channel){
-                channel.sendMessage(profile.getName() + " lost " + stake
-                        + " coins, 3 Apple's does not give anything!").queue();
+                channel.sendMessage(profile.getName() + " gained 1000" +
+                        " coins!").queue();
+                profile.setCoins(1000);
             }
         },
         WATERMELON(){
@@ -127,8 +129,9 @@ public class Slots {
 
             @Override
             public void action(Profile profile, int stake, TextChannel channel){
-                channel.sendMessage(profile.getName() + " lost " + stake
-                        + " coins, 3 Watermelon's does not give anything!").queue();
+                channel.sendMessage(profile.getName() + " gained 1000" +
+                        " coins!").queue();
+                profile.setCoins(1000);
             }
         }
     }
@@ -148,7 +151,7 @@ public class Slots {
             slotImages.add(Slot.BANANAS.img());
         for(int i = 0; i < 10; i++)
             slotImages.add(Slot.BLUE_BEARS.img());
-        for(int i = 0; i < 52; i++){
+        for(int i = 0; i < 40; i++){
             slotImages.add(Slot.WATERMELON.img());
             slotImages.add(Slot.APPLE.img());
             slotImages.add(Slot.PENCIL.img());

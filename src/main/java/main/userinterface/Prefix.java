@@ -108,6 +108,12 @@ public class Prefix {
                 return serverPrefix + "H";
             }
         },
+        STREET_FIGHT(){
+            @Override
+            public String prefix(String serverPrefix) {
+                return serverPrefix + "B";
+            }
+        },
         SEE_RANK() {
             @Override
             public String prefix(String serverPrefix) {

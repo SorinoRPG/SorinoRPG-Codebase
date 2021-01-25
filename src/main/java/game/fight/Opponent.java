@@ -10,14 +10,13 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class Opponent implements Serializable {
     private final Sorino sorino;
     private int health;
     private int energy;
 
-    Opponent(Sorino sorino, GuildMessageReceivedEvent event){
+    public Opponent(Sorino sorino, GuildMessageReceivedEvent event){
         this.sorino = sorino;
         try {
             this.health = sorino.getHealth(Profile.getProfile(event).getLevel());
@@ -63,9 +62,7 @@ public class Opponent implements Serializable {
         return damageDecrease;
     }
 
-    public Optional<String> takeDamage(Move move, GuildMessageReceivedEvent event){
-        if (energy < 0)
-            return Optional.of("You have no more energy left!");
+    public void takeDamage(Move move, GuildMessageReceivedEvent event){
         if(damageDecrease + sorino.getIfWeakness(move.getSorino()) > 1.00)
             damageDecrease = 1 - (sorino.getIfWeakness(move.getSorino())+0.01);
         health -= move.getEffect() -
@@ -75,17 +72,13 @@ public class Opponent implements Serializable {
         event.getChannel().sendMessage(
                 move.getDesc()
         ).queue();
-        return Optional.empty();
     }
-    public Optional<String> defenseUp(Move move, GuildMessageReceivedEvent event){
-        if (energy < 0)
-            return Optional.of("You have no more usages!");
+    public void defenseUp(Move move, GuildMessageReceivedEvent event){
         damageDecrease += move.getEffect();
         energy -= move.getEnergy();
         event.getChannel().sendMessage(
                 move.getDesc()
         ).queue();
-        return Optional.empty();
     }
     public void dropEnergy(Move move){
         energy -= move.getEnergy();

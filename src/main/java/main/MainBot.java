@@ -18,10 +18,10 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InaccessibleObjectException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 /**
@@ -65,6 +65,8 @@ public class MainBot {
 
 
 
+        Thread.sleep(1000);
+
         Timer timer = new Timer();
         ScheduledTasks tasks = new ScheduledTasks(
                 new Task() {
@@ -92,6 +94,7 @@ public class MainBot {
                         for(File f : directories){
                             if(!ids.contains(f.getName())) {
                                 try {
+                                    FileUtils.copyDirectory(f, new File("/db_recycle/" + f.getName() + ""));
                                     FileUtils.deleteDirectory(f);
                                     guildsLost++;
                                     fileID = fileID.concat(f.getName() + "\\");

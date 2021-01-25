@@ -1,10 +1,13 @@
 package data;
 
 import data.logging.Logger;
+import game.fight.streetfight.StreetProtector;
 import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -73,10 +76,10 @@ public class Profile implements Serializable {
     public ArrayList<Sorino> getSorinoAsList(){
         return userSorino;
     }
-    public void addSorino(Sorino sorino){
-        for (Sorino sor:
-             userSorino) {
-            if(sor.getName().equals(sorino.getName())) return;
+    public void addSorino(Sorino sorino) {
+        for (Sorino sor :
+                userSorino) {
+            if (sor.getName().equals(sorino.getName())) return;
         }
         this.userSorino.add(sorino);
     }
@@ -126,8 +129,7 @@ public class Profile implements Serializable {
             if(xp >= xpLevelThresh){
                 TextChannel channel = event.getChannel();
                 ArrayList<File> guild =
-                        (ArrayList<File>)
-                        Arrays.asList(new File("/db/" + event.getGuild().getId()).listFiles());
+                        new ArrayList<>(Arrays.asList(new File("/db/" + event.getGuild().getId()).listFiles()));
                 if(guild.contains(new File("/db/" + event.getGuild().getId() + "/CHANNEL.txt"))){
                     Scanner scanner = new Scanner(
                             new FileInputStream(
@@ -148,6 +150,11 @@ public class Profile implements Serializable {
                 embedBuilder.setImage(imageUrl);
 
                 assert channel != null;
+                Member member = event.getGuild().getSelfMember();
+                if(!member.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS,
+                        Permission.MESSAGE_WRITE))
+                    return;
+
                 channel.sendMessage(embedBuilder.build()).queue();
             }
             recreateProfile();
@@ -333,6 +340,7 @@ public class Profile implements Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Profile storeToProfile(ProfileStore profileStore){
         return new Profile(Sorino.AllSorino.strToList(profileStore.userSorino),
                 new Coins(profileStore.coins), profileStore.ID,

@@ -34,7 +34,7 @@ public class Mantra extends Rage implements Sorino {
 
     //Bundle Run
     private final Move mantra = new Move(0.3, "Screams the mantra!",
-            false, 70,
+            true, 70,
             "https://cdn.discordapp.com/attachments/794351462163546125/795374065908187156/Gritos-Juntos-728x1030.png");
     @Override
     public Move customRageMove(Sorino initiator) {

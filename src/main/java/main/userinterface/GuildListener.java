@@ -128,7 +128,7 @@ public class GuildListener extends ListenerAdapter {
     Map<String, Long> spamControl = ExpiringMap
             .builder()
             .maxSize(10000)
-            .expiration(4, TimeUnit.SECONDS)
+            .expiration(2, TimeUnit.SECONDS)
             .expirationListener((k, v) -> {
                 try {
                     System.out.println("Traffic ended from: " + k + " at: " +
@@ -207,7 +207,6 @@ public class GuildListener extends ListenerAdapter {
 
 
         if(!Prefix.assertPrefix(event)) {
-            Command.FIGHT.userAction.action(event);
             return;
         }
         if(spamControl.containsKey(event.getAuthor().getId() + "//" + event.getGuild().getId())){
