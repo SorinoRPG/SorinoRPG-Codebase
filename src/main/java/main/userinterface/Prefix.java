@@ -66,7 +66,6 @@ public class Prefix {
     public static String removeFightPrefix(GuildMessageReceivedEvent event){
         String message = event.getMessage()
                 .getContentRaw();
-        if(!message.contains(guildPrefix(event.getGuild().getId()) + "F")) return message;
         return message.toUpperCase()
                 .replace(guildPrefix(event.getGuild().getId()) + "F", "");
     }
@@ -148,12 +147,6 @@ public class Prefix {
             @Override
             public String prefix(String serverPrefix) {
                 return serverPrefix + "W";
-            }
-        },
-        CHANGE() {
-            @Override
-            public String prefix(String serverPrefix){
-                return serverPrefix + "Q";
             }
         },
         SLOT() {

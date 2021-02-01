@@ -149,13 +149,8 @@ public class Slots {
             slotImages.add(Slot.CHERRIES.img());
         for(int i = 0; i != 79; i++)
             slotImages.add(Slot.BANANAS.img());
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 22; i++)
             slotImages.add(Slot.BLUE_BEARS.img());
-        for(int i = 0; i < 40; i++){
-            slotImages.add(Slot.WATERMELON.img());
-            slotImages.add(Slot.APPLE.img());
-            slotImages.add(Slot.PENCIL.img());
-        }
 
         this.slotImages = slotImages.toArray(new String[0]);
     }

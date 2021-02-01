@@ -1,7 +1,7 @@
 package game.fight.streetfight;
 
 import game.characters.Sorino;
-import game.fight.streetfight.protectors.Sumato;
+import game.fight.streetfight.protectors.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,6 +29,36 @@ public interface StreetProtector extends Serializable {
             @Override
             public StreetProtector getProtector() {
                 return new Sumato();
+            }
+        },
+        SHIZEN {
+            @Override
+            public StreetProtector getProtector() {
+                return new Shizen();
+            }
+        },
+        SOSHU {
+            @Override
+            public StreetProtector getProtector() {
+                return new Soshu();
+            }
+        },
+        IKARI {
+            @Override
+            public StreetProtector getProtector() {
+                return new Ikari();
+            }
+        },
+        CHIKARA {
+            @Override
+            public StreetProtector getProtector() {
+                return new Chikara();
+            }
+        },
+        TAMOTSU {
+            @Override
+            public StreetProtector getProtector() {
+                return new Tamotsu();
             }
         };
 

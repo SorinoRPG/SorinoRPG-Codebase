@@ -86,7 +86,7 @@ enum FileCommand{
                     profile.recreateProfile();
                     System.out.println("Successfully updated: " + profile.getName());
                 } catch (Exception exc) {
-                    System.out.println("There was an error in updating...");
+                    System.out.println("There was an error in updating: " + updateFile.getPath() + "\n");
                     exc.printStackTrace();
                 }
             }

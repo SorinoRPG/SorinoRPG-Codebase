@@ -72,11 +72,9 @@ public class GuildListener extends ListenerAdapter {
                 "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
                 "WChampions` Buy a champions Wrap\n" +
                 "\n" + "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "Q` Change the prefix and level channel, to change the prefix to `!` I would enter "
-                + "`" + Prefix.guildPrefix(event.getGuild().getId()) + "Q !`" +
-                " You can type in `QRESET` to reset the prefix to `.`. You can " +
-                "enter `" + Prefix.guildPrefix(event.getGuild().getId()) + "Q #channel` " +
-                "to change the level up channel\n\n" +
+                "setprefix <prefix>` to change the prefix. " +
+                "To change the channel where level up messages" +
+                " are sent, enter `" + Prefix.guildPrefix(event.getGuild().getId()) + "setchannel #channel`.\n\n" +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) + "G`" +
                 " use slot machine\n\n" +
                 "**How to fight**\n" +
@@ -95,7 +93,12 @@ public class GuildListener extends ListenerAdapter {
                 "\n" +
                 "You can end the fight anytime you wish with the command " +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "FEND @mention`");
+                "FEND @mention`\n\n" +
+                "**How to Street Fight** \n" +
+                "To start a street fight enter `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "BSTART`. The message should tell you how to choose an opponent.\n" +
+                "From their, you can enter `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "BMOVE` to start fighting!");
         embedBuilder.addField("Invite SorinoRPG to your server",
                 "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=27648)",
                 true);
@@ -115,6 +118,7 @@ public class GuildListener extends ListenerAdapter {
         embedBuilder.addField("Email us!",
                 "SorinoRPG@gmail.com",
                 true);
+
 
         for(TextChannel channel : event.getGuild().getTextChannels()) {
             if (channel.canTalk()){
@@ -186,6 +190,16 @@ public class GuildListener extends ListenerAdapter {
         } catch (IOException | ProfileNotFoundException | ClassNotFoundException ignored) {}
 
 
+
+
+        if(event.getMessage().getContentRaw().equals("!help!")) {
+            Command.HELP.userAction.action(event);
+            return;
+        }
+
+        if(!Prefix.assertPrefix(event)) {
+            return;
+        }
         if(!event.getGuild().getSelfMember().hasPermission(
                 Permission.MESSAGE_EMBED_LINKS,
                 Permission.MESSAGE_READ,
@@ -196,19 +210,11 @@ public class GuildListener extends ListenerAdapter {
                     "Message Read permission").queue();
             return;
         }
-
-        if(event.getMessage().getContentRaw().equals("!help!")) {
-            Command.HELP.userAction.action(event);
-            return;
-        } else if (event.getMessage().getContentRaw().equals("QRESET")){
-            Command.Qreset(event);
+        if(event.getMessage().getContentRaw().contains("set")) {
+            Command.CHANGE.userAction.action(event);
             return;
         }
 
-
-        if(!Prefix.assertPrefix(event)) {
-            return;
-        }
         if(spamControl.containsKey(event.getAuthor().getId() + "//" + event.getGuild().getId())){
             event.getChannel().sendMessage("Calm down with the commands!").queue();
             return;

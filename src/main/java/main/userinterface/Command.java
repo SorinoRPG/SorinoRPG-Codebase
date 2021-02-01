@@ -18,9 +18,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -29,49 +27,52 @@ import java.util.function.Function;
 public enum Command {
     HELP(event -> {
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Help -- January 8 update is live!");
+            embedBuilder.setTitle("Help -- January 27 update is live!");
             embedBuilder.setColor(0x000dff);
-            embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "C` Creates an account **This is required to start playing SorinoRPG**\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "P` Let's you view your account details like coins, Sorino, etc\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "R` Let's you view your Rank, mention someone to compare ranks\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "S` Searches for a Sorino or Coins\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "W` Shows you the Wraps you can buy\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "WStandard` Buy a standard Wrap\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "WPremium` Buy a premium Wrap\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "WChampions` Buy a champions Wrap\n" +
-                    "\n" + "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "Q` Change the prefix and level channel, to change the prefix to `!` I would enter "
-                    + "`" + Prefix.guildPrefix(event.getGuild().getId()) + "Q !`" +
-                    " You can type in `QRESET` to reset the prefix to `.`. You can " +
-                    "enter `" + Prefix.guildPrefix(event.getGuild().getId()) + "Q #channel` " +
-                    "to change the level up channel\n\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) + "G`" +
-                    " use slot machine\n\n" +
-                    "**How to fight**\n" +
-                    "To start a fight you must enter:" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FSTART @mention`.\n" +
-                    "Note: You must always mention the person you are fighting with throughout the fight.\n" +
-                    "\n" +
-                    "To choose the Sorino you would like, enter" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FSORINO @mention`, if I wanted to use Calkanor for example, I would enter " +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) + "FCalkanor @mention`.\n" +
-                    "\n" +
-                    "To choose a move, enter " +"`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FMOVE @mention`, if I wanted to use Scratch, I would enter " +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) + "FScratch @mention`.\n" +
-                    "\n" +
-                    "You can end the fight anytime you wish with the command " +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FEND @mention`");
+        embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "C` Creates an account **This is required to start playing SorinoRPG**\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "P` Let's you view your account details like coins, Sorino, etc\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "R` Let's you view your Rank, mention someone to compare ranks\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "S` Searches for a Sorino or Coins\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "W` Shows you the Wraps you can buy\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "WStandard` Buy a standard Wrap\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "WPremium` Buy a premium Wrap\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "WChampions` Buy a champions Wrap\n" +
+                "\n" + "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "setprefix <prefix>` to change the prefix. " +
+                "To change the channel where level up messages" +
+                " are sent, enter `" + Prefix.guildPrefix(event.getGuild().getId()) + "setchannel #channel`.\n\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) + "G`" +
+                " use slot machine\n\n" +
+                "**How to fight**\n" +
+                "To start a fight you must enter:" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "FSTART @mention`.\n" +
+                "Note: You must always mention the person you are fighting with throughout the fight.\n" +
+                "\n" +
+                "To choose the Sorino you would like, enter" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "FSORINO @mention`, if I wanted to use Calkanor for example, I would enter " +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) + "FCalkanor @mention`.\n" +
+                "\n" +
+                "To choose a move, enter " +"`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "FMOVE @mention`, if I wanted to use Scratch, I would enter " +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) + "FScratch @mention`.\n" +
+                "\n" +
+                "You can end the fight anytime you wish with the command " +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "FEND @mention`\n\n" +
+                "**How to Street Fight** \n" +
+                "To start a street fight enter `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "BSTART`. The message should tell you how to choose an opponent.\n" +
+                "From their, you can enter `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "BMOVE` to start fighting!");
             embedBuilder.addField("Invite SorinoRPG to your server",
                     "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=27648)",
                     true);
@@ -175,7 +176,7 @@ public enum Command {
                     profile.incrementXP(coins / 2, event);
                     profile.recreateProfile();
                 } else {
-                    boolean didCatch = new Random().nextInt(100) > 90;
+                    boolean didCatch = new Random().nextInt(100) > 70;
                     Sorino sorino = Sorino.AllSorino.getRandom();
                     if(profile.getLevel() < 7 && sorino.getName().contains("Hidden")){
                         event.getChannel().sendMessage("You cannot collect Hidden " +
@@ -656,7 +657,7 @@ public enum Command {
                 return;
             }
 
-            if(event.getMessage().getMentionedChannels().size() == 1){
+            if(event.getMessage().getContentRaw().contains("setchannel")){
                 try (FileWriter fw = new FileWriter(
                         new File("/db/" + event.getGuild().getId() + "/CHANNEL.txt"))){
                     fw.write(event.getMessage().getMentionedChannels().get(0).getId());
@@ -676,25 +677,26 @@ public enum Command {
                         exc.printStackTrace();
                     }
                 }
-
-                return;
             }
+            else if (event.getMessage().getContentRaw().contains("setprefix")){
+                if(!event.getMessage().getContentRaw().contains(" ")) return;
+                String newPrefix = event.getMessage().getContentRaw().substring(
+                        event.getMessage().getContentRaw().indexOf(" ") + 1
+                );
+                if(newPrefix.length() >= 5) newPrefix = newPrefix.substring(0, 5);
 
-            String newPrefix = event.getMessage().getContentRaw().substring(
-                    event.getMessage().getContentRaw().indexOf(" ") + 1
-            );
-            try (FileWriter fileWriter = new FileWriter(new File(
-                    "/db/" + event.getGuild().getId() + "/PREFIX.txt"
-            ), false)) {
-                fileWriter.write(newPrefix);
-                event.getChannel().sendMessage("Changed server prefix to: " + newPrefix).queue();
-            } catch (IOException e) {
-                Logger logger = new Logger(Logger.exceptionAsString(e));
-
-                try {
-                    logger.logError();
-                } catch (IOException exc) {
-                    exc.printStackTrace();
+                try (FileWriter fileWriter = new FileWriter(new File(
+                        "/db/" + event.getGuild().getId() + "/PREFIX.txt"
+                ), false)) {
+                    fileWriter.write(newPrefix);
+                    event.getChannel().sendMessage("Changed server prefix to: " + newPrefix).queue();
+                } catch (IOException e) {
+                    Logger logger = new Logger(Logger.exceptionAsString(e));
+                    try {
+                        logger.logError();
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
             }
         });
@@ -833,7 +835,7 @@ public enum Command {
         event.getChannel().sendMessage(embedBuilder.build()).queue();
     }),
     STREET_FIGHT(event -> {
-        String command = event.getMessage().getContentRaw().substring(
+        String command = event.getMessage().getContentRaw().toUpperCase().substring(
                 event.getMessage().getContentRaw().indexOf("B")+1
         ).trim();
         class MoveFight {
@@ -849,6 +851,8 @@ public enum Command {
             try{
                 StreetFight fight = StreetFight.readFight(event1.getGuild().getId(), event1.getAuthor().getId());
                 Sorino sorino = fight.userSorino.get(0);
+                if(command.contains(" "))
+                    return sorino.getMove(command.substring(0, command.indexOf(" ")), sorino);
                 return sorino.getMove(command, sorino);
             } catch (FightNotFoundException e){
                 return Optional.empty();
@@ -871,9 +875,16 @@ public enum Command {
                 embedBuilder.setFooter(" gained " + move.getEffect() + " defence",
                         event.getAuthor().getAvatarUrl());
 
+
                 event.getChannel().sendMessage(embedBuilder.build()).queue();
+
+                String ranMove = fight.protector
+                        .getGuardianSorino()
+                        .getMoves()
+                        .get(new Random().nextInt(4));
+                if(ranMove.contains(" ")) ranMove = ranMove.substring(0, ranMove.indexOf(" "));
                 fight.protector.getGuardianSorino().getMove(
-                        fight.protector.getGuardianSorino().getMoves().get(new Random().nextInt(4)),
+                        ranMove,
                         fight.protector.getGuardianSorino()
                 ).ifPresent(protectorMove -> {
                     if(protectorMove.isDefensive()){
@@ -909,8 +920,14 @@ public enum Command {
                 embedBuilder.setFooter(fight.protector.getName() + " lost " + move.getEffect() + " health");
 
                 event.getChannel().sendMessage(embedBuilder.build()).queue();
+
+                String ranMove = fight.protector
+                        .getGuardianSorino()
+                        .getMoves()
+                        .get(new Random().nextInt(4));
+                if(ranMove.contains(" ")) ranMove = ranMove.substring(0, ranMove.indexOf(" "));
                 fight.protector.getGuardianSorino().getMove(
-                        fight.protector.getGuardianSorino().getMoves().get(new Random().nextInt(4)),
+                        ranMove,
                         fight.protector.getGuardianSorino()
                 ).ifPresent(protectorMove -> {
                     if(protectorMove.isDefensive()){
@@ -1108,7 +1125,9 @@ public enum Command {
 
                             profile.incrementXP(400, event);
                             profile.incrementWin();
+                            profile.addSorino(fight.protector.getGuardianSorino());
                             profile.setCoins(10000);
+                            profile.recreateProfile();
                         }  catch (IOException | ClassNotFoundException e) {
                             Logger logger1 =
                                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -1175,7 +1194,6 @@ public enum Command {
                 put(Prefix.PrefixString.SEE_RANK, Command.SEE_RANK);
                 put(Prefix.PrefixString.HELP, Command.HELP);
                 put(Prefix.PrefixString.WRAP, Command.WRAP);
-                put(Prefix.PrefixString.CHANGE, Command.CHANGE);
                 put(Prefix.PrefixString.SLOT, Command.SLOT);
                 put(Prefix.PrefixString.STREET_FIGHT, Command.STREET_FIGHT);
             }
@@ -1191,30 +1209,17 @@ public enum Command {
         return Command.ERROR;
     }
 
-    public static void Qreset(GuildMessageReceivedEvent event){
-        event.getGuild().retrieveMember(event.getAuthor()).queue(member -> {
-            if(member.hasPermission(Permission.MESSAGE_MANAGE)){
-                event.getChannel().sendMessage("You do not have the permission to do such a command!")
-                        .queue();
-                return;
-            }
+    public static void registerProfile(GuildMessageReceivedEvent event) throws IOException, ClassNotFoundException, ProfileNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(
+                new FileInputStream(new File("/db/USERLIST.txt"))
+        );
 
-            try (FileWriter fileWriter = new FileWriter(new File(
-                    "/db/" + event.getGuild().getId() + "/PREFIX.txt"
-            ), false)) {
-                fileWriter.write(".");
-                event.getChannel().sendMessage("Reset server prefix to: .").queue();
-            } catch (IOException e) {
-                Logger logger = new Logger(Logger.exceptionAsString(e));
+        @SuppressWarnings("unchecked")
+        HashMap<String, Profile> userList = (HashMap<String, Profile>) objectInputStream.readObject();
+        Profile profile = Profile.getProfile(event);
 
-                try {
-                    logger.logError();
-                } catch (IOException exc) {
-                    exc.printStackTrace();
-                }
-            }
-        });
-
+        userList.put(event.getAuthor().getId(), profile);
+        profile.recreateProfile();
     }
 }
 

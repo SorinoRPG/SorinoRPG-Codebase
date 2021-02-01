@@ -32,12 +32,11 @@ public class Sumato implements StreetProtector{
 
     @Override
     public String getLosingRemark() {
-        return"You must be trained. Here's my Guardian Sorino, you are clearly worthy.";
+        return "You must be trained. Here's my Guardian Sorino, you are clearly worthy.";
     }
 
     @Override
     public Sorino getGuardianSorino() {
-
         return new DongoliaGuardian();
     }
     public static class DongoliaGuardian extends Smart implements Sorino {
@@ -58,7 +57,7 @@ public class Sumato implements StreetProtector{
 
         @Override
         public Optional<Sorino> getSorino(String sorino) {
-            return sorino.toUpperCase().contains("DONGOLIA") ? Optional.of(this) : Optional.empty();
+            return sorino.equalsIgnoreCase("DongoliaGuardian") ? Optional.of(this) : Optional.empty();
         }
 
         @Override
@@ -68,7 +67,7 @@ public class Sumato implements StreetProtector{
 
         private final Move dongPunch = new Move(50, "Performed Dong Punch!",
                 false, 25,
-                "https://cdn.discordapp.com/attachments/768534237493985291/777638224205447208/9k.png");
+                "https://cdn.discordapp.com/attachments/803353528088133632/803353540638539817/old-red-brick-wall-damaged-background-picture-id1002801182.png");
         @Override
         public Move customSmartMove(Sorino initiator) {
            dongPunch.addSorino(initiator);

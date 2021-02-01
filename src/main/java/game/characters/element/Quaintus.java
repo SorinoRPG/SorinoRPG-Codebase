@@ -55,7 +55,7 @@ public class Quaintus extends Element implements Sorino {
             case "HARNESS": return Optional.ofNullable(super.harness(initiator));
             case "BURN": return Optional.ofNullable(super.burn(initiator));
             case "FREEZE": return Optional.ofNullable(super.freeze(initiator));
-            case "QUAD FORCE": return Optional.ofNullable(customElementMove(initiator));
+            case "QUAD": return Optional.ofNullable(customElementMove(initiator));
             default: return Optional.empty();
         }
     }

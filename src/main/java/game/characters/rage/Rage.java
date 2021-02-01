@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Rage {
-    double getIfWeakness(Sorino sorino){
+    protected double getIfWeakness(Sorino sorino){
         if (sorino instanceof Smart)
             return 0.3;
         return 0;
@@ -18,7 +18,7 @@ public abstract class Rage {
     final Move ballistic = new Move(26, "Went on an inaccurate rampage!",
             false, 19,
             "https://cdn.discordapp.com/attachments/768534237493985291/777633571774791710/Science_australiafires-1191951200.png");
-    Move ballistic(Sorino initiator){
+    protected Move ballistic(Sorino initiator){
         ballistic.addSorino(initiator);
         return ballistic;
     }
@@ -26,7 +26,7 @@ public abstract class Rage {
     final Move charge = new Move(40, "An accurate hit",
             false, 30,
             "https://cdn.discordapp.com/attachments/768534237493985291/777633937886281778/116950449-stock-vector-cartoon-red-bull-attack.png");
-    Move charge(Sorino initiator){
+    protected Move charge(Sorino initiator){
         charge.addSorino(initiator);
         return charge;
     }
@@ -34,14 +34,14 @@ public abstract class Rage {
     final Move gouge = new Move(35, "Gouged the opponent",
             false, 20,
             "https://images.ctfassets.net/u4vv676b8z52/4B4aASUoMBqZhfEQVGUe32/49f351e15e189c3750ce696932982f5c/dry-eye-12-treatments-1200x630.png?fm=jpg&q=80");
-    Move gouge(Sorino initiator){
+    protected Move gouge(Sorino initiator){
         gouge.addSorino(initiator);
         return gouge;
     }
 
-    abstract Move customRageMove(Sorino initiator);
+    protected abstract Move customRageMove(Sorino initiator);
 
-    List<String> getMovesAbs(){
+    protected List<String> getMovesAbs(){
         return new ArrayList<>(Arrays.asList("Ballistic", "Gouge", "Charge"));
     }
 }

@@ -52,7 +52,7 @@ public class Bundlebeast extends Rage implements Sorino {
     @Override
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
-            case "BUNDLE RUN": return Optional.ofNullable(customRageMove(initiator));
+            case "BUNDLE": return Optional.ofNullable(customRageMove(initiator));
             case "GOUGE": return Optional.ofNullable(super.gouge(initiator));
             case "BALLISTIC": return Optional.ofNullable(super.ballistic(initiator));
             case "CHARGE": return Optional.ofNullable(super.charge(initiator));

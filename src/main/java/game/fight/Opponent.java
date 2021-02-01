@@ -63,8 +63,8 @@ public class Opponent implements Serializable {
     }
 
     public void takeDamage(Move move, GuildMessageReceivedEvent event){
-        if(damageDecrease + sorino.getIfWeakness(move.getSorino()) > 1.00)
-            damageDecrease = 1 - (sorino.getIfWeakness(move.getSorino())+0.01);
+        if(damageDecrease + sorino.getIfWeakness(move.getSorino()) >= 1.00)
+            damageDecrease = 1 - (sorino.getIfWeakness(move.getSorino())+0.1);
         health -= move.getEffect() -
                 (move.getEffect() * damageDecrease) +
                 (move.getEffect() * sorino.getIfWeakness(move.getSorino()));

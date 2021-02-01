@@ -8,6 +8,7 @@ import game.characters.smart.*;
 import game.characters.starter.Gray;
 import game.fight.Move;
 import game.fight.Opponent;
+import game.fight.streetfight.protectors.*;
 
 import java.io.Serializable;
 
@@ -54,6 +55,42 @@ public interface Sorino extends Serializable {
 
     @SuppressWarnings("unused")
     enum AllSorino implements GetSorino {
+        TAMUSHIRIGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Tamotsu.TamushiriGuardian();
+            }
+        },
+        KARINIROGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Chikara.KariniroGuardian();
+            }
+        },
+        SUNISHIGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Ikari.SunishiGuardian();
+            }
+        },
+        INGOSAGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Soshu.IngosaGuardian();
+            }
+        },
+        HONIHOLAGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Shizen.HoniholaGuardian();
+            }
+        },
+        DONGOLIAGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Sumato.DongoliaGuardian();
+            }
+        },
         PATREONA {
             @Override
             public Sorino getSorino() {

@@ -45,14 +45,14 @@ public class Mantra extends Rage implements Sorino {
     @Override
     public List<String> getMoves() {
         List<String> moves = super.getMovesAbs();
-        moves.add("Mantra");
+        moves.add("Chant");
         return moves;
     }
 
     @Override
     public Optional<Move> getMove(String move, Sorino initiator) {
         switch(move.toUpperCase()){
-            case "MANTRA": return Optional.ofNullable(customRageMove(initiator));
+            case "CHANT": return Optional.ofNullable(customRageMove(initiator));
             case "GOUGE": return Optional.ofNullable(super.gouge(initiator));
             case "BALLISTIC": return Optional.ofNullable(super.ballistic(initiator));
             case "CHARGE": return Optional.ofNullable(super.charge(initiator));
