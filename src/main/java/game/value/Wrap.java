@@ -79,7 +79,7 @@ public enum Wrap implements WrapAction{
     PREMIUM(){
         @Override
         public void action(Profile profile, GuildMessageReceivedEvent event) {
-            if(profile.spend(30000)){
+            if(profile.spend(45000)){
                 event.getChannel().sendMessage("You have insufficient funds!").queue();
                 return;
             }
@@ -113,7 +113,7 @@ public enum Wrap implements WrapAction{
     CHAMPIONS(){
         @Override
         public void action(Profile profile, GuildMessageReceivedEvent event) {
-            if(profile.spend(75000)){
+            if(profile.spend(100000)){
                 event.getChannel().sendMessage("You have insufficient funds!").queue();
                 return;
             }

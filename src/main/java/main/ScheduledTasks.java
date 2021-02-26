@@ -1,6 +1,7 @@
 package main;
 
-import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
 
 public class ScheduledTasks extends TimerTask {
@@ -17,7 +18,9 @@ public class ScheduledTasks extends TimerTask {
             task.printTaskStatus();
         }
         System.out.println("Tasks completed: " + tasks.length  + "\n" +
-                "Current time: ");
+                "Current time: "  + DateTimeFormatter
+                .ofPattern("dd/MM/yyyy HH:mm:ss")
+                .format(LocalDateTime.now()));
 
 //        try {
 //            SystemTray tray = SystemTray.getSystemTray();

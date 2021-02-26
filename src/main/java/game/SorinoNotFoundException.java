@@ -10,7 +10,8 @@ public class SorinoNotFoundException extends Exception{
 
     @Override
     public String toString() {
-        return "Ignatiamon! tried to attempt to find an Ignatiamon but failed because \n" +
-                cause;
+        return "SorinoNotFoundException{" +
+                "cause='" + cause + '\'' +
+                '}';
     }
 }

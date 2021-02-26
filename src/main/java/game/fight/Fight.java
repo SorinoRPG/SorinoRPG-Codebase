@@ -4,7 +4,6 @@ import game.characters.Sorino;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Fight implements Serializable{
     public static class GameInfo implements Serializable{
@@ -37,9 +36,10 @@ public class Fight implements Serializable{
                 new ObjectOutputStream(new FileOutputStream(
                         new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt")
                 ));
+         fightTime = System.currentTimeMillis();
+         objectStream.flush();
          objectStream.writeObject(this);
          objectStream.close();
-         fightTime = System.currentTimeMillis();
     }
     public static Fight readFight(String guildID, String idSum) throws FightNotFoundException {
         try {

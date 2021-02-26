@@ -23,6 +23,7 @@ public class StreetFight implements Serializable{
                 new ObjectOutputStream(new FileOutputStream(
                         new File("/db/" + guildID + "/fights/&&" + id + ".txt")
                 ));
+        objectStream.flush();
         objectStream.writeObject(this);
         objectStream.close();
         fightTime = System.currentTimeMillis();

@@ -44,6 +44,8 @@ public class ProfileStore implements Serializable {
     public static ProfileStore readFromFile(File file) throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream =
                 new ObjectInputStream(new FileInputStream(file));
-        return (ProfileStore) objectInputStream.readObject();
+        ProfileStore ps =  (ProfileStore) objectInputStream.readObject();
+        objectInputStream.close();
+        return ps;
     }
 }

@@ -33,8 +33,8 @@ public class Mountitude extends Element implements Sorino {
     }
 
     //Recycle
-    private final Move avalanche = new Move(80, "Caused an avalanche!",
-            true, 50,
+    private final Move avalanche = new Move(80, "Cau   sed an avalanche!",
+            false, 50,
             "https://cdn.discordapp.com/attachments/794351462163546125/795371892609515550/avalanche.png");
     @Override
     public Move customElementMove(Sorino initiator) {

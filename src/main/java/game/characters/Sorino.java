@@ -55,6 +55,36 @@ public interface Sorino extends Serializable {
 
     @SuppressWarnings("unused")
     enum AllSorino implements GetSorino {
+        ILLUMEGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Lightrino.IllumeGuardian();
+            }
+        },
+        SHOUOKOGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Pewtini.ShouokoGuardian();
+            }
+        },
+        TECHNOVILLEGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Techotia.TechnovilleGuardian();
+            }
+        },
+        XENIAGUARDIAN {
+            @Override
+            public Sorino getSorino() {
+                return new Xerxes.XeniaGuardian();
+            }
+        },
+        FGP {
+            @Override
+            public Sorino getSorino() {
+                return new FGP();
+            }
+        },
         TAMUSHIRIGUARDIAN {
             @Override
             public Sorino getSorino() {

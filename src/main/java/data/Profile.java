@@ -5,6 +5,7 @@ import game.fight.streetfight.StreetProtector;
 import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
+import main.userinterface.Prefix;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,10 +15,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -83,6 +81,12 @@ public class Profile implements Serializable {
         }
         this.userSorino.add(sorino);
     }
+    public String getImageUrl(){
+        return imageUrl;
+    }
+    public String getGuildID(){
+        return guildID;
+    }
     public void setCoins(int amount){
         coins.setCoins(amount);
     }
@@ -112,7 +116,7 @@ public class Profile implements Serializable {
         }
         try {
             recreateProfile();
-        } catch (IOException ioException) {
+        } catch (Exception ioException) {
             Logger logger =
                     new Logger("Error in recreating profile \n" +
                             Logger.exceptionAsString(ioException));
@@ -158,7 +162,7 @@ public class Profile implements Serializable {
                 channel.sendMessage(embedBuilder.build()).queue();
             }
             recreateProfile();
-        } catch (IOException ioException) {
+        } catch (Exception ioException) {
             Logger logger =
                     new Logger("Error: " +
                             Logger.exceptionAsString(ioException));
@@ -194,25 +198,14 @@ public class Profile implements Serializable {
 
         try {
             recreateProfile();
-        } catch (IOException ioException) {
+        } catch (Exception ioException) {
             Logger logger =
                     new Logger("Error in recreating profile \n" +
                             Logger.exceptionAsString(ioException));
             channel.sendMessage(
-                    "Could not find profile due to a SorinoRPG server error." +
-                            " These could have been the causes:\n\n" +
-                            "1. Your account is being used in something else," +
-                            " most likely in a fight. You can end a fight with this command, (.FEND) so" +
-                            " you can use your account.\n\n" +
-                            "2. Your account is currently being reviewed or processed, this could be due" +
-                            " to suspicious activity or receiving an award of some sort. For the latter," +
-                            " you will be able to use your account in a minute or so. For the former," +
-                            " this may happen regularly on and off until we can take further action.\n\n" +
-                            "3. There was a server issue, please report this to our email " +
-                            "SorinoRPG@gmail.com or mention us on twitter @Rpgsorino"
-            ).queue(message ->
-                    message.delete().queueAfter(25, TimeUnit.SECONDS)
-            );
+                    "You don't have a profile! Enter: `!help!` to find out how!"+
+                            "If you do have an account, join the support server!"
+            ).queue();
             try{
                 logger.logError();
             } catch (IOException excI){
@@ -226,7 +219,10 @@ public class Profile implements Serializable {
     public static Profile readFromFile(File file) throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream = new
                 ObjectInputStream(new FileInputStream(file));
-        return (Profile) objectInputStream.readObject();
+
+        Profile temp = (Profile) objectInputStream.readObject();
+        objectInputStream.close();
+        return temp;
     }
 
     public void createProfile() throws IOException {
@@ -239,6 +235,7 @@ public class Profile implements Serializable {
                                         + ID+ ".txt")
                          )
                 );
+        objectOutputStream.flush();
         try {
             objectOutputStream.writeObject(this);
 
@@ -249,6 +246,7 @@ public class Profile implements Serializable {
                                     + ID+ ".txt")
                     )
             );
+            objectOutputStream.flush();
             objectOutputStream.writeObject(new ProfileStore(userSorino, coins, ID, name, wins, loses,
                     imageUrl, guildID, xp, xpLevelThresh, level));
             objectOutputStream.close();
@@ -257,7 +255,72 @@ public class Profile implements Serializable {
             throw e;
         }
     }
-    public void recreateProfile() throws IOException {
+    public void baseRecreate() throws Exception {
+        ObjectOutputStream objectOutputStream =
+                new ObjectOutputStream(
+                        new FileOutputStream(
+                                new File("/db/" +
+                                        guildID + "/@@"
+                                        + ID+ ".txt"), false
+                        )
+                );
+        objectOutputStream.flush();
+        try {
+            objectOutputStream.writeObject(this);
+            objectOutputStream = new ObjectOutputStream(
+                    new FileOutputStream(
+                            new File("/db/" +
+                                    guildID + "/UPDATE_STORE/$"
+                                    + ID+ ".txt")
+                    )
+            );
+            objectOutputStream.flush();
+            objectOutputStream.writeObject(new ProfileStore(userSorino, coins, ID, name, wins, loses,
+                    imageUrl, guildID, xp, xpLevelThresh, level));
+            objectOutputStream.close();
+        } catch (IOException ioException){
+            objectOutputStream.close();
+            throw ioException;
+        }
+    }
+    public void recreateProfile() throws Exception {
+        ObjectInputStream objectInputStream = new ObjectInputStream(
+                new FileInputStream(new File("/db/USERLIST.txt"))
+        );
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, ProfileStore> userList =
+                (HashMap<String, ProfileStore>) objectInputStream.readObject();
+        objectInputStream.close();
+        if(userList.containsKey(this.ID)){
+            userList.replace(ID, this.profileToStore());
+
+            ObjectOutputStream userListOut = new ObjectOutputStream(new FileOutputStream(
+                    new File("/db/USERLIST.txt")
+            ));
+            userListOut.flush();
+            userListOut.writeObject(userList);
+            userListOut.close();
+
+            ProfileStore ps = userList.get(this.ID);
+            Profile p = Profile.storeToProfile(ps);
+            File[] directories = new File("/db").listFiles((current, name) ->
+                    new File(current, name).isDirectory());
+            for(File guild : directories){
+                ArrayList<File> guildInfo = new ArrayList<>(
+                        Arrays.asList(guild.listFiles((current, name) ->
+                                new File(current, name).getName().contains(ID))));
+                boolean contains = guildInfo.size() >= 1;
+                if(contains){
+                    Profile pNew =
+                            new Profile(p.userSorino, p.coins, p.ID, p.name, p.wins, p.loses,
+                                    p.imageUrl, guild.getName(), p.level, p.xpLevelThresh, p.xp);
+                    pNew.createProfile();
+                }
+            } return;
+        }
+
+
         Logger logger = new Logger("Re-Created profile");
         logger.logAction();
         ObjectOutputStream objectOutputStream =
@@ -268,6 +331,7 @@ public class Profile implements Serializable {
                                         + ID+ ".txt"), false
                         )
                 );
+        objectOutputStream.flush();
         try {
             objectOutputStream.writeObject(this);
             objectOutputStream = new ObjectOutputStream(
@@ -277,6 +341,7 @@ public class Profile implements Serializable {
                                     + ID+ ".txt")
                     )
             );
+            objectOutputStream.flush();
             objectOutputStream.writeObject(new ProfileStore(userSorino, coins, ID, name, wins, loses,
                     imageUrl, guildID, xp, xpLevelThresh, level));
             objectOutputStream.close();
@@ -286,6 +351,8 @@ public class Profile implements Serializable {
         }
 
     }
+
+
     public static Profile getProfile(GuildMessageReceivedEvent event)
             throws IOException,
             ProfileNotFoundException, ClassNotFoundException {
@@ -320,7 +387,7 @@ public class Profile implements Serializable {
                         new File("/db/" +
                                 event.getGuild().getId() + "/@@"
                                 + author.getId() + ".txt"
-                )));
+                        )));
         if (!new File("/db/" +
                 event.getGuild().getId() + "/@@"
                 + author.getId() + ".txt").exists()) {
@@ -330,17 +397,16 @@ public class Profile implements Serializable {
 
         try {
             Profile profile = (Profile) objectInputStream.readObject();
-            profile.name = event.getAuthor().getName();
-            profile.imageUrl = event.getAuthor().getAvatarUrl();
+            profile.name = author.getName();
+            profile.imageUrl = author.getAvatarUrl();
 
             return profile;
-        } catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             objectInputStream.close();
             throw e;
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static Profile storeToProfile(ProfileStore profileStore){
         return new Profile(Sorino.AllSorino.strToList(profileStore.userSorino),
                 new Coins(profileStore.coins), profileStore.ID,
@@ -351,7 +417,15 @@ public class Profile implements Serializable {
                 profileStore.xpLevelThresh,
                 profileStore.xp);
     }
+    public ProfileStore profileToStore(){
+        return new ProfileStore(this.userSorino, this.coins, this.ID, this.name,
+                this.wins, this.loses, this.imageUrl, this.guildID, this.xp, this.xpLevelThresh, this.level);
+    }
 
+    public Profile changeGuildID(String newGID){
+        return new Profile(userSorino, coins, ID, name, wins, loses,
+                imageUrl, newGID, level, xpLevelThresh, xp);
+    }
 
     @Override
     public String toString() {

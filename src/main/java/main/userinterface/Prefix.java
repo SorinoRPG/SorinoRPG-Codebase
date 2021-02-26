@@ -27,7 +27,7 @@ import java.util.Scanner;
 public class Prefix {
 
     interface PrefixGetter{
-        String prefix(String serverPrefix);
+        String prefix();
     }
 
     /**
@@ -83,101 +83,93 @@ public class Prefix {
      * @param event The command that contains the prefix
      * @return The prefix as a string
      */
-    public static String cutPrefix(GuildMessageReceivedEvent event){
-        try {
-            int prefixLength = Prefix.guildPrefix(event.getGuild().getId()).length() + 1;
-            return event.getMessage().getContentRaw().substring(0, prefixLength);
-        } catch (StringIndexOutOfBoundsException e){
-            return "---";
-        }
-    }
 
     public static String guildPrefix(String guildID){
         try(Scanner scanner = new Scanner(new File("/db/" + guildID + "/PREFIX.txt"))){
             return scanner.nextLine();
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
+            return ".";
         }
     }
     enum PrefixString implements PrefixGetter {
-        HELP(){
-            @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "H";
-            }
-        },
         STREET_FIGHT(){
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "B";
+            public String prefix() {
+                return "B";
             }
         },
         SEE_RANK() {
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "R";
+            public String prefix() {
+                return "R";
             }
         },
         FIGHT() {
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "F";
+            public String prefix() {
+                return "F";
             }
         },
         SEARCH() {
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "S";
+            public String prefix() {
+                return "S";
             }
         },
         CREATE_PROFILE(){
             @Override
-            public String prefix(String serverPrefix){
-                return serverPrefix + "C";
+            public String prefix(){
+                 return "C";
             }
         },
         SEE_PROFILE() {
             @Override
-            public String prefix(String serverPrefix){
-                return serverPrefix + "P";
+            public String prefix(){
+                return "P";
             }
         },
         WRAP() {
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "W";
+            public String prefix() {
+                return "W";
             }
         },
         SLOT() {
             @Override
-            public String prefix(String serverPrefix) {
-                return serverPrefix + "G";
+            public String prefix() {
+                return "G";
             }
-        };
-
-        /**
-         * Used to convert a prefix in a {@link String} form to a {@link PrefixString}
-         *
-         * <p>
-         *     Checks the prefix against all the
-         *     {@link PrefixString} values, if it
-         *     equals one, returns it as an Optional
-         *     object, else, it returns an empty
-         *     Optional object
-         * </p>
-         * @param prefix The prefix that will be determined
-         * @return An optional value for a {@link PrefixString}
-         */
-        public static Optional<PrefixString> getPrefix(String prefix, String guildId) {
-            ArrayList<PrefixString> prefixes =
-                    new ArrayList<>(EnumSet.allOf(PrefixString.class));
-            for(PrefixString prefixString: prefixes){
-                if(prefixString.prefix(Prefix.guildPrefix(guildId)).equals(prefix))
-                    return Optional.of(
-                    prefixString);
+        },
+        HEISTS(){
+            @Override
+            public String prefix() {
+                return "H";
             }
-            return Optional.empty();
+        },
+        VOTE() {
+            @Override
+            public String prefix() {
+                return "VOTE";
+            }
+        },
+        UPDATE() {
+            @Override
+            public String prefix() {
+                return "UPDATE";
+            }
+        },
+        INFO() {
+            @Override
+            public String prefix() {
+                return "INFO";
+            }
+        },
+        DONATE() {
+            @Override
+            public String prefix() {
+                return "DONATE";
+            }
         }
     }
 }

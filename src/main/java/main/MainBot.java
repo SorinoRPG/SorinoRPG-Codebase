@@ -1,8 +1,11 @@
 package main;
 
+import data.datareading.FileCommand;
 import data.logging.LogRecycler;
 import data.logging.Logger;
 import game.fight.FightRecycler;
+import game.heist.HeistRecycler;
+import main.springboot.SpringApp;
 import main.userinterface.GuildListener;
 
 import javax.security.auth.login.LoginException;
@@ -20,9 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 /**
  * <h1>MainBot</h1>
@@ -33,11 +34,13 @@ import java.util.Timer;
  *     To learn more
  *
  * @author Emmanuel Okafor
- * @since 01/12/2020
- * @version 1.0
+ * @since 20/10/2020
+ * @version 0.3
  */
 
 public class MainBot {
+
+
     /**
      * The initializer for the bot is of course the main method.
      * It has set the activity to a "-help for information" and the
@@ -51,21 +54,19 @@ public class MainBot {
         System.out.println("Started Execution: " + DateTimeFormatter
                 .ofPattern("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now()) + "\n\n");
-        JDA jda = JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
+        SpringApp.init(args);
+
+        jda = JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
                 GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new GuildListener())
-                .setActivity(Activity.playing("!help! >Pondering on the meaning of life<"))
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setStatus(OnlineStatus.ONLINE)
                 .build();
         DiscordBotListAPI api = new DiscordBotListAPI.Builder()
                 .token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NDU2NjM0OTU0Mzg5OTE0OSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA5MzYwMDE1fQ.4woBRWlUh_vG2tCVbrmY8Gg_V7-I9dH6twlEYyjQI_4")
                 .botId("764566349543899149")
                 .build();
+
         Thread.sleep(10000);
-
-
-
-        Thread.sleep(1000);
 
         Timer timer = new Timer();
         ScheduledTasks tasks = new ScheduledTasks(
@@ -80,7 +81,7 @@ public class MainBot {
                         System.out.println("Changed server number to: " + jda.getGuilds().size());
                     }
                 },
-                new Task(){
+                new Task() {
                     String fileID = "";
                     int guildsLost = 0;
                     String exc = "";
@@ -90,15 +91,15 @@ public class MainBot {
                         File[] directories = new File("/db").listFiles((current, name) ->
                                 new File(current, name).isDirectory());
                         ArrayList<String> ids = new ArrayList<>();
-                        for (Guild g: jda.getGuilds()) ids.add(g.getId());
-                        for(File f : directories){
-                            if(!ids.contains(f.getName())) {
+                        for (Guild g : jda.getGuilds()) ids.add(g.getId());
+                        for (File f : directories) {
+                            if (!ids.contains(f.getName())) {
                                 try {
-                                    FileUtils.copyDirectory(f, new File("/db_recycle/" + f.getName() + ""));
+                                    FileUtils.copyDirectory(f, new File("/db_recycle/" + f.getName()));
                                     FileUtils.deleteDirectory(f);
                                     guildsLost++;
                                     fileID = fileID.concat(f.getName() + "\\");
-                                } catch (IOException e){
+                                } catch (IOException e) {
                                     exc = exc.concat(Logger.exceptionAsString(e) + "\n");
                                 }
                             }
@@ -111,7 +112,67 @@ public class MainBot {
                         System.out.println("ID'S: " + fileID);
                         System.err.println("EXCEPTIONS: \n" + exc);
                     }
-                }, new FightRecycler(), new LogRecycler());
+                },
+                new Task() {
+                    @Override
+                    public void doTask() {
+                        jda.getPresence().setActivity(Activity.watching(
+                                phrases[new Random().nextInt(phrases.length)]));
+                    }
+
+                    @Override
+                    public void printTaskStatus() {
+
+                    }
+                },
+                new Task() {
+                    @Override
+                    public void doTask() {
+                        FileCommand.DB_BACKUP.action.action("null");
+                    }
+
+                    @Override
+                    public void printTaskStatus() {
+
+                    }
+                }, new FightRecycler(), new LogRecycler(), new HeistRecycler());
         timer.schedule(tasks, 0, 3600000);
+
+        Thread.sleep(5000);
+
+        while (true) {
+            System.out.print(">>");
+
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.nextLine();
+
+            if(input.equals("END")) return;
+
+            FileCommand fileCommand = FileCommand.getCmd(input);
+            fileCommand.action.action(input.substring(input.indexOf(" ")+1));
+        }
     }
+    public static String dbl_webhook = "239E4B95CD52AAD71638B61698DC59FE01E2200A4D4FC1E636091D0DAC3728EE";
+    private static JDA jda;
+    public static JDA getJda() {
+        return jda;
+    }
+
+    static String[] phrases = {
+            "Thanos destroy half the universe",
+            "Wandavision",
+            "People spam search",
+            "People gambling away their lives",
+            "People lose to Street Protectors",
+            "Jeff Kinney losing his mind",
+            "Phineas and Ferb",
+            "Github repositories grow old",
+            "2020 on repeat",
+            "MrBeast getting cancelled",
+            "Discord servers die",
+            "Wall Street go bankrupt",
+            "People get vaccinated",
+            "X-Men become part of the MCU"
+    };
+
 }

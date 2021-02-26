@@ -8,6 +8,7 @@ import data.logging.Logger;
 
 import game.characters.Sorino;
 
+import main.userinterface.Prefix;
 import main.userinterface.UserAction;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -30,7 +31,9 @@ public class FightManager {
         message.setColor(0x000dff);
 
         message.setTitle("Enter your move " + user.getName());
-        message.setFooter("Needs to enter their move", user.getAvatarUrl());
+        message.setFooter("To choose a move enter: " +
+                 Prefix.guildPrefix(event.getGuild().getId()) +
+                "FMOVE @mention <MOVE> being the move and `@mention` being the user you are fighting", user.getAvatarUrl());
         message.addField("Moves: ", sorino.getMoves().toString(), false);
         event.getChannel().sendMessage(message.build())
                 .queue();  
@@ -47,7 +50,9 @@ public class FightManager {
             for (Sorino sorino : Profile.getProfile(user, event).getSorinoAsList())
                 message.addField(sorino.getName(),
                         "HEALTH: " + sorino.getHealth(Profile.getProfile(user, event).getLevel()) +
-                                "\nENERGY: " + sorino.getEnergy(Profile.getProfile(user, event).getLevel()),
+                                "\nENERGY: " + sorino.getEnergy(Profile.getProfile(user, event).getLevel()) +
+                                "\nTo choose this Sorino, enter `" + Prefix.guildPrefix(event.getGuild().getId())
+                                + "F" + sorino.getName().substring(0, sorino.getName().indexOf(":")) + " @mention`",
                         true);
 
             event.getChannel().sendMessage(message.build()).queue();
@@ -196,7 +201,7 @@ public class FightManager {
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
-                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setThumbnail(nextMove.getUrl());
                     embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
                             user.getAvatarUrl());
                     event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -208,7 +213,7 @@ public class FightManager {
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter + 1)).queue(user -> {
-                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setThumbnail(nextMove.getUrl());
                     embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
                             , user.getAvatarUrl());
                     event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -223,7 +228,7 @@ public class FightManager {
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter)).queue(user -> {
-                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setThumbnail(nextMove.getUrl());
                     embedBuilder.setFooter(" gained " + nextMove.getEffect() + " defence",
                             user.getAvatarUrl());
 
@@ -237,7 +242,7 @@ public class FightManager {
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 event.getJDA().retrieveUserById(fight.usersID.get(fight.currFighter - 1)).queue(user -> {
-                    embedBuilder.setImage(nextMove.getUrl());
+                    embedBuilder.setThumbnail(nextMove.getUrl());
                     embedBuilder.setFooter("was hit with " + nextMove.getEffect() + " damage!"
                             , user.getAvatarUrl());
                     event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -275,7 +280,7 @@ public class FightManager {
 
                 winnerProfile.recreateProfile();
                 loserProfile.recreateProfile();
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 try{
                     Logger logger1 =
                             new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -291,24 +296,8 @@ public class FightManager {
                                     Logger.exceptionAsString(excI)
                     ).queue();
                 }
-            } catch (ProfileNotFoundException e) {
-                try{
-                    Logger logger =
-                            new Logger("Error in finding Profile \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "Could not find profile!"
-                    ).queue();
-                    logger.logError();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            }
-        })
-        );
+            } }
+            ));
 
 
         try {

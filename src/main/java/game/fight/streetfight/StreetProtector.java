@@ -25,6 +25,30 @@ public interface StreetProtector extends Serializable {
 
     @SuppressWarnings("unused")
     enum Protectors implements GetProtector{
+        LIGHTRINO {
+            @Override
+            public StreetProtector getProtector() {
+                return new Lightrino();
+            }
+        },
+        PEWTINI {
+            @Override
+            public StreetProtector getProtector() {
+                return new Pewtini();
+            }
+        },
+        TECHOTIA {
+            @Override
+            public StreetProtector getProtector() {
+                return new Techotia();
+            }
+        },
+        XERXES {
+            @Override
+            public StreetProtector getProtector() {
+                return new Xerxes();
+            }
+        },
         SUMATO {
             @Override
             public StreetProtector getProtector() {
