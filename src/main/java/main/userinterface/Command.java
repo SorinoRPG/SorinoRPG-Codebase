@@ -1,8 +1,9 @@
 package main.userinterface;
 
+import com.mongodb.client.MongoCollection;
+import data.Mongo;
 import data.Profile;
 import data.ProfileNotFoundException;
-import data.ProfileStore;
 import data.logging.Logger;
 
 import game.fight.*;
@@ -10,62 +11,76 @@ import game.fight.streetfight.StreetFight;
 import game.fight.streetfight.StreetProtector;
 import game.heist.Heist;
 import game.heist.HeistNotFoundException;
-import game.value.Coins;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
 
 import game.value.Slots;
 import game.value.Wrap;
+import main.Paginator;
+import main.userinterface.parser.MarketParser;
+import main.userinterface.parser.StringParseException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 
 public enum Command {
     HELP(event -> {
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Help -- February 18 update is live!");
+            embedBuilder.setTitle("Help");
             embedBuilder.setColor(0x000dff);
-            embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "C` Creates an account **This is required to start playing SorinoRPG**\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "accountsave` Let's you view your, or someone else's, account details like coins, Sorino, etc\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "P` Let's you view your, or someone else's, account details like coins, Sorino, etc\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "R` Let's you view your Rank\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "S` Searches for a Sorino or Coins\n" +
-                    "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "W` Shows you the Wraps you can buy\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "vote` will give you the link to vote for 7,000 coins!\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "update` will show you the latest bot updates\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "donate <coins> @ mention` to give coins to someone\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "setprefix <prefix>` to change the prefix. " +
-                    "To change the channel where level up messages" +
-                    " are sent, enter `" + Prefix.guildPrefix(event.getGuild().getId()) + "setchannel <#channel>`.\n\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) + "G`" +
-                    " use slot machine\n\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FSTART @mention` is used to start a fight with a user.\n" +
-                    "You can end the fight anytime you wish with the command " +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "FEND @mention`\n\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "BSTART` To  start a Street Fight.\n" +
-                    "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "BEND` To end the fight!");
+        embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "C` Creates an account **This is required to start playing SorinoRPG**\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "account_set_primary` To set the current account as the primary. All other data in other " +
+                "servers will be overwritten.\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "account_remove_primary` To remove the primary account, all accounts will then update seperately " +
+                "from one another.\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "P` Let's you view your, or someone else's, account details like coins, Sorino, etc\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "R` Let's you view your Rank\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "S` Searches for a Sorino or Coins\n" +
+                "\n" + "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "vote` will give you the link to vote for 7,000 coins!\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "invite` will give you the link to invite to a server you own for 20 ,000 coins!\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "update` will show you the latest bot updates\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "donate <coins> @mention` to give coins to someone\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "bug <bug_you_found>` Will send the developers any bugs. Spamming or Trolling is not tolerated\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "setprefix <prefix>` to change the prefix. " +
+                "\nTo change the channel where level up messages" +
+                " are sent, enter `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "setlevel <#channel>` You can also end the message with `OFF` so no messages are sent at all.\n\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "HHELP` Shows you how to play Heists\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "WHELP` Shows you how to use Wraps\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "GHELP` Shows you how to Gamble\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "FHELP` To understand how to use fights\n" +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "BHELP` To understand how to use Street Fight.\n"  +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "MHELP` To understand how to use the Transfer Market.\n"  +
+                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
+                "info HELP` To get help on info\n");
             embedBuilder.addField("Invite SorinoRPG to your server",
                     "[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=27648)",
                     true);
@@ -82,8 +97,8 @@ public enum Command {
                             " coins!",
                     "[Patreon](https://www.patreon.com/sorinorpg?fan_landing=true)",
                     true);
-            embedBuilder.addField("Email us!",
-                    "SorinoRPG@gmail.com",
+            embedBuilder.addField("Our Official Server!",
+                        "[Server](https://discord.gg/2sC9RmkZbJ)",
                     true);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -99,7 +114,7 @@ public enum Command {
                 embedBuilder.setTitle(sorino.getName());
                 embedBuilder.setColor(0x000dff);
 
-                Profile profile = Profile.getProfile(event);
+                Profile profile = Profile.getProfile(event.getAuthor());
 
                 embedBuilder.setDescription(
                         "BASE HEALTH: " + (sorino.getHealth(profile.getLevel()) -
@@ -132,29 +147,9 @@ public enum Command {
                 event.getChannel().sendMessage(embedBuilder.build()).queue();
             } catch (SorinoNotFoundException e) {
                 e.printStackTrace();
-            } catch (IOException | ClassNotFoundException e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "C`\n" +
-                                "If you do have an account, join the support server!"
-                ).queue();
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
             } catch (ProfileNotFoundException e) {
-                Logger logger =
-                        new Logger("Error in finding Profile \n" +
-                                Logger.exceptionAsString(e));
-                try{
-                    logger.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
             }
         }
         else if(StreetProtector.Protectors.containsProtector(message).isPresent()){
@@ -170,7 +165,7 @@ public enum Command {
             embedBuilder.addField("Losing remark", protector.getLosingRemark(), true);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
-        } else {
+        } else if (message.equalsIgnoreCase("HELP")){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(0x000dff);
             embedBuilder.setDescription("To view the data on Sorino or Protectors, enter : `" +
@@ -200,34 +195,11 @@ public enum Command {
         new Thread(() -> {
             Logger logger;
             try {
-                event.getChannel().sendMessage(Profile.getProfile(event)
-                        .showLevel(event
-                                .getChannel())).queue();
-            } catch (IOException | ClassNotFoundException e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "C`\n" +
-                                "If you do have an account, join the support server!"
-                ).queue(message ->
-                        message.delete().queueAfter(25000, TimeUnit.MILLISECONDS)
-                );
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
+                event.getChannel().sendMessage(Profile.getProfile(event.getAuthor())
+                        .showLevel()).queue();
             } catch (ProfileNotFoundException e) {
-                logger =
-                        new Logger("Error in finding Profile \n" +
-                                Logger.exceptionAsString(e));
-                try{
-                    logger.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
             }
 
             try {
@@ -240,11 +212,8 @@ public enum Command {
         }).start();
     }),
     SEARCH(event -> {
-        new Thread(() -> {
-            Logger logger;
-
             try {
-                Profile profile = Profile.getProfile(event);
+                Profile profile = Profile.getProfile(event.getAuthor());
                 int probabilityResult = new Random().nextInt(100);
                 if (probabilityResult < 90) {
                     EmbedBuilder message = new EmbedBuilder();
@@ -259,7 +228,7 @@ public enum Command {
                     event.getChannel().sendMessage(message.build()).queue();
                     profile.setCoins(coins);
                     profile.incrementXP(coins / 2, event);
-                    profile.recreateProfile();
+                    profile.recreate();
                 } else {
                     boolean didCatch = new Random().nextInt(100) > 70;
                     Sorino sorino = Sorino.AllSorino.getRandom();
@@ -286,61 +255,30 @@ public enum Command {
                         event.getChannel().sendMessage(message.build()).queue();
                         profile.addSorino(sorino);
                         profile.incrementXP(50, event);
-                        profile.recreateProfile();
+                        profile.recreate();
                     } else
                         event.getChannel().sendMessage(event.getAuthor().getName() +
                                 " attempted to catch a " + sorino.getName() +
-                                " but failed!").queue();
+                                " but failed!").queue(ignored -> {}, e -> {});
                 }
             } catch (Exception e) {
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "C`\n" +
-                                "If you do have an account, join the support server!"
-                ).queue();
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
-            }
-            try {
-                logger = new Logger("Search");
-                logger.logAction();
-            } catch (IOException e) {
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
                 e.printStackTrace();
             }
-
-        }).start();
     }),
     FIGHT(event -> {
         String rawMessage = Prefix.removeFightPrefix(event);
 
         class Check {
-            boolean matchID(String id){
-                try {
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
-
-                    return fight.usersID.get(fight.currFighter).equals(id);
-                } catch (Exception e){
-                    return false;
-                }
-            }
             boolean checkMove(String input){
                 try {
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+                    Fight fight = Fight.readFight(event.getChannel().getId());
+                    if(input.contains(" ")) input = input.substring(0, input.indexOf(" "));
 
                     return fight.fighters.get(fight.currFighter).getMove(input,
                             fight.fighters.get(fight.currFighter)).isPresent();
-                }catch (FightNotFoundException e) {
+                } catch (FightNotFoundException e) {
                     event.getChannel().sendMessage("You did not create a fight!").queue();
 
                     Logger fightLogger = new Logger(Logger.exceptionAsString(e));
@@ -350,17 +288,12 @@ public enum Command {
                         e1.printStackTrace();
                     }
                     return false;
-                } catch (IndexOutOfBoundsException e){
-                    event.getChannel().sendMessage("See, I can't really know who you are fighting if you" +
-                            " don't mention them at the end of your message!").queue();
-                    return false;
                 }
             }
             Move getMove(String input){
                 try {
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
+                    Fight fight = Fight.readFight(event.getChannel().getId());
+                    if(input.contains(" ")) input = input.substring(0, input.indexOf(" "));
 
                     if (fight.fighters.get(fight.currFighter).getMove(input,
                             fight.fighters.get(fight.currFighter)).isPresent())
@@ -380,172 +313,172 @@ public enum Command {
                 }
             }
         }
-        try {
-            if (rawMessage.toUpperCase().contains("START")) {
-                Fight fight = new Fight();
-                long idSum = event.getAuthor().getIdLong() + event.getMessage().getMentionedUsers().get(0).getIdLong();
-                FightManager.fightPhase1(event, fight, String.valueOf(idSum));
 
-            } else if (rawMessage.toUpperCase().contains("END")) {
-                try {
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
-                    if (fight.endFight(event.getGuild().getId(), String.valueOf(idSum)))
-                        event.getChannel().sendMessage("Fight with " + event.getAuthor().getName() + " and " +
-                                event.getMessage().getMentionedUsers().get(0).getName() + " has ended").queue();
-                }catch (FightNotFoundException e) {
-                    event.getChannel().sendMessage("You did not create a fight!").queue();
-                    Logger fightLogger = new Logger(Logger.exceptionAsString(e));
-                    try {
-                        fightLogger.logError();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            } else if (Sorino.AllSorino.isSorino(
-                    rawMessage.substring(0, rawMessage.indexOf(" ")))) {
-                try {
-                    Profile profile = Profile.getProfile(event);
-                    Sorino sorino = profile.getSpecificSorino(rawMessage.substring(0, rawMessage.indexOf(" ")));
+         if (rawMessage.equalsIgnoreCase("HELP")) {
+             String p = Prefix.guildPrefix(event.getGuild().getId());
 
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
-                    FightManager.fightPhase2(event, sorino, fight, String.valueOf(idSum));
-                }catch (SorinoNotFoundException e) {
-                    try {
-                        Logger logger = new Logger("System sorino bypass, check source code");
-                        logger.logError();
-                    } catch (IOException exc) {
-                        Logger logger = new Logger("Error in saving fight" +
-                                Logger.exceptionAsString(exc));
-                        event.getChannel().sendMessage("There was a server error in saving the " +
-                                "fight! Please end it!").queue();
-                        try {
-                            logger.logError();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                } catch (IOException e) {
-                    Logger logger = new Logger("Error in saving fight" +
-                            Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage("There was a server error in saving the " +
-                            "fight! Please end it!").queue();
-                    try {
-                        logger.logError();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (ProfileNotFoundException e) {
-                    Logger logger =
-                            new Logger("Error in finding Profile \n" +
-                                    Logger.exceptionAsString(e));
+             EmbedBuilder embedBuilder = new EmbedBuilder();
+             embedBuilder.setColor(0x000dff);
 
-                    try {
-                        logger.logError();
-                    } catch (IOException excI) {
-                        excI.printStackTrace();
-                    }
-                } catch (ClassNotFoundException e) {
-                    try {
-                        Logger logger = new Logger("Class change failure");
-                        event.getChannel().sendMessage("There was a server error, tweet us " +
-                                "@Rpgsorino to fix this ASAP")
-                                .queue();
-                        logger.logError();
-                    } catch (IOException exception) {
-                        exception.printStackTrace();
-                    }
-                } catch (FightNotFoundException e) {
-                    event.getChannel().sendMessage("You did not create a fight!").queue();
-                    Logger fightLogger = new Logger(Logger.exceptionAsString(e));
-                    try {
-                        fightLogger.logError();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            } else if (new Check().checkMove(rawMessage.substring(0, rawMessage.indexOf(" "))) &&
-                    new Check().matchID(event.getAuthor().getId())) {
-                try {
-                    long idSum = event.getAuthor().getIdLong() +
-                            event.getMessage().getMentionedUsers().get(0).getIdLong();
-                    Fight fight = Fight.readFight(event.getGuild().getId(), String.valueOf(idSum));
-                    if (FightManager.fightPhase3(new Check().getMove(rawMessage.substring(0,
-                            rawMessage.indexOf(" "))), event, fight).isPresent()) {
-                        FightManager.fightPhase3(new Check().getMove(rawMessage.substring(0,
-                                rawMessage.indexOf(" "))), event, fight)
-                                .ifPresent((s) -> {
-                                    int[] coins = FightManager.fightPhase4(event, s);
-                                    event.getJDA().retrieveUserById(s.getWinner()).queue(user -> {
-                                        EmbedBuilder message = new EmbedBuilder();
-                                        message.setColor(0x000dff);
-                                        message.setTitle("WINNER");
-                                        message.setThumbnail(user.getAvatarUrl());
-                                        event.getJDA().retrieveUserById(s.getLoser()).queue(user1 -> {
-                                                    message.setDescription(user.getName() + " has won " + coins[0]
-                                                            + " coins for beating " + user1.getName());
-                                                    message.setFooter( "has won " + coins[0]
-                                                                    + " coins for beating " + user1.getName(),
-                                                            user.getAvatarUrl());
+             embedBuilder.setTitle("Fight");
 
-                                                    event.getChannel().sendMessage(message.build()).queue();
-                                                }
-                                        );
-                                    });
-                                    event.getJDA().retrieveUserById(s.getLoser()).queue(user -> {
-                                        EmbedBuilder message = new EmbedBuilder();
-                                        message.setColor(0x000dff);
-                                        message.setTitle("LOSER");
-                                        message.setThumbnail(user.getAvatarUrl());
-                                        event.getJDA().retrieveUserById(s.getWinner()).queue(user1 -> {
-                                                    message.setDescription(user.getName() + " has lost " + (coins[1] - (coins[1] * 2))
-                                                            + " coins for losing to " + user1.getName());
-                                                    message.setFooter("has lost " + (coins[1] - (coins[1] * 2))
-                                                                    + " coins for losing to " + user1.getName(),
-                                                            user.getAvatarUrl());
-                                                    event.getChannel().sendMessage(message.build()).queue();
-                                                    fight.endFight(event.getGuild().getId(), String.valueOf(idSum));
-                                                }
-                                        );
-                                    });
-                                });
-                    } else fight.saveFight(event.getGuild().getId(), String.valueOf(idSum));
-                } catch (IOException e) {
-                    try {
-                        Logger logger = new Logger("Class change failure");
-                        logger.logError();
-                    } catch (IOException exception) {
-                        exception.printStackTrace();
-                    }
-                } catch (FightNotFoundException e) {
-                    event.getChannel().sendMessage("You did not create a fight!").queue();
-                    Logger fightLogger = new Logger(Logger.exceptionAsString(e));
-                    try {
-                        fightLogger.logError();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        } catch (StringIndexOutOfBoundsException e){
-            event.getChannel().sendMessage("You did not specify your opponent!").queue();
-        }
+             embedBuilder.addField(p + "FSTART @mention",
+                     "This will begin a fight with the mentioned user." +
+                             "For example, I could enter `" + p + "FSTART @Manny`. To begin a fight with " +
+                             "`@Manny`.",
+                     true);
+             embedBuilder.addField(p + "FEND",
+                     "This will end the fight in the channel",
+                     true);
+             embedBuilder.addField(p + "F<SORINO>",
+                     "This selects `<SORINO>` as your Sorino to battle" +
+                             "**The Sorino must be listen in your Sorino**",
+                     true);
+             embedBuilder.addField(p + "F<MOVE>",
+                     "This perform `<MOVE>` on the mentioned user." +
+                             "**The move must be a move listen in your Sorinos' moves**",
+                     true);
+
+             event.getChannel().sendMessage(embedBuilder.build()).queue();
+
+         } else if(rawMessage.toUpperCase().contains("START")){
+             if(event.getMessage().getMentionedUsers().get(0).equals(event.getAuthor())){
+                 event.getChannel().sendMessage("You cannot battle yourself!").queue();
+                 return;
+             } else if(FightManager.fightExists(event.getChannel().getId())){
+                 event.getChannel().sendMessage("There is a battle going on currently in this channel.").queue();
+                 return;
+             }
+
+             Fight fight = new Fight();
+             FightManager.fightPhase1(event, fight, event.getChannel().getId());
+         } else if (rawMessage.toUpperCase().contains("END")) {
+             try {
+                 Fight fight = Fight.readFight(event.getChannel().getId());
+
+                 if(!fight.usersID.contains(event.getAuthor().getId())){
+                     event.getChannel().sendMessage("You are not a member of the fight in this channel.")
+                             .queue();
+
+                     return;
+                 }
+
+                 fight.endFight(event.getChannel().getId());
+                 event.getChannel().sendMessage("The fight in this channel has ended").queue();
+             }catch (FightNotFoundException e) {
+                 event.getChannel().sendMessage("You did not create a fight!").queue();
+                 Logger fightLogger = new Logger(Logger.exceptionAsString(e));
+                 try {
+                     fightLogger.logError();
+                 } catch (IOException e1) {
+                     e1.printStackTrace();
+                 }
+             }
+         } else if (Sorino.AllSorino.isSorino(
+                 rawMessage)) {
+             try {
+                 Profile profile = Profile.getProfile(event.getAuthor());
+                 Sorino sorino = profile.getSpecificSorino(rawMessage);
+                 Fight fight = Fight.readFight(event.getChannel().getId());
+                 if(!event.getAuthor().getId().equals(fight.usersID.get(fight.phase2Calls))) return;
+
+                 FightManager.fightPhase2(event, sorino, fight, event.getChannel().getId());
+             }catch (SorinoNotFoundException e) {
+                 try {
+                     Logger logger = new Logger("System sorino bypass, check source code");
+                     logger.logError();
+                 } catch (IOException exc) {
+                     Logger logger = new Logger("Error in saving fight" +
+                             Logger.exceptionAsString(exc));
+                     event.getChannel().sendMessage("There was a server error in saving the " +
+                             "fight! Please end it!").queue();
+                     try {
+                         logger.logError();
+                     } catch (IOException ex) {
+                         ex.printStackTrace();
+                     }
+                 }
+             } catch (ProfileNotFoundException e) {
+                 event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                         Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
+             } catch (FightNotFoundException e) {
+                 event.getChannel().sendMessage("You did not create a fight!").queue();
+                 Logger fightLogger = new Logger(Logger.exceptionAsString(e));
+                 try {
+                     fightLogger.logError();
+                 } catch (IOException e1) {
+                     e1.printStackTrace();
+                 }
+             }
+         } else if (new Check().checkMove(rawMessage)) {
+             try {
+                 Fight fight = Fight.readFight(event.getChannel().getId());
+                 if(!event.getAuthor().getId().equals(fight.usersID.get(fight.currFighter))) return;
+                 if (FightManager.fightPhase3(new Check().getMove(rawMessage), event, fight).isPresent()) {
+                     FightManager.fightPhase3(new Check().getMove(rawMessage), event, fight)
+                             .ifPresent((s) -> {
+                                 double cm = FightManager.fightPhase4(event, s);
+                                 int winCoins = (int) Math.floor((600) * cm);
+                                 int loseCoins = (int) Math.floor((-150) * cm);
+                                 event.getJDA().retrieveUserById(s.getWinner()).queue(user -> {
+                                     EmbedBuilder message = new EmbedBuilder();
+                                     message.setColor(0x000dff);
+                                     message.setTitle("WINNER");
+                                     message.setThumbnail(user.getAvatarUrl());
+                                     event.getJDA().retrieveUserById(s.getLoser()).queue(user1 -> {
+                                                 message.setDescription(user.getName() + " has won " + winCoins
+                                                         + " coins for beating " + user1.getName());
+                                                 message.setFooter( "has won " + winCoins
+                                                                 + " coins for beating " + user1.getName(),
+                                                         user.getAvatarUrl());
+
+                                                 event.getChannel().sendMessage(message.build()).queue();
+                                             }
+                                     );
+                                 });
+                                 event.getJDA().retrieveUserById(s.getLoser()).queue(user -> {
+                                     EmbedBuilder message = new EmbedBuilder();
+                                     message.setColor(0x000dff);
+                                     message.setTitle("LOSER");
+                                     message.setThumbnail(user.getAvatarUrl());
+                                     event.getJDA().retrieveUserById(s.getWinner()).queue(user1 -> {
+                                                 message.setDescription(user.getName() + " has lost " + (loseCoins - (loseCoins * 2))
+                                                         + " coins for losing to " + user1.getName());
+                                                 message.setFooter("has lost " + (loseCoins - (loseCoins * 2))
+                                                                 + " coins for losing to " + user1.getName(),
+                                                         user.getAvatarUrl());
+                                                 event.getChannel().sendMessage(message.build()).queue();
+                                                 fight.endFight(event.getChannel().getId());
+                                             }
+                                     );
+                                 });
+                             });
+                 } else fight.saveFight(event.getChannel().getId());
+             } catch (FightNotFoundException e) {
+                 event.getChannel().sendMessage("You did not create a fight!").queue();
+                 Logger fightLogger = new Logger(Logger.exceptionAsString(e));
+                 try {
+                     fightLogger.logError();
+                 } catch (IOException e1) {
+                     e1.printStackTrace();
+                 }
+             }
+         }
     }),
     HEIST(event -> {
-        String message = event.getMessage()
-                .getContentRaw().toUpperCase().replace(".H", "");
+        String mainMessage = event.getMessage()
+                .getContentRaw().replace(Prefix.guildPrefix(event.getGuild().getId()),
+                        "");
 
-        if(message.equals("CREATE")){
-            if(Heist.HeistUtil.exists(event.getGuild().getId(), event.getChannel().getId())) {
+        String message = mainMessage.toUpperCase().substring(1);
+        if(message.equalsIgnoreCase("SELECT")){
+            if(Heist.HeistUtil.exists(event.getChannel().getId())) {
                 event.getChannel().sendMessage("Sorry! There is already a heist " +
                         "in this channel!").queue();
                 return;
             }
             try {
-                Profile.getProfile(event);
+                Profile.getProfile(event.getAuthor());
             } catch (Exception e){
                 Logger logger1 =
                         new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -577,57 +510,45 @@ public enum Command {
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
         } else if(Heist.HeistUtil.isHeist(message)){
-            if(Heist.HeistUtil.exists(event.getGuild().getId(), event.getChannel().getId())) {
+            if(Heist.HeistUtil.exists(event.getChannel().getId())) {
                 event.getChannel().sendMessage("Sorry! There is already a heist " +
                         "in this channel!").queue();
                 return;
             }
 
             try {
-
-
                 Heist heist = Heist.HeistUtil.getHeist(message);
 
-                Profile profile = Profile.getProfile(event);
+                Profile profile = Profile.getProfile(event.getAuthor());
                 if(profile.spend(heist.setupCost())){
                     event.getChannel().sendMessage("You can't afford this heist!").queue();
+                    return;
+                } else if (heist.levelBoundary() >= profile.getLevel()){
+                    event.getChannel().sendMessage("You are too low a level to begin this heist, come back when " +
+                            "you are level " + heist.levelBoundary() + 1).queue();
                     return;
                 }
 
                 heist.setLeaderID(event.getAuthor().getId());
                 heist.addMember(event.getAuthor().getId());
 
-                event.getChannel().sendMessage(heist.heistState()).queue();
+                event.getChannel().sendMessage(heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
 
-                heist.saveHeist(event.getGuild().getId(), event.getChannel().getId());
+                heist.saveHeist(event.getChannel().getId());
             } catch (Exception e){
                 event.getChannel().sendMessage("There was an error in creating this heist!" +
                         "\nMaybe this heist does not exist, make sure the heists' name is " +
                         "what you have entered.").queue();
-                e.printStackTrace();
             }
-        } else if(message.equals("JOIN")){
+        } else if(message.equalsIgnoreCase("JOIN")){
             try {
-                Profile.getProfile(event);
+                Profile.getProfile(event.getAuthor());
             } catch (Exception e){
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "C`\n" +
-                                "If you do have an account, join the support server!"
-                ).queue();
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
-                return;
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
             }
             try {
-                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getGuild().getId(),
-                        event.getChannel().getId());
+                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
 
                 if(heist.isFull()){
                     event.getChannel().sendMessage("Yeah I'm sorry but this heist is FULL")
@@ -640,66 +561,42 @@ public enum Command {
                 }
 
                 heist.addMember(event.getAuthor().getId());
-                heist.saveHeist(event.getGuild().getId(),
-                        event.getChannel().getId());
-                event.getChannel().sendMessage(heist.heistState()).queue();
+                heist.saveHeist(event.getChannel().getId());
+                event.getChannel().sendMessage(heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
             } catch (HeistNotFoundException e){
                 event.getChannel().sendMessage(
                         "Imagine trying to join a heist that does not exist").queue();
-            } catch (IOException e){
-                event.getChannel().sendMessage("Hmmmm, there seems to be a problem" +
-                        " joining this heist...\nTalk to the support server, so we can fix" +
-                        " it").queue();
-                e.printStackTrace();
-                Logger log = new Logger(Logger.exceptionAsString(e));
-                try{
-                    log.logError();
-                } catch (IOException exc2){
-                    exc2.printStackTrace();
-                }
             }
-        } else if (message.equals("START")){
+        } else if (message.equalsIgnoreCase("START")){
             try {
-                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getGuild().getId(),
-                        event.getChannel().getId());
+                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
                 if(!heist.getLeaderID().equals(event.getAuthor().getId())){
                     event.getChannel().sendMessage("You are not the leader!").queue();
-                    heist.heistState();
+                    event.getChannel().sendMessage(
+                            heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
                     return;
                 } else if(!heist.isFull()){
                     event.getChannel().sendMessage("You can't expect to pull this off" +
                             " if you don't have a full team!").queue();
-                    heist.heistState();
+                    event.getChannel().sendMessage(
+                            heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
                     return;
                 }
 
-                heist.setCurrentID(heist.getAllID().get(new Random().nextInt(4)));
-                heist.saveHeist(event.getGuild().getId(),
-                        event.getChannel().getId());
+                heist.setCurrentID(heist.getAllID().get(new Random().nextInt(heist.getAllID().size())));
+                heist.saveHeist(event.getChannel().getId());
                 event.getJDA().retrieveUserById(heist.currentID()).queue(user -> event.getChannel().sendMessage(
                         heist.getCurrentStage().ask(Prefix.guildPrefix(event.getGuild().getId()), user)).queue());
             } catch (HeistNotFoundException e){
                 event.getChannel().sendMessage("This heist does not exist in this channel!")
                         .queue();
-                e.printStackTrace();
-            } catch (IOException e){
-                event.getChannel().sendMessage("There is a problem with starting this" +
-                        " heist!").queue();
-                Logger log = new Logger(Logger.exceptionAsString(e));
-
-                try {
-                    log.logError();
-                } catch (IOException exc){
-                    exc.printStackTrace();
-                }
             }
 
         } else if(message.endsWith("A") ||
                   message.endsWith("B") ||
                   message.endsWith("C")){
             try {
-                 Heist heist = Heist.HeistUtil.getCurrentHeist(event.getGuild().getId(),
-                        event.getChannel().getId());
+                 Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
                 if(!heist.currentID().equals(event.getAuthor().getId())){
                     event.getChannel().sendMessage("It's not your turn!\n" +
                             "Hold back or we will be caught!").queue();
@@ -709,32 +606,38 @@ public enum Command {
                     case 0xA:{ // Chose correctly
                         String oldId = heist.currentID();
                         while(oldId.equals(heist.currentID()))
-                            heist.setCurrentID(heist.getAllID().get(new Random().nextInt(4)));
-                        heist.setCurrentID(heist.getAllID().get(new Random().nextInt(4)));
+                            heist.setCurrentID(heist.getAllID().get(new Random().nextInt(
+                                    heist.getAllID().size())));
                         event.getJDA().retrieveUserById(heist.currentID()).queue(user -> {
                                 event.getChannel().sendMessage(heist.getCurrentStage().success(user)).queue();
                                 heist.incrementStage();
                                 event.getChannel().sendMessage(
                                 heist.getCurrentStage()
                                         .ask(Prefix.guildPrefix(event.getGuild().getId()), user)).queue();
-                            try {
-                                heist.saveHeist(event.getGuild().getId(), event.getChannel().getId());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                                heist.saveHeist(event.getChannel().getId());
                         });
                         return;
                     }
                     case 0xB:{ // Chose incorrectly
                         event.getJDA().retrieveUserById(heist.currentID()).queue(user ->
                                 event.getChannel().sendMessage(heist.getCurrentStage().failure(user)).queue());
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.setColor(0x000dff);
+                        embed.setTitle(event.getAuthor().getName() + " has been sent to prison.");
+                        embed.setDescription("They were the last person at the crime scene. SENTENCE: " +
+                                "10 minutes");
+                        embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                        embed.setFooter("Find prison boring? Try bribe the guards with " +
+                                Prefix.guildPrefix(event.getGuild().getId()) + "bribe");
+                        event.getChannel().sendMessage(embed.build()).queue();
+                        GuildListener.prison.put(event.getAuthor().getId(), event.getGuild().getId());
                         for(String Id : heist.getAllID()){
                             event.getJDA().retrieveUserById(Id).queue(user -> {
-
+                                GuildListener.heistControl.put(user.getId(), event.getGuild().getId());
                                 try{
-                                    Profile profile = Profile.getProfile(user, event);
+                                    Profile profile = Profile.getProfile(user);
                                     profile.setCoins(-heist.bail());
-                                    profile.recreateProfile();
+                                    profile.recreate();
                                 } catch (Exception e) {
                                     Logger logger1 =
                                             new Logger(
@@ -752,10 +655,7 @@ public enum Command {
                                 }
                             });
                         }
-                        File heistFile = new File("/db/" + event.getGuild().getId() + "/heists/%" +
-                                event.getChannel().getId() + ".txt");
-
-                        FileUtils.forceDelete(heistFile);
+                        Heist.heistMap.remove(event.getChannel().getId());
                         return;
                     }
                     case 0xC:{ // Won heist
@@ -765,9 +665,12 @@ public enum Command {
                         for(String Id : heist.getAllID()){
                             event.getJDA().retrieveUserById(Id).queue(user -> {
                                 try{
-                                    Profile profile = Profile.getProfile(user, event);
+                                    GuildListener.heistControl.put(user.getId(), event.getGuild().getId());
+                                    Profile profile = Profile.getProfile(user);
                                     profile.setCoins(heist.payout());
-                                    profile.recreateProfile();
+                                    if(heist.getLeaderID().equals(Id))
+                                        profile.setCoins(heist.setupCost() * 2);
+                                    profile.recreate();
                                 } catch (Exception e) {
                                     Logger logger1 =
                                             new Logger(
@@ -785,32 +688,18 @@ public enum Command {
                                 }
                             });
                         }
-                        File heistFile = new File("/db/" + event.getGuild().getId() + "/heists/%" +
-                                event.getChannel().getId() + ".txt");
-
-                        FileUtils.forceDelete(heistFile);
+                        Heist.heistMap.remove(event.getChannel().getId());
                     }
                 }
             } catch (HeistNotFoundException e){
                     event.getChannel().sendMessage("This heist does not exist in this channel!")
                             .queue();
                     e.printStackTrace();
-                } catch (IOException e){
-                    event.getChannel().sendMessage("There is a problem with starting this" +
-                            " heist!").queue();
-                    Logger log = new Logger(Logger.exceptionAsString(e));
-
-                    try {
-                        log.logError();
-                    } catch (IOException exc){
-                        exc.printStackTrace();
-                    }
                 }
-            }
+        }
         else if(message.endsWith("ABORT")){
                 try {
-                    Heist heist = Heist.HeistUtil.getCurrentHeist(event.getGuild().getId(),
-                            event.getChannel().getId());
+                    Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
                     if(!heist.getLeaderID().equals(event.getAuthor().getId())){
                         event.getChannel().sendMessage("Don't try and end something you didn't start!")
                                 .queue();
@@ -820,12 +709,10 @@ public enum Command {
 
                     embedBuilder.setTitle(event.getAuthor().getName() + " has abandoned their heist!");
                     embedBuilder.setDescription("They aren't getting refunded");
+                    embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
                     embedBuilder.setColor(0x000dff);
 
-                    File heistFile = new File("/db/" + event.getGuild().getId() + "/heists/%" +
-                            event.getChannel().getId() + ".txt");
-
-                    FileUtils.forceDelete(heistFile);
+                    Heist.heistMap.remove(event.getChannel().getId());
                     event.getChannel().sendMessage(embedBuilder.build()).queue();
                 } catch (Exception e){
                     event.getChannel().sendMessage("There was an error in aborting!" +
@@ -837,84 +724,46 @@ public enum Command {
                     exc.printStackTrace();
                 }
             }
+        } else if(message.equalsIgnoreCase("HELP")){
+            String p = Prefix.guildPrefix(event.getGuild().getId());
+
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(0x000dff);
+
+            embedBuilder.setTitle("Heists");
+
+            embedBuilder.addField(p + "HSELECT",
+                    "This will display the available heists you can select." +
+                            "**Some heists may not accept you as you may not be the required level",
+                    true);
+            embedBuilder.addField(p + "H<HEIST>",
+                    "This will choose `<HEIST>` as the Heist you wish to play. " +
+                            "If I entered `" + p + "HCodebreaker` I would be selecting `Codebreaker`" +
+                            " as my chosen heist.",
+                    true);
+            embedBuilder.addField(p + "HSTART",
+                    "This will begin a heist, and is only allowed to be triggered " +
+                            "by the heist leader.",
+                    true);
+            embedBuilder.addField(p + "HABORT",
+                    "This will automatically abort a heist. No refunds.",
+                    true);
+
+            event.getChannel().sendMessage(embedBuilder.build()).queue();
+
         }
     }),
     CREATE_PROFILE(event -> {
-        if(new File("/db/" + event.getGuild().getId() +
-                "/@@" + event.getAuthor().getId() + ".txt").exists()){
+        if(Mongo.mongoClient().getDatabase("user")
+                .getCollection("account")
+                .find(new Document("userID", event.getAuthor().getId())).iterator().hasNext()){
             event.getChannel().sendMessage("You already have an account!").queue();
             return;
         }
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(
-                    new FileInputStream(new File("/db/USERLIST.txt"))
-            );
-
-            @SuppressWarnings("unchecked")
-            HashMap<String, ProfileStore> userList =
-                    (HashMap<String, ProfileStore>) objectInputStream.readObject();
-            objectInputStream.close();
-            if(userList.containsKey(event.getAuthor().getId())){
-                ProfileStore profStore = userList.get(event.getAuthor().getId());
-                Profile profile = Profile.storeToProfile(profStore);
-                profile = profile.changeGuildID(event.getGuild().getId());
-
-                profile.createProfile();
-
-                EmbedBuilder message = new EmbedBuilder();
-
-                message.setColor(0x000dff);
-                message.setTitle(event.getAuthor().getName() + "'s Profile");
-                message.setImage(event.getAuthor().getAvatarUrl());
-                message.setDescription(profile.toString());
-                message.setFooter("Updated their profile to a new server.",
-                        event.getAuthor().getAvatarUrl());
-
-                event.getChannel().sendMessage(message.build()).queue();
-                return;
-            }
-        } catch (Exception e){
-            Logger logger = new Logger(Logger.exceptionAsString(e));
-            event.getChannel().sendMessage("There was an error updating your" +
-                    " account to a new server!\n" +
-                    "Join our support server so we can fix his ASAP!").queue();
-
-            try {
-                logger.logError();
-            } catch (IOException excI){
-                excI.printStackTrace();
-            }
-
-            return;
-        }
-
-        Logger logger
-                = new Logger("Created profile");
-        // Only one phase, no method needed
-        Profile userProfile =
-                new Profile(new ArrayList<>(Collections.singletonList(new Gray())),
-                        new Coins(50),
-                        event.getAuthor().getId(), event.getAuthor().getName()
-                        ,0, 0, event.getAuthor().getAvatarUrl(),
-                        event.getGuild().getId());
-        try {
-            userProfile.createProfile();
-        } catch(IOException e){
-
-            logger = new Logger("Error in creating profile + \n" +
-                    Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "There was a server error in creating your profile."
-            ).queue();
-            System.out.println(Logger.exceptionAsString(e));
-            try {
-                logger.logError();
-                return;
-            } catch (IOException exc){
-                exc.printStackTrace();
-                return;
-            }
-        }
+        Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())), 50,
+                event.getAuthor().getId(), event.getAuthor().getName(), 0, 0, event.getAuthor().getAvatarUrl(),
+                event.getGuild().getId());
+        userProfile.createProfile();
         EmbedBuilder message = new EmbedBuilder();
         message.setColor(0x000dff);
 
@@ -924,20 +773,11 @@ public enum Command {
         message.setFooter("Created a profile", event.getAuthor().getAvatarUrl());
 
         event.getChannel().sendMessage(message.build()).queue();
-        try {
-            logger.logAction();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }),
     SEE_PROFILE(event -> {
-        Logger logger
-            = new Logger("Checked profile");
-        // Only one phase no methods needed
         try {
             if(event.getMessage().getMentionedUsers().size() == 1){
-                Profile profile = Profile.getProfile(event.getMessage().getMentionedUsers().get(0)
-                ,event);
+                Profile profile = Profile.getProfile(event.getMessage().getMentionedUsers().get(0));
 
                 EmbedBuilder message = new EmbedBuilder();
                 message.setColor(0x000dff);
@@ -953,7 +793,14 @@ public enum Command {
                 event.getChannel().sendMessage(message.build()).queue();
                 return;
             }
-            Profile profile = Profile.getProfile(event);
+        }catch (ProfileNotFoundException e) {
+            event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                    Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
+        }
+
+
+        try {
+            Profile profile = Profile.getProfile(event.getAuthor());
             EmbedBuilder message = new EmbedBuilder();
             message.setColor(0x000dff);
 
@@ -963,73 +810,36 @@ public enum Command {
             message.setFooter("Requested to see their profile", event.getAuthor().getAvatarUrl());
 
             event.getChannel().sendMessage(message.build()).queue();
-        } catch (IOException | ClassNotFoundException e) {
-            Logger logger1 =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                            "C`\n" +
-                            "If you do have an account, join the support server!"
-            ).queue();
-            try{
-                logger1.logError();
-            } catch (IOException excI){
-                excI.printStackTrace();
-            }
         } catch (ProfileNotFoundException e) {
-            logger =
-                    new Logger("Error in finding Profile \n" +
-                            Logger.exceptionAsString(e));
-            try{
-                logger.logError();
-            } catch (IOException excI){
-                excI.printStackTrace();
-            }
+            event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                    Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
         }
-        try {
-            logger.logAction();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }),
     WRAP(event -> {
         String message = event.getMessage().getContentRaw();
         try {
-            Profile userProfile = Profile.getProfile(event);
+            Profile userProfile = Profile.getProfile(event.getAuthor());
 
             if(message.toUpperCase().contains(Wrap.CHAMPIONS.toString())){
                 Wrap.CHAMPIONS.action(userProfile, event);
-                userProfile.recreateProfile();
+                userProfile.recreate();
                 return;
             } else if(message.toUpperCase().contains(Wrap.PREMIUM.toString())){
                 Wrap.PREMIUM.action(userProfile, event);
-                userProfile.recreateProfile();
+                userProfile.recreate();
                 return;
             } else if(message.toUpperCase().contains(Wrap.STANDARD.toString())){
                 Wrap.STANDARD.action(userProfile, event);
-                userProfile.recreateProfile();
+                userProfile.recreate();
                 return;
             } else if(message.toUpperCase().contains(Wrap.BASIC.toString())){
                 Wrap.BASIC.action(userProfile, event);
-                userProfile.recreateProfile();
+                userProfile.recreate();
                 return;
             }
         } catch (Exception e) {
-            Logger logger1 =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                            "C`\n" +
-                            "If you do have an account, join the support server!"
-            ).queue();
-            try{
-                logger1.logError();
-            } catch (IOException excI){
-                excI.printStackTrace();
-            }
+            event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                    Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
         }
 
         String prefix = Prefix.guildPrefix(event.getGuild().getId());
@@ -1066,51 +876,38 @@ public enum Command {
                 return;
             }
 
-            if(event.getMessage().getContentRaw().contains("setchannel")){
-                try (FileWriter fw = new FileWriter(
-                        new File("/db/" + event.getGuild().getId() + "/CHANNEL.txt"))){
-                    fw.write(event.getMessage().getMentionedChannels().get(0).getId());
-                    event.getChannel().sendMessage(
-                            "Saved: " + event.getMessage().getMentionedChannels().get(0).getName()
-                    ).queue();
-                } catch (IOException e){
-                    event.getChannel().sendMessage(
-                            "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                    "C`\n" +
-                                    "If you do have an account, join the support server!"
-                    ).queue();
+            if(event.getMessage().getContentRaw().contains("setlevel")){
+                MongoCollection<Document> collection = Mongo.mongoClient()
+                        .getDatabase("guild")
+                        .getCollection("channel");
+                String id = event.getMessage().getMentionedChannels().get(0).getId();
 
-                    try {
-                        Logger logger =
-                                new Logger(Logger.exceptionAsString(e));
-                        logger.logError();
-                    } catch (IOException exc){
-                        exc.printStackTrace();
-                    }
+                if(event.getMessage().getContentRaw().contains("OFF")) id = "OFF";
+                if(collection.find(new Document("guildID", event.getGuild().getId())).iterator().hasNext()){
+                    collection.replaceOne(new Document("guildID", event.getGuild().getId()),
+                            new Document("guildID", event.getGuild().getId())
+                                    .append("channel", id));
+                    return;
                 }
+                collection.insertOne(new Document("guildID", event.getGuild().getId())
+                                .append("channel", id));
             }
             else if (event.getMessage().getContentRaw().contains("setprefix")){
                 if(!event.getMessage().getContentRaw().contains(" ")) return;
                 String newPrefix = event.getMessage().getContentRaw().substring(
                         event.getMessage().getContentRaw().indexOf(" ") + 1
                 );
-                if(newPrefix.length() >= 5) newPrefix = newPrefix.substring(0, 5);
-
-                try (FileWriter fileWriter = new FileWriter(new File(
-                        "/db/" + event.getGuild().getId() + "/PREFIX.txt"
-                ), false)) {
-                    fileWriter.write(newPrefix);
-                    event.getGuild().getSelfMember().modifyNickname("[" + newPrefix + "] SorinoRPG")
-                            .queue();
-                    event.getChannel().sendMessage("Changed server prefix to: " + newPrefix).queue();
-                } catch (IOException e) {
-                    Logger logger = new Logger(Logger.exceptionAsString(e));
-                    try {
-                        logger.logError();
-                    } catch (IOException exc) {
-                        exc.printStackTrace();
-                    }
+                MongoCollection<Document> collection = Mongo.mongoClient()
+                        .getDatabase("guild")
+                        .getCollection("prefix");
+                if(collection.find(new Document("guildID", event.getGuild().getId())).iterator().hasNext()){
+                    collection.replaceOne(new Document("guildID", event.getGuild().getId()),
+                            new Document("guildID", event.getGuild().getId())
+                            .append("prefix", newPrefix));
+                    return;
                 }
+                collection.insertOne(new Document("guildID", event.getGuild().getId())
+                        .append("prefix", newPrefix));
             }
         });
     }),
@@ -1120,7 +917,7 @@ public enum Command {
                     event.getMessage().getContentRaw().indexOf(" ")+1
             ));
 
-            Profile profile = Profile.getProfile(event);
+            Profile profile = Profile.getProfile(event.getAuthor());
             if(profile.spend(stake)) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + " has insufficient funds!")
                         .queue();
@@ -1131,7 +928,7 @@ public enum Command {
                         .queue();
                 return;
             }
-            profile.recreateProfile();
+            profile.recreate();
 
             Slots slots = new Slots();
             String[] randoms = slots.random();
@@ -1158,11 +955,11 @@ public enum Command {
             if(Slots.checkSame(randoms)){
                 Slots.Slot slot = slots.getInfo(randoms[1]);
                 slot.action(profile, stake, event.getChannel());
-                profile.recreateProfile();
+                profile.recreate();
             } else {
                 if(Arrays.asList(randoms).contains(Slots.Slot.SAPPHIRES.img())){
                     profile.setCoins((int) (stake * 1.5));
-                    profile.recreateProfile();
+                    profile.recreate();
                     event.getChannel().sendMessage(
                             event.getAuthor().getName() + " found a Sapphire and will receive " +
                                     stake * 1.5  + " coins!"
@@ -1170,7 +967,7 @@ public enum Command {
                     return;
                 } else if (Arrays.asList(randoms).contains(Slots.Slot.BLUE_BEARS.img())){
                     profile.setCoins((int) (stake * 1.25));
-                    profile.recreateProfile();
+                    profile.recreate();
                     event.getChannel().sendMessage(
                             event.getAuthor().getName() + " found a Blue Bear and will receive " +
                                     (int) (stake * 1.25) + " coins!"
@@ -1203,7 +1000,7 @@ public enum Command {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(0x000dff);
-        embedBuilder.setTitle("How to play Slots!");
+        embedBuilder.setTitle("Slots");
         embedBuilder.setDescription("If I wanted to " +
                 "play with 100 coins I would enter `" +
                 Prefix.guildPrefix(event.getGuild().getId()) + "G 100`.");
@@ -1228,8 +1025,11 @@ public enum Command {
         event.getChannel().sendMessage(embedBuilder.build()).queue();
     }),
     STREET_FIGHT(event -> {
-        String command = event.getMessage().getContentRaw().toUpperCase().replace(
-                Prefix.guildPrefix(event.getGuild().getId()) + "B", "");
+        String mainCommand = event.getMessage()
+                .getContentRaw().replace(Prefix.guildPrefix(event.getGuild().getId()),
+                        "");
+
+        String command = mainCommand.toUpperCase().substring(1);
         class MoveFight {
             final Move move;
             final StreetFight fight;
@@ -1241,7 +1041,7 @@ public enum Command {
         }
         Function<GuildMessageReceivedEvent, Optional<Move>> checkMove = event1 -> {
             try{
-                StreetFight fight = StreetFight.readFight(event1.getGuild().getId(), event1.getAuthor().getId());
+                StreetFight fight = StreetFight.readFight(event1.getChannel().getId());
                 Sorino sorino = fight.userSorino.get(0);
                 if(command.contains(" "))
                     return sorino.getMove(command.substring(0, command.indexOf(" ")), sorino);
@@ -1261,11 +1061,16 @@ public enum Command {
 
             if(move.isDefensive()){
                 fight.opponents.get(1).defenseUp(move, event);
+                if(fight.opponents.get(1).hasConceded())
+                    return Optional.of(new Fight.GameInfo("Protector", "User"));
+                else if(fight.opponents.get(0).hasConceded())
+                    return Optional.of(new Fight.GameInfo("User", "Protector"));
+
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 embedBuilder.setThumbnail(move.getUrl());
-                embedBuilder.setFooter(" gained " + move.getEffect() + " defence",
-                        event.getAuthor().getAvatarUrl());
+                embedBuilder.setAuthor(event.getAuthor().getName() + " gained " + move.getEffect() + " defence");
+                embedBuilder.setFooter(move.getDesc(), event.getAuthor().getAvatarUrl());
 
 
                 event.getChannel().sendMessage(embedBuilder.build()).queue();
@@ -1275,41 +1080,61 @@ public enum Command {
                         .getMoves()
                         .get(new Random().nextInt(4));
                 if(ranMove.contains(" ")) ranMove = ranMove.substring(0, ranMove.indexOf(" "));
-                fight.protector.getGuardianSorino().getMove(
+
+                if(fight.protector.getGuardianSorino().getMove(
                         ranMove,
-                        fight.protector.getGuardianSorino()
-                ).ifPresent(protectorMove -> {
+                        fight.protector.getGuardianSorino()).isPresent()){
+                    Move protectorMove = fight.protector.getGuardianSorino().getMove(
+                            ranMove,
+                            fight.protector.getGuardianSorino()).get();
                     if(protectorMove.isDefensive()){
                         fight.opponents.get(0).defenseUp(protectorMove, event);
+                        if(fight.opponents.get(1).hasConceded())
+                            return Optional.of(new Fight.GameInfo("Protector", "User"));
+                        else if(fight.opponents.get(0).hasConceded())
+                            return Optional.of(new Fight.GameInfo("User", "Protector"));
+
                         EmbedBuilder embedBuilder1 = new EmbedBuilder();
                         embedBuilder1.setColor(0x000dff);
                         embedBuilder1.setThumbnail(protectorMove.getUrl());
-                        embedBuilder1.setFooter(fight.protector.getName()
+                        embedBuilder1.setAuthor(fight.protector.getName()
                                 + " gained " + protectorMove.getEffect() + " defence");
+                        embedBuilder1.setFooter(protectorMove.getDesc());
 
                         event.getChannel().sendMessage(embedBuilder1.build()).queue();
                     } else {
                         fight.opponents.get(1).takeDamage(protectorMove, event);
                         fight.opponents.get(0).dropEnergy(protectorMove);
+                        if(fight.opponents.get(1).hasConceded())
+                            return Optional.of(new Fight.GameInfo("Protector", "User"));
+                        else if(fight.opponents.get(0).hasConceded())
+                            return Optional.of(new Fight.GameInfo("User", "Protector"));
 
                         EmbedBuilder embedBuilder2 = new EmbedBuilder();
                         embedBuilder2.setColor(0x000dff);
                         embedBuilder2.setThumbnail(protectorMove.getUrl());
-                        embedBuilder2.setFooter(" lost " + protectorMove.getEffect() + " health",
-                                event.getAuthor().getAvatarUrl());
+                        embedBuilder2.setAuthor(event.getAuthor().getName() +
+                                " lost " + protectorMove.getEffect() + " health");
+                        embedBuilder2.setFooter(protectorMove.getDesc());
 
                         event.getChannel().sendMessage(embedBuilder2.build())
                                 .queue();
                     }
-                });
+                }
             } else {
                 fight.opponents.get(0).takeDamage(move, event);
                 fight.opponents.get(1).dropEnergy(move);
+                if(fight.opponents.get(1).hasConceded())
+                    return Optional.of(new Fight.GameInfo("Protector", "User"));
+                else if(fight.opponents.get(0).hasConceded())
+                    return Optional.of(new Fight.GameInfo("User", "Protector"));
+
 
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setColor(0x000dff);
                 embedBuilder.setThumbnail(move.getUrl());
-                embedBuilder.setFooter(fight.protector.getName() + " lost " + move.getEffect() + " health");
+                embedBuilder.setAuthor(fight.protector.getName() + " lost " + move.getEffect() + " health");
+                embedBuilder.setFooter(move.getDesc());
 
                 event.getChannel().sendMessage(embedBuilder.build()).queue();
 
@@ -1318,33 +1143,49 @@ public enum Command {
                         .getMoves()
                         .get(new Random().nextInt(4));
                 if(ranMove.contains(" ")) ranMove = ranMove.substring(0, ranMove.indexOf(" "));
-                fight.protector.getGuardianSorino().getMove(
+
+                if(fight.protector.getGuardianSorino().getMove(
                         ranMove,
                         fight.protector.getGuardianSorino()
-                ).ifPresent(protectorMove -> {
+                ).isPresent()){
+                    Move protectorMove = fight.protector.getGuardianSorino().getMove(
+                            ranMove,
+                            fight.protector.getGuardianSorino()
+                    ).get();
                     if(protectorMove.isDefensive()){
                         fight.opponents.get(0).defenseUp(protectorMove, event);
+                        if(fight.opponents.get(1).hasConceded())
+                            return Optional.of(new Fight.GameInfo("Protector", "User"));
+                        else if(fight.opponents.get(0).hasConceded())
+                            return Optional.of(new Fight.GameInfo("User", "Protector"));
+
                         EmbedBuilder embedBuilder1 = new EmbedBuilder();
                         embedBuilder1.setColor(0x000dff);
                         embedBuilder1.setThumbnail(protectorMove.getUrl());
-                        embedBuilder1.setFooter(fight.protector.getName()
+                        embedBuilder1.setAuthor(fight.protector.getName()
                                 + " gained " + protectorMove.getEffect() + " defence");
+                        embedBuilder1.setFooter(protectorMove.getDesc());
 
                         event.getChannel().sendMessage(embedBuilder1.build()).queue();
                     } else {
                         fight.opponents.get(1).takeDamage(protectorMove, event);
                         fight.opponents.get(0).dropEnergy(protectorMove);
+                        if(fight.opponents.get(1).hasConceded())
+                            return Optional.of(new Fight.GameInfo("Protector", "User"));
+                        else if(fight.opponents.get(0).hasConceded())
+                            return Optional.of(new Fight.GameInfo("User", "Protector"));
 
                         EmbedBuilder embedBuilder2 = new EmbedBuilder();
                         embedBuilder2.setColor(0x000dff);
                         embedBuilder2.setThumbnail(protectorMove.getUrl());
-                        embedBuilder2.setFooter(" lost " + protectorMove.getEffect() + " health",
-                                event.getAuthor().getAvatarUrl());
+                        embedBuilder2.setAuthor(event.getAuthor().getName() +
+                                " lost " + protectorMove.getEffect() + " health");
+                        embedBuilder2.setFooter(protectorMove.getDesc());
 
                         event.getChannel().sendMessage(embedBuilder2.build())
                                 .queue();
                     }
-                });
+                }
             }
 
 
@@ -1356,50 +1197,79 @@ public enum Command {
             EmbedBuilder embed  = new EmbedBuilder();
             embed.setTitle("Health of the Fighters!");
             embed.setColor(0x000dff);
-            embed.addField(fight.protector.getName() + "'s Health \t\t\t ",
-                    "HEALTH: " + fight.opponents.get(0).getHealth() + "\n" +
-                            "ENERGY: " + fight.opponents.get(0).getEnergy() + "\n" +
-                            "DEFENCE: " + fight.opponents.get(0).getDecrease() + " drop-off",
+            embed.addField(fight.protector.getName() + "'s Health",
+              "HEALTH: " + fight.opponents.get(0).getHealth() + "\n" +
+                    "ENERGY: " + fight.opponents.get(0).getEnergy() + "\n"+
+                    "DEFENCE: " + fight.opponents.get(0).getDecrease() + " drop-off",
                     true);
-            embed.addField(event.getAuthor().getName() + "'s Health \t\t\t ",
+            embed.addField(event.getAuthor().getName() + "'s Health",
                     "HEALTH: " + fight.opponents.get(1).getHealth() + "\n" +
-                            "ENERGY: " + fight.opponents.get(1).getEnergy() + "\n" +
-                            "DEFENCE: " + fight.opponents.get(1).getDecrease() + " drop-off",
+                    "ENERGY: " + fight.opponents.get(1).getEnergy() + "\n"+
+                    "DEFENCE: " + fight.opponents.get(1).getDecrease(),
                     true);
-            event.getChannel().sendMessage(embed.build())
-                    .queue();
+            embed.addField("Enter your move " + event.getAuthor().getName(),
+                    "Moves: " + fight.userSorino.get(0).getMoves().toString()
+                            + "\n" +
+                            "To enter a move, type `" + Prefix.guildPrefix(event.getGuild().getId()) +
+                            "B<MOVE>`, `<MOVE>` being the move you want to use.",
+                    false);
+            embed.setFooter(" needs to enter their move", event.getAuthor().getAvatarUrl());
 
-            EmbedBuilder message = new EmbedBuilder();
-            message.setColor(0x000dff);
-            message.setTitle("Enter your move " + event.getAuthor().getName());
-            message.setFooter("Needs to enter their move", event.getAuthor().getAvatarUrl());
-            message.addField("Moves: ", fight.userSorino.get(0).getMoves().toString()
-                    + "\n" +
-                    "To enter a move, type `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                    "B<MOVE>`, `<MOVE>` being the move you want to use.", false);
-            event.getChannel().sendMessage(message.build())
+            event.getChannel().sendMessage(embed.build())
                     .queue();
 
             return Optional.empty();
         };
         try {
             if(command.toUpperCase().contains("START")){
+
+                if(FightManager.fightExists(event.getChannel().getId())){
+                    event.getChannel().sendMessage("There is a battle going on currently in this channel.").queue();
+                    return;
+                }
+
                 List<StreetProtector> protectors = StreetProtector.Protectors.getAllProtectors();
 
                 EmbedBuilder embedBuilder = new EmbedBuilder();
-                embedBuilder.setTitle("Choose a Street Protector to battle!");
+                embedBuilder.setTitle("Choose a Street Protector to Battle");
                 embedBuilder.setColor(0x000dff);
 
-                for(StreetProtector protector : protectors)
+                Paginator paginator = new Paginator(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now())
+                        + " GMT", 0x000dff);
+                for(StreetProtector protector : protectors) {
+                    if(embedBuilder.getFields().size() % 6 == 0 && embedBuilder.getFields().size() != 0){
+                        paginator.addPage(embedBuilder);
+                        embedBuilder = new EmbedBuilder();
+                        embedBuilder.setTitle("Choose a Street Protector to Battle");
+                    }
                     embedBuilder.addField(protector.getName() + ": " + protector.getStreetName(),
                             "Guardian Sorino: " + protector.getGuardianSorino().getName() + "\n" +
                                     "Enter: `" +
                                     Prefix.guildPrefix(event.getGuild().getId()) + "B" + protector.getName() +
-                                            "` to battle " + protector.getName(),
-                                    true);
-                event.getChannel().sendMessage(embedBuilder.build()).queue();
+                                    "` to battle " + protector.getName(),
+                            true);
+                }
+                if(paginator.embeds.size() == 0) {
+                    event.getChannel().sendMessage(embedBuilder.build()).queue();
+                    return;
+                }
+                paginator.addPage(embedBuilder);
+                paginator.paginate();
+
+                if(paginator.isSinglePage){
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+                } else {
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue(message -> {
+                        Paginator.paginators.put(message.getId(), paginator);
+                        message.addReaction("\u2B05").queue();
+                        message.addReaction("\u27A1").queue();
+                    });
+                }
+
             } else if(StreetProtector.Protectors.containsProtector(command).isPresent()){
                 StreetProtector protector = StreetProtector.Protectors.containsProtector(command).get();
+
+
                 StreetFight streetFight =
                         new StreetFight(protector);
 
@@ -1415,48 +1285,48 @@ public enum Command {
                 message. setTitle("Specify your Sorino " + event.getAuthor().getName());
                 message.setFooter("is choosing their Sorino", event.getAuthor().getAvatarUrl());
                 message.setDescription("Choose one of your Sorino");
+
+                Paginator paginator = new Paginator(event.getAuthor().getName() + " is choosing their Sorino",
+                        0x000dff);
                 try {
-                    for (Sorino sorino : Profile.getProfile(event).getSorinoAsList())
+                    for (Sorino sorino : Profile.getProfile(event.getAuthor()).getSorinoAsList()) {
+                        if(message.getFields().size() % 6 == 0 && message.getFields().size() != 0){
+                            paginator.addPage(message);
+                            message = new EmbedBuilder();
+                            message.setTitle("Specify your Sorino " + event.getAuthor().getName());
+                            message.setDescription("Choose one of your Sorino");
+                        }
                         message.addField(sorino.getName(),
-                                "HEALTH: " + sorino.getHealth(Profile.getProfile(event).getLevel()) +
-                                        "\nENERGY: " + sorino.getEnergy(Profile.getProfile(event).getLevel())
+                                "HEALTH: " + sorino.getHealth(Profile.getProfile(event.getAuthor()).getLevel()) +
+                                        "\nENERGY: " + sorino.getEnergy(Profile.getProfile(event.getAuthor()).getLevel())
                                         + "\nTo choose this Sorino, enter `" + Prefix.guildPrefix(event.getGuild().getId())
                                         + "B" + sorino.getName().substring(0, sorino.getName().indexOf(":")) + "`",
                                 true);
+                    }
 
-                    event.getChannel().sendMessage(message.build()).queue();
-                    streetFight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
-                } catch (IOException | ClassNotFoundException e) {
-                    Logger logger1 =
-                            new Logger("Error in finding Profile due to IO and Classes \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                    "C`\n" +
-                                    "If you do have an account, join the support server!"
-                    ).queue();
-                    try{
-                        logger1.logError();
-                    } catch (IOException excI){
-                        excI.printStackTrace();
+                    if(paginator.embeds.size() == 0) {
+                        event.getChannel().sendMessage(message.build()).queue();
+                        return;
                     }
-                } catch (ProfileNotFoundException e) {
-                    Logger logger =
-                            new Logger("Error in finding Profile \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                    "C`\n" +
-                                    "If you do have an account, join the support server!"
-                    ).queue();
-                    try{
-                        logger.logError();
-                    } catch (IOException excI){
-                        excI.printStackTrace();
+                    paginator.addPage(message);
+                    paginator.paginate();
+
+                    if(paginator.isSinglePage){
+                        event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+                    } else {
+                        event.getChannel().sendMessage(paginator.currentPage.build()).queue(message1 -> {
+                            Paginator.paginators.put(message1.getId(), paginator);
+                            message1.addReaction("\u2B05").queue();
+                            message1.addReaction("\u27A1").queue();
+                        });
                     }
+                    streetFight.saveFight(event.getChannel().getId());
+                }catch (ProfileNotFoundException e) {
+                    event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                            Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
                 }
             } else if(Sorino.AllSorino.isSorino(command)){
-                StreetFight fight = StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId());
+                StreetFight fight = StreetFight.readFight(event.getChannel().getId());
                 fight.userSorino.add(Sorino.AllSorino.getSorino(command));
                 fight.opponents.add(new Opponent(fight.protector.getGuardianSorino(), event));
                 fight.opponents.add(new Opponent(fight.userSorino.get(0), event));
@@ -1473,13 +1343,13 @@ public enum Command {
 
                 event.getChannel().sendMessage(message.build())
                         .queue();
-                fight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
+                fight.saveFight(event.getChannel().getId());
             } else if(checkMove.apply(event).isPresent()){
                 Move move = checkMove.apply(event).get();
-                StreetFight fight = StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId());
+                StreetFight fight = StreetFight.readFight(event.getChannel().getId());
 
                 Optional<Fight.GameInfo> gameInfo = moveFunction.apply(new MoveFight(move, fight));
-                fight.saveFight(event.getGuild().getId(), event.getAuthor().getId());
+                fight.saveFight(event.getChannel().getId());
                 gameInfo.ifPresent(gameInfo1 -> {
                     if(gameInfo1.winner.equals("Protector")){
                         try {
@@ -1489,10 +1359,10 @@ public enum Command {
                             embedBuilder.setDescription(fight.protector.getWinningRemark());
                             event.getChannel().sendMessage(embedBuilder.build()).queue();
 
-                            Profile profile = Profile.getProfile(event);
+                            Profile profile = Profile.getProfile(event.getAuthor());
                             profile.incrementLoss();
                             profile.incrementXP(50, event);
-                            profile.recreateProfile();
+                            profile.recreate();
                         } catch (Exception e) {
                             Logger logger1 =
                                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -1517,13 +1387,13 @@ public enum Command {
                         event.getChannel().sendMessage(embedBuilder.build()).queue();
 
                         try {
-                            Profile profile = Profile.getProfile(event);
+                            Profile profile = Profile.getProfile(event.getAuthor());
 
                             profile.incrementXP(400, event);
                             profile.incrementWin();
                             profile.addSorino(fight.protector.getGuardianSorino());
                             profile.setCoins(10000);
-                            profile.recreateProfile();
+                            profile.recreate();
                         }  catch (Exception e) {
                             Logger logger1 =
                                     new Logger("Error in finding Profile due to IO and Classes \n" +
@@ -1540,13 +1410,38 @@ public enum Command {
                             }
                         }
                     }
-                    fight.endFight(event.getGuild().getId(), event.getAuthor().getId());
+                    fight.endFight(event.getChannel().getId());
                 });
             } else if(command.toUpperCase().contains("END")){
                 event.getChannel().sendMessage(event.getAuthor().getName() + " has ended his Street Fight!")
                         .queue();
-                StreetFight.readFight(event.getGuild().getId(), event.getAuthor().getId())
-                        .endFight(event.getGuild().getId(), event.getAuthor().getId());
+                StreetFight.readFight(event.getChannel().getId())
+                        .endFight(event.getChannel().getId());
+            } else if(command.equalsIgnoreCase("HELP")){
+                String p = Prefix.guildPrefix(event.getGuild().getId());
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+
+                embedBuilder.setTitle("Street Fight");
+
+                embedBuilder.addField(p + "BSTART",
+                        "This allows you to begin a Street Fight",
+                        true);
+                embedBuilder.addField(p + "B<PROTECTOR>",
+                        "This allows you to start a street fight with `<PROTECTOR>`." +
+                                "If I enter `" + p + "BXerxes`. I will enter a Street Fight with " +
+                                "`Xerxes`.",
+                        true);
+                embedBuilder.addField(p + "B<SORINO>",
+                        "This allows you to select a Sorino. If I enter `" + p + "BGray`, I would be selecting " +
+                                "`Gray` as my Sorino.",
+                        true);
+                embedBuilder.addField(p + "BEND",
+                        "This ends a current Street Fight",
+                        true);
+
+                event.getChannel().sendMessage(embedBuilder.build()).queue();
             }
         } catch (Exception e) {
             Logger logger1 =
@@ -1566,8 +1461,9 @@ public enum Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(0x000dff);
 
-        embedBuilder.setTitle("SorinoRPG is currently v0.2");
+        embedBuilder.setTitle("SorinoRPG is currently v0.3");
         embedBuilder.setDescription("[Update Log](https://sorinorpg.github.io/Sorino-Update-Log/)");
+        embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
 
         event.getChannel().sendMessage(embedBuilder.build()).queue();
     }),
@@ -1577,6 +1473,8 @@ public enum Command {
 
         embedBuilder.setTitle("Vote for 7,000 coins!");
         embedBuilder.setDescription("[Click to Vote](https://top.gg/bot/764566349543899149/vote)");
+        embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
+        embedBuilder.setFooter("Webhooks have now been fixed, voting will now give coins!");
 
         event.getChannel().sendMessage(embedBuilder.build()).queue();
     }),
@@ -1590,23 +1488,153 @@ public enum Command {
         if(value >= 50000){
             event.getChannel().sendMessage("You can't send 50,000 or more!").queue();
             return;
+        } else if (value < 0 ){
+            event.getChannel().sendMessage("Don't even try").queue();
+            return;
         }
+
         try {
-            Profile giver = Profile.getProfile(event);
-            giver.setCoins(-value);
-            giver.recreateProfile();
+            Profile giver = Profile.getProfile(event.getAuthor());
+            if(giver.spend(value)) {
+                event.getChannel().sendMessage("You can't give more money than you don't have!")
+                        .queue();
+                return;
+            }
+            giver.recreate();
 
-            Profile receiver = Profile.getProfile(event.getMessage().getMentionedUsers().get(0) , event);
+            Profile receiver = Profile.getProfile(event.getMessage().getMentionedUsers().get(0) );
             receiver.setCoins(value);
-            receiver.recreateProfile();
+            receiver.recreate();
 
-            event.getChannel().sendMessage(giver.getName() + " successfully donated " + value
-                    + " to " + receiver.getName()).queue();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(0x000dff);
+
+            embedBuilder.setTitle("Successful Donation!");
+            embedBuilder.setDescription(giver.getName() + " successfully donated " + value
+                    + " coins to " + receiver.getName());
+            embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
+
+            event.getChannel().sendMessage(embedBuilder.build()).queue();
         } catch (Exception e) {
             event.getChannel().sendMessage("There was an error sending coins. Assert that all parties " +
                     "have an account and have entered `" + Prefix.guildPrefix(event.getGuild().getId()) + "C`." +
                     " If not, join the support server so we can fix this issue!").queue();
         }
+    }),
+    INVITE(event -> {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(0x000dff);
+
+        embedBuilder.setTitle("Invite SorinoRPG to a server that you are an owner of, and receive 20,000 coins!");
+        embedBuilder.setDescription("[Invite](https://discord.com/oauth2/authorize?client_id=764566349543899149&scope=bot&permissions=27648)");
+        embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
+
+        event.getChannel().sendMessage(embedBuilder.build()).queue();
+    }),
+    BUG(event -> {
+        String bug = event.getMessage().getContentRaw().replace(Prefix.guildPrefix(event.getGuild().getId()),
+                "").toUpperCase().replace("BUG ", "");
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(0x000dff);
+        embed.setTitle("Bug reported");
+        embed.setDescription("Bug: " + bug);
+        embed.setThumbnail(event.getAuthor().getAvatarUrl());
+        embed.setFooter("Any spam will not be tolerated and will lead to a blacklist");
+
+        event.getChannel().sendMessage(embed.build()).queue();
+
+        embed.setFooter(event.getAuthor().getId());
+        Objects.requireNonNull(event.getJDA().getTextChannelById("820318304148914236"))
+                .sendMessage(embed.build()).queue();
+        GuildListener.bugControl.put(event.getAuthor().getId(), event.getGuild().getId());
+    }),
+    BRIBE(event -> {
+        try {
+            Profile profile = Profile.getProfile(event.getAuthor());
+
+            if(profile.spend(5000)){
+                event.getChannel().sendMessage("Yeah, come back when you have 5000 coins on you.").queue();
+                return;
+            } else if(!GuildListener.prison.containsKey(event.getAuthor().getId())){
+                event.getChannel().sendMessage("You're not a prisoner!").queue();
+                return;
+            }
+
+            profile.recreate();
+
+            GuildListener.prison.remove(event.getAuthor().getId());
+
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(0x000dff);
+
+            embedBuilder.setTitle("You bribed a Guard!");
+            embedBuilder.setDescription("A greedy Guard agreed to release you from prison for a fee!");
+            embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
+
+            event.getChannel().sendMessage(embedBuilder.build()).queue();
+        }catch (Exception e) {
+            Logger logger1 =
+                    new Logger("Error in finding Profile due to IO and Classes \n" +
+                            Logger.exceptionAsString(e));
+            event.getChannel().sendMessage(
+                    "There was an error in bribing the guard!"
+            ).queue();
+            try{
+                logger1.logError();
+            } catch (IOException excI){
+                excI.printStackTrace();
+            }
+        }
+    }),
+    MARKET(event -> {
+        if(!event.getAuthor().getAsTag().equals("Manny#6363")){
+            event.getChannel().sendMessage("Sorry! The market is undergoing some changes right now, and will not " +
+                    "be accessible for the time being!").queue();
+            return;
+        }
+
+        int l = Prefix.guildPrefix(event.getGuild().getId()).length() +1;
+        String command = event.getMessage().getContentRaw().substring(l);
+        if(command.equals("HELP")){
+            String p = Prefix.guildPrefix(event.getGuild().getId());
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle("Transfer Market Help");
+            embedBuilder.addField(p + "MSELL <Item/Sorino> <Time in hours> <Initial Price>",
+                    "This allows you to post an Item/Sorino on the transfer market. Example: `" + p +
+                    "MSELL Urwald 2 25000`. This is what you would enter, to post an Urwald, for 2 hours at a " +
+                            "start price of 25,000 coins.", true);
+            embedBuilder.addField(p + "MBID <ID> <Bid>",
+                    "This allows you to bid on a post on the transfer market. The bid MUST be higher than the current " +
+                            "price. Example: `" + p + "MBID qUAs25a 26,000`. This is what you would enter to bid " +
+                            "26,000 coins on Urwald.", true);
+            embedBuilder.addField(p + "MPERSONAL_BIDS",
+                    "This allows you to view your own bids, and to see how your bids are doing", true);
+            embedBuilder.addField(".MSEARCH <Search Term>",
+                    "This allows you to see what is on the market, based on the Search term you have entered. " +
+                            "Example: `" + p + "MSEARCH Common`. This will allow me to view the common posts" +
+                            " on the transfer market.", true);
+            embedBuilder.addField(p + "MTOP",
+                    "This allows you to view the top posts on the market.", true);
+
+            event.getChannel().sendMessage(embedBuilder.build()).queue();
+        } else if(command.toUpperCase().startsWith("BID")){
+            try {
+                ArrayList<Object> data = MarketParser.bid(command, Prefix.guildPrefix(event.getGuild().getId()));
+            } catch(StringParseException e){
+
+            }
+        } else if(command.toUpperCase().startsWith("SELL")){
+
+        } else if(command.toUpperCase().startsWith("PERSONAL_BIDS")){
+
+        } else if(command.toUpperCase().startsWith("SEARCH")){
+
+        } else if(command.toUpperCase().startsWith("TOP")){
+
+        }
+
+
     }),
     ERROR(event -> {
     });
@@ -1619,6 +1647,14 @@ public enum Command {
     static Command getCommand(GuildMessageReceivedEvent message){
         HashMap<Prefix.PrefixString, Command> commandHashMap = new HashMap<>() {
             {
+                put(Prefix.PrefixString.HELP, Command.HELP);
+                put(Prefix.PrefixString.BRIBE, Command.BRIBE);
+                put(Prefix.PrefixString.BUG, Command.BUG);
+                put(Prefix.PrefixString.VOTE, Command.VOTE);
+                put(Prefix.PrefixString.UPDATE, Command.UPDATE);
+                put(Prefix.PrefixString.INFO, Command.INFO);
+                put(Prefix.PrefixString.INVITE, Command.INVITE);
+                put(Prefix.PrefixString.CHANGE, Command.CHANGE);
                 put(Prefix.PrefixString.DONATE, Command.DONATE);
                 put(Prefix.PrefixString.FIGHT, Command.FIGHT);
                 put(Prefix.PrefixString.SEARCH, Command.SEARCH);
@@ -1629,56 +1665,16 @@ public enum Command {
                 put(Prefix.PrefixString.SLOT, Command.SLOT);
                 put(Prefix.PrefixString.HEISTS, Command.HEIST);
                 put(Prefix.PrefixString.STREET_FIGHT, Command.STREET_FIGHT);
-                put(Prefix.PrefixString.VOTE, Command.VOTE);
-                put(Prefix.PrefixString.UPDATE, Command.UPDATE);
-                put(Prefix.PrefixString.INFO, Command.INFO);
+                put(Prefix.PrefixString.MARKET, Command.MARKET);
             }
         };
 
         String mess = message.getMessage().getContentDisplay()
                 .replace(Prefix.guildPrefix(message.getGuild().getId()), "").toUpperCase();
         for(Prefix.PrefixString prefix : EnumSet.allOf(Prefix.PrefixString.class))
-            if(mess.startsWith(prefix.prefix())) return commandHashMap.get(prefix);
+            if(mess.startsWith(prefix.prefix()) || mess.equals(prefix.prefix())) return commandHashMap.get(prefix);
 
         return Command.ERROR;
-    }
-
-    public static void registerProfile(GuildMessageReceivedEvent event) {
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(
-                    new FileInputStream(new File("/db/USERLIST.txt"))
-            );
-
-            @SuppressWarnings("unchecked")
-            HashMap<String, ProfileStore> userList = (HashMap<String, ProfileStore>) objectInputStream.readObject();
-            Profile profile = Profile.getProfile(event);
-            ProfileStore ps = profile.profileToStore();
-
-            userList.put(event.getAuthor().getId(), ps);
-
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(
-                    new FileOutputStream(
-                            new File("/db/USERLIST.txt")
-                    )
-            );
-            objectOutputStream.flush();
-            objectOutputStream.writeObject(userList);
-            objectOutputStream.close();
-
-            profile.recreateProfile();
-
-            event.getChannel().sendMessage("Saved account!").queue();
-        } catch (Exception e){
-            Logger logger = new Logger(Logger.exceptionAsString(e));
-            event.getChannel().sendMessage("There was a problem saving your profile!\n" +
-                    "Contact our Official Server to get help!").queue();
-
-            try{
-                logger.logError();
-            } catch (IOException eI){
-                eI.printStackTrace();
-            }
-        }
     }
 }
 

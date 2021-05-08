@@ -28,7 +28,7 @@ public class Stage8 implements Stage {
     @Override
     public int processChoice(char choice) {
         switch (choice){
-            case 'A': return 0xA;
+            case 'A': return 0xC;
             case 'B': return 0xB;
             case 'C': return 0xB;
             default: return 0;

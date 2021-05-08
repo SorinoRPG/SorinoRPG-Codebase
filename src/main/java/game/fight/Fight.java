@@ -26,37 +26,20 @@ public class Fight implements Serializable{
     public ArrayList<String> usersID = new ArrayList<>();
     public ArrayList<Sorino> fighters = new ArrayList<>();
     public ArrayList<Opponent> opponents = new ArrayList<>();
-    int phase2Calls = 0;
+    public int phase2Calls = 0;
     public int currFighter = 0;
 
-    public long fightTime = System.currentTimeMillis();
-
-    public void saveFight(String guildID, String idSum) throws IOException {
-         ObjectOutputStream objectStream =
-                new ObjectOutputStream(new FileOutputStream(
-                        new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt")
-                ));
-         fightTime = System.currentTimeMillis();
-         objectStream.flush();
-         objectStream.writeObject(this);
-         objectStream.close();
+    public void saveFight(String idSum) {
+         if(FightManager.fightMap.containsKey(idSum))
+            FightManager.fightMap.put(idSum, this);
+         else FightManager.fightMap.replace(idSum, this);
     }
-    public static Fight readFight(String guildID, String idSum) throws FightNotFoundException {
-        try {
-            ObjectInputStream objectInputStream =
-                    new ObjectInputStream(new FileInputStream(
-                            new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt")
-                    ));
-            Fight fight = (Fight) objectInputStream.readObject();
-            objectInputStream.close();
-
-            return fight;
-        } catch (IOException | ClassNotFoundException e){
-            throw new FightNotFoundException(e);
-        }
+    public static Fight readFight(String idSum) throws FightNotFoundException {
+        if(!FightManager.fightMap.containsKey(idSum)) throw new FightNotFoundException();
+        return FightManager.fightMap.get(idSum);
     }
-    public boolean endFight(String guildID, String idSum){
-        return new File("C:\\db\\" + guildID + "\\fights\\" + idSum + ".txt").delete();
+    public void endFight(String idSum){
+       FightManager.fightMap.remove(idSum);
     }
 
 }

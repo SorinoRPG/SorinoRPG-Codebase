@@ -6,33 +6,51 @@ import game.heist.availableheists.casinorush.CasinoRush;
 import game.heist.availableheists.codebreaker.Codebreaker;
 import game.heist.availableheists.serverwipe.ServerWipe;
 import game.heist.availableheists.traincatch.TrainCatch;
+import main.MainBot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.jodah.expiringmap.ExpiringMap;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public interface Heist extends Serializable {
+    ExpiringMap<String, Heist> heistMap = ExpiringMap.builder()
+            .maxSize(10000000)
+            .expiration(1, TimeUnit.HOURS)
+            .expirationListener((k, v) -> {
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setColor(0x00dff);
+                embed.setTitle("This heist has gone on for 1 hour.");
+                embed.setDescription("The heist in this channel has gone on too long, therefore it was deleted.");
+                embed.setFooter("All user-data will stay as it was before the heist.");
+
+                //noinspection ConstantConditions
+                MainBot.getJda().getTextChannelById((String) k).sendMessage(embed.build()).queue();
+            }).build();
+
+
     String getName();
     String getType();
+    int levelBoundary();
     String getLeaderID();
     String currentID();
     void setCurrentID(String id);
     List<String> getAllID();
     void setLeaderID(String ID);
     void addMember(String ID);
-    MessageEmbed heistState();
+    MessageEmbed heistState(String p);
     boolean isFull();
     Stage getCurrentStage();
     void incrementStage();
     String getDesc();
     int setupCost();
-    long time();
     int payout();
     int bail();
-    void saveHeist(String guildID, String channelID) throws IOException;
+    void saveHeist(String channelID);
 
 
 
@@ -78,31 +96,13 @@ public interface Heist extends Serializable {
             }
         };
 
-        public static boolean exists(String guildID, String channelID){
-            if(new File("/db/" + guildID + "/heists").listFiles() == null) return false;
-            ArrayList<File> heists =
-                    new ArrayList<>(Arrays.asList(new File("/db/" + guildID + "/heists").listFiles()));
-            File file = new File("/db/" + guildID + "/heists/%" + channelID + ".txt");
-
-            return heists.contains(file);
+        public static boolean exists(String channelID){
+            return heistMap.containsKey(channelID);
         }
-        public static Heist getCurrentHeist(String guildID, String channelID)
-                throws HeistNotFoundException, IOException{
-            Heist heist;
-
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(
-                        new FileInputStream(
-                                new File("/db/" + guildID + "/heists/%" + channelID + ".txt")
-                        )
-                );
-
-                heist = (Heist) objectInputStream.readObject();
-                objectInputStream.close();
-                return heist;
-            } catch (FileNotFoundException | ClassNotFoundException e ){
-                throw new HeistNotFoundException("Heist is not in folder!");
-            }
+        public static Heist getCurrentHeist(String channelID)
+                throws HeistNotFoundException{
+            if(!heistMap.containsKey(channelID)) throw new HeistNotFoundException("Heist was not in map!");
+            return heistMap.get(channelID);
         }
         public static boolean isHeist(String heistStr){
             ArrayList<HeistUtil> heists = new ArrayList<>(

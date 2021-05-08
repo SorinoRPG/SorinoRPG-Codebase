@@ -6,10 +6,6 @@ import game.heist.Stage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -18,7 +14,6 @@ public class TrainCatch implements Heist {
     String leaderID;
     ArrayList<String> allID = new ArrayList<>();
     int stage = 0;
-    long lastTime = System.currentTimeMillis();
 
     @SuppressWarnings("unused")
     enum Stages implements GetStage {
@@ -112,22 +107,22 @@ public class TrainCatch implements Heist {
     }
 
     @Override
-    public MessageEmbed heistState() {
+    public MessageEmbed heistState(String p) {
         EmbedBuilder embed = new EmbedBuilder();
 
         embed.setTitle(getName());
-        embed.setDescription(getAllID().size() + "/4 players\n\n" +
+        embed.setDescription(getAllID().size() + "/2 players\n\n" +
                 getDesc());
         embed.setColor(0x000dff);
 
-        embed.setAuthor("Enter .HSTART to begin this heist!");
-        embed.setFooter("Enter .HJOIN to join this heist!");
+        embed.setAuthor("Enter " + p + "HSTART to begin this heist!");
+        embed.setFooter("Enter " + p + "HJOIN to join this heist!");
         return embed.build();
     }
 
     @Override
     public boolean isFull() {
-        return allID.size() == 4;
+        return allID.size() == 2;
     }
 
     @Override
@@ -160,13 +155,18 @@ public class TrainCatch implements Heist {
     }
 
     @Override
+    public int levelBoundary() {
+        return 2;
+    }
+
+    @Override
     public int setupCost() {
-        return 10000;
+        return 5000;
     }
 
     @Override
     public int payout() {
-        return 50000;
+        return 30000;
     }
 
     @Override
@@ -175,21 +175,9 @@ public class TrainCatch implements Heist {
     }
 
     @Override
-    public void saveHeist(String guildID, String channelID) throws IOException {
-        ObjectOutputStream objectOutputStream =
-                new ObjectOutputStream(
-                        new FileOutputStream(
-                                new File("/db/" + guildID + "/heists/%" + channelID + ".txt"))
-                );
-        objectOutputStream.flush();
-        objectOutputStream.writeObject(this);
-        objectOutputStream.close();
-
-        lastTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public long time() {
-        return lastTime;
+    public void saveHeist(String channelID){
+        if(!Heist.heistMap.containsKey(channelID))
+            Heist.heistMap.put(channelID, this);
+        else Heist.heistMap.replace(channelID, this);
     }
 }

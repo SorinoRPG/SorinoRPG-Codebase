@@ -1,5 +1,7 @@
 package main;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
@@ -7,7 +9,8 @@ import java.util.TimerTask;
 public class ScheduledTasks extends TimerTask {
     private final Task[] tasks;
 
-    ScheduledTasks(Task ... tasks){
+    ScheduledTasks(Task ... tasks
+    ){
         this.tasks = tasks;
     }
 
@@ -22,18 +25,15 @@ public class ScheduledTasks extends TimerTask {
                 .ofPattern("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now()));
 
-//        try {
-//            SystemTray tray = SystemTray.getSystemTray();
-//
-//            TrayIcon trayIcon = new TrayIcon("Tray Demo");
-//            trayIcon.setImageAutoSize(true);
-//            trayIcon.setToolTip("System tray icon demo");
-//            tray.add(trayIcon);
-//
-//            trayIcon.displayMessage("A data reset for SorinoRPG occurred!",
-//                    "Please open in the command line", TrayIcon.MessageType.INFO);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
+        MainBot.getJda().retrieveUserById("672883208811184166").queue(user -> {
+            user.openPrivateChannel().queue(channel -> {
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                embedBuilder.setColor(0x000dff);
+
+                embedBuilder.setTitle("Database reset!");
+                embedBuilder.setDescription("Please check to see what has happened");
+                channel.sendMessage(embedBuilder.build()).queue();
+            });
+        });
     }
 }

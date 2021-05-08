@@ -1,7 +1,6 @@
 package game.fight.streetfight.protectors;
 
 import game.characters.Sorino;
-import game.characters.rage.Mantra;
 import game.characters.smart.Smart;
 import game.fight.Move;
 import game.fight.streetfight.StreetProtector;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Sumato implements StreetProtector{
+
     @Override
     public String getName() {
         return "Sumato";

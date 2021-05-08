@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Shizen implements StreetProtector {
+
     @Override
     public String getName() {
         return "Shizen";

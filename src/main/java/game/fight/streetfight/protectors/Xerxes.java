@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Xerxes implements StreetProtector {
+
     @Override
     public String getName() {
         return "Xerxes";

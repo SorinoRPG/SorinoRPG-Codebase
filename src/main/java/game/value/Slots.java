@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class Slots {
     interface SlotInfo {

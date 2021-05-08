@@ -59,7 +59,7 @@ public class Stage8 implements Stage {
         embedBuilder.setTitle("BOOOM! You passed the heist!");
         embedBuilder.setDescription("**Jessica** Amazing! I'll wire you the money ASAP, well done boys! " +
                 "Adios!");
-        embedBuilder.setFooter("You will be paid 60000 coins due to this success!");
+        embedBuilder.setFooter("You will be paid 30000 coins due to this success!");
 
 
         return embedBuilder.build();

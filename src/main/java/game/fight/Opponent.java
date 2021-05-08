@@ -2,14 +2,12 @@ package game.fight;
 
 import data.Profile;
 import data.ProfileNotFoundException;
-import data.logging.Logger;
 import game.characters.Sorino;
 
+import main.userinterface.Prefix;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.Optional;
 
 public class Opponent implements Serializable {
     private final Sorino sorino;
@@ -19,32 +17,11 @@ public class Opponent implements Serializable {
     public Opponent(Sorino sorino, GuildMessageReceivedEvent event){
         this.sorino = sorino;
         try {
-            this.health = sorino.getHealth(Profile.getProfile(event).getLevel());
-            this.energy = sorino.getEnergy(Profile.getProfile(event).getLevel());
-        } catch (IOException | ClassNotFoundException e) {
-            Logger logger =
-                    new Logger("Error in finding Profile due to IO and Classes \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile due to IO and Classes "
-            ).queue();
-            try {
-                logger.logError();
-            } catch (IOException excI) {
-                excI.printStackTrace();
-            }
+            this.health = sorino.getHealth(Profile.getProfile(event.getAuthor()).getLevel());
+            this.energy = sorino.getEnergy(Profile.getProfile(event.getAuthor()).getLevel());
         } catch (ProfileNotFoundException e) {
-            Logger logger =
-                    new Logger("Error in finding Profile \n" +
-                            Logger.exceptionAsString(e));
-            event.getChannel().sendMessage(
-                    "Could not find profile!"
-            ).queue();
-            try{
-                logger.logError();
-            } catch (IOException excI){
-                excI.printStackTrace();
-            }
+            event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                    Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
         }
     }
     private double damageDecrease = 0;
@@ -69,16 +46,10 @@ public class Opponent implements Serializable {
                 (move.getEffect() * damageDecrease) +
                 (move.getEffect() * sorino.getIfWeakness(move.getSorino()));
 
-        event.getChannel().sendMessage(
-                move.getDesc()
-        ).queue();
     }
     public void defenseUp(Move move, GuildMessageReceivedEvent event){
         damageDecrease += move.getEffect();
         energy -= move.getEnergy();
-        event.getChannel().sendMessage(
-                move.getDesc()
-        ).queue();
     }
     public void dropEnergy(Move move){
         energy -= move.getEnergy();

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Ikari implements StreetProtector {
+
     @Override
     public String getName() {
         return "Ikari";

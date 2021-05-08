@@ -29,8 +29,8 @@ public class Stage2 implements Stage {
     public int processChoice(char choice) {
         switch (choice){
             case 'A': return 0xB;
-            case 'B': return 0xA;
-            case 'C': return 0xB;
+            case 'B': return 0xB;
+            case 'C': return 0xA;
             default: return 0;
         }
     }

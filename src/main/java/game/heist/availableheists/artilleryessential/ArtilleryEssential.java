@@ -2,16 +2,10 @@ package game.heist.availableheists.artilleryessential;
 
 import game.heist.GetStage;
 import game.heist.Heist;
-import game.heist.HeistNotFoundException;
 import game.heist.Stage;
-import main.MainBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,7 +14,6 @@ public class ArtilleryEssential implements Heist {
     String leaderID;
     ArrayList<String> allID = new ArrayList<>();
     int stage = 0;
-    long lastTime = System.currentTimeMillis();
 
     @SuppressWarnings("unused")
     enum Stages implements GetStage {
@@ -126,7 +119,12 @@ public class ArtilleryEssential implements Heist {
     }
 
     @Override
-    public MessageEmbed heistState() {
+    public int levelBoundary() {
+        return 1;
+    }
+
+    @Override
+    public MessageEmbed heistState(String p) {
         EmbedBuilder embed = new EmbedBuilder();
 
         embed.setTitle(getName());
@@ -134,8 +132,8 @@ public class ArtilleryEssential implements Heist {
                 getDesc());
         embed.setColor(0x000dff);
 
-        embed.setAuthor("Enter .HSTART to begin this heist!");
-        embed.setFooter("Enter .HJOIN to join this heist!");
+        embed.setAuthor("Enter " + p + "HSTART to begin this heist!");
+        embed.setFooter("Enter " + p + "HJOIN to join this heist!");
         return embed.build();
     }
 
@@ -179,21 +177,9 @@ public class ArtilleryEssential implements Heist {
     }
 
     @Override
-    public void saveHeist(String guildID, String channelID) throws IOException {
-        ObjectOutputStream objectOutputStream =
-                new ObjectOutputStream(
-                        new FileOutputStream(
-                                new File("/db/" + guildID + "/heists/%" + channelID + ".txt"))
-                );
-        objectOutputStream.flush();
-        objectOutputStream.writeObject(this);
-        objectOutputStream.close();
-
-        lastTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public long time() {
-        return lastTime;
+    public void saveHeist(String channelID){
+        if(!Heist.heistMap.containsKey(channelID))
+            Heist.heistMap.put(channelID, this);
+        else Heist.heistMap.replace(channelID, this);
     }
 }

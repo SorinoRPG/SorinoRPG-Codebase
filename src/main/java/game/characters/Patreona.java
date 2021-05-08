@@ -67,7 +67,7 @@ public class Patreona implements Sorino{
 
     @Override
     public String getName() {
-        return "Patreona: Patron type: Exclusive";
+        return "Patreona: Patron type | Exclusive";
     }
 
 

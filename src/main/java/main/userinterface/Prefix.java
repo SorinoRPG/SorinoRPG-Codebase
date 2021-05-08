@@ -1,12 +1,12 @@
 package main.userinterface;
 
+import com.mongodb.client.MongoCollection;
+import data.Mongo;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.bson.Document;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -66,8 +66,8 @@ public class Prefix {
     public static String removeFightPrefix(GuildMessageReceivedEvent event){
         String message = event.getMessage()
                 .getContentRaw();
-        return message.toUpperCase()
-                .replace(guildPrefix(event.getGuild().getId()) + "F", "");
+        return message
+                .substring(Prefix.guildPrefix(event.getGuild().getId()).length()+1);
     }
 
     /**
@@ -80,71 +80,37 @@ public class Prefix {
      *     utilized.
      * </p>
      *
-     * @param event The command that contains the prefix
+     * @param guildID The command that contains the prefix
      * @return The prefix as a string
      */
 
     public static String guildPrefix(String guildID){
-        try(Scanner scanner = new Scanner(new File("/db/" + guildID + "/PREFIX.txt"))){
-            return scanner.nextLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ".";
+        MongoCollection<Document> mongoCollection = Mongo.mongoClient()
+                .getDatabase("guild")
+                .getCollection("prefix");
+        if(mongoCollection.find(new Document("guildID", guildID)).iterator().hasNext()){
+            Document doc = mongoCollection.find(new Document("guildID", guildID)).first();
+            return  doc.getString("prefix");
         }
+        return ".";
     }
     enum PrefixString implements PrefixGetter {
-        STREET_FIGHT(){
+        HELP() {
             @Override
             public String prefix() {
-                return "B";
+                return "HELP";
             }
         },
-        SEE_RANK() {
+        BRIBE() {
             @Override
             public String prefix() {
-                return "R";
+                return "BRIBE";
             }
         },
-        FIGHT() {
+        BUG() {
             @Override
             public String prefix() {
-                return "F";
-            }
-        },
-        SEARCH() {
-            @Override
-            public String prefix() {
-                return "S";
-            }
-        },
-        CREATE_PROFILE(){
-            @Override
-            public String prefix(){
-                 return "C";
-            }
-        },
-        SEE_PROFILE() {
-            @Override
-            public String prefix(){
-                return "P";
-            }
-        },
-        WRAP() {
-            @Override
-            public String prefix() {
-                return "W";
-            }
-        },
-        SLOT() {
-            @Override
-            public String prefix() {
-                return "G";
-            }
-        },
-        HEISTS(){
-            @Override
-            public String prefix() {
-                return "H";
+                return "BUG";
             }
         },
         VOTE() {
@@ -165,10 +131,88 @@ public class Prefix {
                 return "INFO";
             }
         },
+        ACCOUNT() {
+            @Override
+            public String prefix() {
+                return "ACCOUNT";
+            }
+        },
+        INVITE(){
+            @Override
+            public String prefix() {
+                return "INVITE";
+            }
+        },
+        CHANGE() {
+            @Override
+            public String prefix() {
+                return "SET";
+            }
+        },
         DONATE() {
             @Override
             public String prefix() {
                 return "DONATE";
+            }
+        },
+        FIGHT() {
+            @Override
+            public String prefix() {
+                return "F";
+            }
+        },
+        SEARCH() {
+            @Override
+            public String prefix() {
+                return "S";
+            }
+        },
+        SEE_PROFILE() {
+            @Override
+            public String prefix(){
+                return "P";
+            }
+        },
+        CREATE_PROFILE(){
+            @Override
+            public String prefix(){
+                return "C";
+            }
+        },
+        SEE_RANK() {
+            @Override
+            public String prefix() {
+                return "R";
+            }
+        },
+        WRAP() {
+            @Override
+            public String prefix() {
+                return "W";
+            }
+        },
+        SLOT() {
+            @Override
+            public String prefix() {
+                return "G";
+            }
+        },
+        HEISTS(){
+            @Override
+            public String prefix() {
+                return "H";
+            }
+        },
+        STREET_FIGHT(){
+            @Override
+            public String prefix() {
+                return "B";
+            }
+        },
+        MARKET() {
+            @Override
+            public String prefix() {
+                return "M";
             }
         }
     }

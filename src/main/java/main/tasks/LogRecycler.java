@@ -1,5 +1,6 @@
-package data.logging;
+package main.tasks;
 
+import data.logging.Logger;
 import main.Task;
 
 import java.io.File;
@@ -8,7 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+
+
 public class LogRecycler implements Task {
+    static java.util.logging.Logger logger = java.util.logging.Logger.getAnonymousLogger();
+
     long spaceSaved;
     String errors = "";
 
@@ -39,8 +44,7 @@ public class LogRecycler implements Task {
 
     @Override
     public void printTaskStatus() {
-        System.out.println("Completed log clear\n" +
-                "Approximate space saved " + spaceSaved + "B");
+        logger.info("Completed log clear | Approximate space saved " + spaceSaved + "B");
         System.err.println("EXCEPTIONS:\n" +
                 errors);
         errors = "";
