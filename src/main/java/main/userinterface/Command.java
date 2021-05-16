@@ -15,15 +15,16 @@ import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
 
+import game.items.type.Item;
 import game.value.Slots;
 import game.value.Wrap;
+import game.value.transfer.*;
 import main.Paginator;
 import main.userinterface.parser.MarketParser;
 import main.userinterface.parser.StringParseException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 
 import java.io.*;
@@ -40,12 +41,6 @@ public enum Command {
             embedBuilder.setColor(0x000dff);
         embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
                 "C` Creates an account **This is required to start playing SorinoRPG**\n" +
-                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "account_set_primary` To set the current account as the primary. All other data in other " +
-                "servers will be overwritten.\n" +
-                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "account_remove_primary` To remove the primary account, all accounts will then update seperately " +
-                "from one another.\n" +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) +
                 "P` Let's you view your, or someone else's, account details like coins, Sorino, etc\n" +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) +
@@ -520,7 +515,7 @@ public enum Command {
                 Heist heist = Heist.HeistUtil.getHeist(message);
 
                 Profile profile = Profile.getProfile(event.getAuthor());
-                if(profile.spend(heist.setupCost())){
+                if(!profile.spend(heist.setupCost())){
                     event.getChannel().sendMessage("You can't afford this heist!").queue();
                     return;
                 } else if (heist.levelBoundary() >= profile.getLevel()){
@@ -762,7 +757,7 @@ public enum Command {
         }
         Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())), 50,
                 event.getAuthor().getId(), event.getAuthor().getName(), 0, 0, event.getAuthor().getAvatarUrl(),
-                event.getGuild().getId());
+                event.getGuild().getId(), new ArrayList<>());
         userProfile.createProfile();
         EmbedBuilder message = new EmbedBuilder();
         message.setColor(0x000dff);
@@ -880,9 +875,10 @@ public enum Command {
                 MongoCollection<Document> collection = Mongo.mongoClient()
                         .getDatabase("guild")
                         .getCollection("channel");
-                String id = event.getMessage().getMentionedChannels().get(0).getId();
+                String id;
 
                 if(event.getMessage().getContentRaw().contains("OFF")) id = "OFF";
+                else id = event.getMessage().getMentionedChannels().get(0).getId();
                 if(collection.find(new Document("guildID", event.getGuild().getId())).iterator().hasNext()){
                     collection.replaceOne(new Document("guildID", event.getGuild().getId()),
                             new Document("guildID", event.getGuild().getId())
@@ -908,6 +904,7 @@ public enum Command {
                 }
                 collection.insertOne(new Document("guildID", event.getGuild().getId())
                         .append("prefix", newPrefix));
+                event.getGuild().getSelfMember().modifyNickname("[" + newPrefix + "] SorinoRPG").queue();
             }
         });
     }),
@@ -918,7 +915,7 @@ public enum Command {
             ));
 
             Profile profile = Profile.getProfile(event.getAuthor());
-            if(profile.spend(stake)) {
+            if(!profile.spend(stake)) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + " has insufficient funds!")
                         .queue();
                 return;
@@ -1495,7 +1492,7 @@ public enum Command {
 
         try {
             Profile giver = Profile.getProfile(event.getAuthor());
-            if(giver.spend(value)) {
+            if(!giver.spend(value)) {
                 event.getChannel().sendMessage("You can't give more money than you don't have!")
                         .queue();
                 return;
@@ -1553,7 +1550,7 @@ public enum Command {
         try {
             Profile profile = Profile.getProfile(event.getAuthor());
 
-            if(profile.spend(5000)){
+            if(!profile.spend(5000)){
                 event.getChannel().sendMessage("Yeah, come back when you have 5000 coins on you.").queue();
                 return;
             } else if(!GuildListener.prison.containsKey(event.getAuthor().getId())){
@@ -1588,17 +1585,14 @@ public enum Command {
         }
     }),
     MARKET(event -> {
-        if(!event.getAuthor().getAsTag().equals("Manny#6363")){
-            event.getChannel().sendMessage("Sorry! The market is undergoing some changes right now, and will not " +
-                    "be accessible for the time being!").queue();
-            return;
-        }
+        String p = Prefix.guildPrefix(event.getGuild().getId());
 
-        int l = Prefix.guildPrefix(event.getGuild().getId()).length() +1;
+        int l = p.length() +1;
         String command = event.getMessage().getContentRaw().substring(l);
         if(command.equals("HELP")){
-            String p = Prefix.guildPrefix(event.getGuild().getId());
             EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(0x00dff);
+
             embedBuilder.setTitle("Transfer Market Help");
             embedBuilder.addField(p + "MSELL <Item/Sorino> <Time in hours> <Initial Price>",
                     "This allows you to post an Item/Sorino on the transfer market. Example: `" + p +
@@ -1610,28 +1604,121 @@ public enum Command {
                             "26,000 coins on Urwald.", true);
             embedBuilder.addField(p + "MPERSONAL_BIDS",
                     "This allows you to view your own bids, and to see how your bids are doing", true);
-            embedBuilder.addField(".MSEARCH <Search Term>",
+            embedBuilder.addField(p + "MSEARCH <Search Term>",
                     "This allows you to see what is on the market, based on the Search term you have entered. " +
                             "Example: `" + p + "MSEARCH Common`. This will allow me to view the common posts" +
                             " on the transfer market.", true);
-            embedBuilder.addField(p + "MTOP",
-                    "This allows you to view the top posts on the market.", true);
+            embedBuilder.addField(p + "MTOP <pages>",
+                    "This allows you to view the top posts on the market. If I wanted to " +
+                            "view the top 6 pages, I would enter `"+ p + "MTOP 6`. Typing in no numbers, or an invalid" +
+                            " number will give the top 3 pages." , true);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
         } else if(command.toUpperCase().startsWith("BID")){
             try {
-                ArrayList<Object> data = MarketParser.bid(command, Prefix.guildPrefix(event.getGuild().getId()));
-            } catch(StringParseException e){
+                event.getChannel().sendMessage("Processing bid....").queue();
+                Market.update();
 
+                ArrayList<Object> data = MarketParser.bid(command, Prefix.guildPrefix(event.getGuild().getId()));
+
+
+                event.getChannel().sendMessage(Market.bid(Listing.getListingById((String) data.get(0)),
+                        (int) data.get(1), event.getAuthor(), Profile.getProfile(event.getAuthor()))).queue();
+            } catch(StringParseException e){
+                event.getChannel().sendMessage("Your input format was incorrect, the correct format is: `" +
+                        e.getProperFormat() + "`").queue();
+            } catch (ListingNotFoundException e){
+                event.getChannel().sendMessage("The listing ID you entered does not exist. `" + e.getId() + "`")
+                        .queue();
+            } catch (ProfileNotFoundException e){
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
             }
         } else if(command.toUpperCase().startsWith("SELL")){
+            try {
+                event.getChannel().sendMessage("Processing sell request....").queue();
+                Market.update();
 
+                ArrayList<Object> data = MarketParser.sell(command, Prefix.guildPrefix(event.getGuild().getId()));
+
+                if(data.get(0) instanceof Sorino){
+                    Listing listing = new SorinoListing(event.getAuthor(), (Sorino) data.get(0), (int) data.get(1),
+                            (long) data.get(2));
+
+                    event.getChannel().sendMessage(Market.sell(listing, event.getAuthor()))
+                    .queue();
+                } else if(data.get(0) instanceof Item){
+                    Listing listing = new ItemListing(event.getAuthor(), (Item) data.get(0), (int) data.get(1),
+                            (long) data.get(2));
+
+                    event.getChannel().sendMessage(Market.sell(listing, event.getAuthor()))
+                            .queue();
+                }
+            } catch (StringParseException e){
+                event.getChannel().sendMessage("Your input format was incorrect, the correct format is: `" +
+                        e.getProperFormat() + "`").queue();
+            } catch(ProfileNotFoundException e){
+                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
+                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
+            }
         } else if(command.toUpperCase().startsWith("PERSONAL_BIDS")){
+            event.getChannel().sendMessage("Processing personal bid viewing....").queue();
+            Market.update();
 
+            Paginator paginator = Market.personalItems(event.getAuthor());
+            if(paginator.isSinglePage){
+                event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+            } else {
+                event.getChannel().sendMessage(paginator.currentPage.build()).queue(message1 -> {
+                    Paginator.paginators.put(message1.getId(), paginator);
+                    message1.addReaction("\u2B05").queue();
+                    message1.addReaction("\u27A1").queue();
+                });
+            }
         } else if(command.toUpperCase().startsWith("SEARCH")){
+            try {
+                String searchTerm = MarketParser.oneArg(command, "SEARCH ", p + "MSEARCH <Search Term>");
+                event.getChannel().sendMessage("Processing search for " + searchTerm + " ....").queue();
+                Market.update();
 
+                Paginator paginator = Market.search(searchTerm);
+                if(paginator.isSinglePage){
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+                } else {
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue(message1 -> {
+                        Paginator.paginators.put(message1.getId(), paginator);
+                        message1.addReaction("\u2B05").queue();
+                        message1.addReaction("\u27A1").queue();
+                    });
+                }
+            } catch (StringParseException e){
+                event.getChannel().sendMessage("Your input format was incorrect, the correct format is: `" +
+                        e.getProperFormat() + "`").queue();
+            }
         } else if(command.toUpperCase().startsWith("TOP")){
+            event.getChannel().sendMessage("Processing top listing request....").queue();
+            Market.update();
 
+            int value;
+
+            try {
+                String valStr = MarketParser.oneArg(command, "TOP ", "");
+                value = Integer.parseInt(valStr);
+            } catch (StringParseException e){
+                value = 3;
+            }
+
+            Paginator paginator = Market.top(value);
+            paginator.paginate();
+            if(paginator.isSinglePage){
+                event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+            } else {
+                event.getChannel().sendMessage(paginator.currentPage.build()).queue(message1 -> {
+                    Paginator.paginators.put(message1.getId(), paginator);
+                    message1.addReaction("\u2B05").queue();
+                    message1.addReaction("\u27A1").queue();
+                });
+            }
         }
 
 

@@ -10,6 +10,7 @@ public class Mongo {
     private static MongoClient mongoClient;
 
     public static void initMongo(){
+
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
         rootLogger.setLevel(Level.OFF);

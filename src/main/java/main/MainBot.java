@@ -41,11 +41,10 @@ public class MainBot {
      * @see JDABuilder
      */
     public static void main(String[] args) throws LoginException, InterruptedException {
-        logger.info("Started Execution");
         SpringApp.init(args);
         Mongo.initMongo();
 
-        jda = JDABuilder.createLight("token",
+        jda = JDABuilder.createLight("NzY0NTY2MzQ5NTQzODk5MTQ5.X4IH5g.kVaBMx1eW3YZVd8E7SPwtjzTkuk",
                 GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS)
                 .addEventListeners(new GuildListener())
                 .setStatus(OnlineStatus.ONLINE)
@@ -60,6 +59,9 @@ public class MainBot {
         ScheduledTasks tasks = new ScheduledTasks(
                 new ServerCountChanger(api, jda),
                 new StatusChanger(jda),
+                new MarketPoster(30, 15, jda, Mongo.mongoClient()
+                        .getDatabase("game")
+                        .getCollection("market")),
                 new LogRecycler());
 
         timer.schedule(tasks, 0, 3600000);

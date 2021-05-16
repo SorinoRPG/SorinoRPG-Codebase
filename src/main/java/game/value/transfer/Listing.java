@@ -1,6 +1,9 @@
 package game.value.transfer;
 
+import data.Mongo;
 import data.Profile;
+import data.ProfileNotFoundException;
+import net.dv8tion.jda.api.entities.User;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -12,17 +15,18 @@ public interface Listing {
     String descOfItem();
     int price();
     void setPrice(int price);
-    boolean checkHasItem(Profile profile);
+    boolean checkHasItem(User user) throws ProfileNotFoundException;
     long timeAllocated();
     long timePutOnMarket();
     String sellerID();
     String listingID();
     String highestBidderID();
-    void setHighestBidderID(String newID);
+    String highestBidderName();
+    void setHighestBidderID(User user);
     void awardItem(Profile profile);
+    void removeItem(Profile profile);
     ArrayList<String> lostBidderIds();
     Document toDocument();
-    Listing toListing(Document document);
 
     static String createListingID(){
         char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
@@ -35,5 +39,22 @@ public interface Listing {
             stringBuilder.append(chars[random.nextInt(chars.length)]);
         }
         return stringBuilder.toString();
+    }
+    
+    static Listing getListingById(String id) throws ListingNotFoundException{
+        if(!Mongo.mongoClient()
+                .getDatabase("game")
+                .getCollection("market")
+                .find(new Document("listingID", id)).iterator().hasNext()) throw new ListingNotFoundException(id);
+
+        Document document = Mongo.mongoClient()
+                .getDatabase("game")
+                .getCollection("market")
+                .find(new Document("listingID", id)).first();
+
+        if(document.containsKey("sorino"))
+            return SorinoListing.toListing(document);
+        else
+            return ItemListing.toListing(document);
     }
 }

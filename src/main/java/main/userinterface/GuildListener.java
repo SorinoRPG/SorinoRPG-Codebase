@@ -6,8 +6,10 @@ import data.ProfileNotFoundException;
 import data.logging.Logger;
 
 import game.characters.starter.Gray;
+import game.items.type.Item;
 import main.MainBot;
 import main.Paginator;
+import main.tasks.MarketPoster;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -37,6 +39,7 @@ public class GuildListener extends ListenerAdapter {
 
     @Override
     public void onException(@NotNull ExceptionEvent event) {
+        event.getCause().printStackTrace();
         StringWriter sw = new StringWriter();
         event.getCause().printStackTrace(new PrintWriter(sw));
         Logger logger = new Logger(sw.toString());
@@ -70,12 +73,6 @@ public class GuildListener extends ListenerAdapter {
                 + event.getGuild().getName());
         embedBuilder.setDescription("`" + Prefix.guildPrefix(event.getGuild().getId()) +
                 "C` Creates an account **This is required to start playing SorinoRPG**\n" +
-                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "account_set_primary` To set the current account as the primary. All other data in other " +
-                "servers will be overwritten.\n" +
-                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                "account_remove_primary` To remove the primary account, all accounts will then update seperately " +
-                "from one another.\n" +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) +
                 "P` Let's you view your, or someone else's, account details like coins, Sorino, etc\n" +
                 "`" + Prefix.guildPrefix(event.getGuild().getId()) +
@@ -137,9 +134,10 @@ public class GuildListener extends ListenerAdapter {
                     profile.recreate();
                 } catch(Exception ignored){}
             }
-            Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())), 20000,
+            Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())),
+                    20000,
                     user.getId(), user.getName(), 0, 0, user.getAvatarUrl(),
-                    event.getGuild().getId());
+                    event.getGuild().getId(), new ArrayList<>());
             userProfile.createProfile();
         });
         for(TextChannel channel : event.getGuild().getTextChannels()) {
@@ -173,20 +171,6 @@ public class GuildListener extends ListenerAdapter {
             .maxSize(100000000)
             .expiration(10, TimeUnit.SECONDS)
             .build();
-    public static Map<String, String> heistControl = ExpiringMap
-            .builder()
-            .maxSize(100000000)
-            .expiration(1, TimeUnit.MINUTES)
-            .expirationListener((k, v) -> MainBot.getJda().retrieveUserById((String) k).queue(user ->
-                user.openPrivateChannel().queue(channel -> {
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
-                    embedBuilder.setColor(0x000dff);
-
-                    embedBuilder.setTitle("The wait is over!");
-                    embedBuilder.setDescription("You may now participate in a heist.");
-                    channel.sendMessage(embedBuilder.build()).queue();
-            })))
-            .build();
     public static Map<String, String> prison = ExpiringMap
             .builder()
             .maxSize(100000000)
@@ -202,6 +186,22 @@ public class GuildListener extends ListenerAdapter {
                         channel.sendMessage(embedBuilder.build()).queue();
                     })))
             .build();
+    public static Map<String, String> heistControl = ExpiringMap
+            .builder()
+            .maxSize(100000000)
+            .expiration(1, TimeUnit.MINUTES)
+            .expirationListener((k, v) -> MainBot.getJda().retrieveUserById((String) k).queue(user ->
+                user.openPrivateChannel().queue(channel -> {
+                    if(prison.containsKey(user.getId())) return;
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setColor(0x000dff);
+
+                    embedBuilder.setTitle("The wait is over!");
+                    embedBuilder.setDescription("You may now participate in a heist.");
+                    channel.sendMessage(embedBuilder.build()).queue();
+            })))
+            .build();
+
     public static Map<String, String> bugControl = ExpiringMap
             .builder()
             .maxSize(1000)
@@ -210,6 +210,7 @@ public class GuildListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         if(event.getAuthor().isBot()) return;
+        if(event.getAuthor().getId().equals("840979342209056798")) return;
         try {
             Profile profile = Profile.getProfile(event.getAuthor());
             profile.incrementXP(10, event);
@@ -240,6 +241,7 @@ public class GuildListener extends ListenerAdapter {
                 .getCollection("blacklist")
                 .find(new Document("ID", event.getAuthor().getId())).iterator().hasNext()){
             event.getChannel().sendMessage("You have been blacklisted from SorinoRPG.").queue();
+            System.out.println("Blacklisted user attempt: " + event.getAuthor().getId());
             return;
         }
 
@@ -302,6 +304,7 @@ public class GuildListener extends ListenerAdapter {
     @Override
     public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
         if(event.getAuthor().isBot()) return;
+
 
         String mess = event.getMessage().getContentRaw();
         if(mess.startsWith("APPEAL:")){

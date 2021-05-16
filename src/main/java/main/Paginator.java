@@ -41,7 +41,7 @@ public class Paginator {
     }
 
     public void paginate(){
-        if(embeds.size() > 1) {
+        if(embeds.size() > 0) {
             ArrayList<EmbedBuilder> preEmbeds = new ArrayList<>();
 
             isSinglePage = false;

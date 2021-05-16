@@ -5,6 +5,8 @@ import com.mongodb.client.MongoDatabase;
 import data.logging.Logger;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
+import game.items.type.Item;
+import game.items.type.ItemNotFound;
 import main.userinterface.Prefix;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -19,21 +21,24 @@ import java.util.*;
 import org.bson.Document;
 
 public class Profile {
-    private final ArrayList<Sorino> userSorino;
-    private int coins;
-    private final String ID;
-    private String name;
-    private String imageUrl;
-    private final String guildID;
-    private int wins;
-    private int loses;
-    private int level;
-    private int xpLevelThresh;
-    private int xp;
+    public final ArrayList<Sorino> userSorino;
+    public final ArrayList<Item> userItems;
+    public int coins;
+    public final String ID;
+    public String name;
+    public String imageUrl;
+    public final String guildID;
+    public int wins;
+    public int loses;
+    public int level;
+    public int xpLevelThresh;
+    public int xp;
 
     public Profile(ArrayList<Sorino> sorino, int coins,
-                   String id, String name, int wins, int loses, String imageUrl, String guildID) {
+                   String id, String name, int wins, int loses, String imageUrl, String guildID,
+                   ArrayList<Item> userItems) {
         this.userSorino = sorino;
+        this.userItems = userItems;
         this.coins = coins;
         this.ID = id;
         this.name = name;
@@ -48,7 +53,7 @@ public class Profile {
 
     public Profile(ArrayList<Sorino> sorino, int coins,
                    String id, String name, int wins, int loses, String imageUrl, String guildID, int xp,
-                   int xpLevelThresh, int level) {
+                   int xpLevelThresh, int level, ArrayList<Item> userItems) {
         this.userSorino = sorino;
         this.coins = coins;
         this.ID = id;
@@ -60,6 +65,7 @@ public class Profile {
         this.level = level;
         this.xpLevelThresh = xpLevelThresh;
         this.xp = xp;
+        this.userItems = userItems;
     }
 
     public Sorino getSpecificSorino(String sorinoStr) throws SorinoNotFoundException {
@@ -74,6 +80,15 @@ public class Profile {
 
     public ArrayList<Sorino> getSorinoAsList() {
         return userSorino;
+    }
+
+    public Item getSpecificItem(String item) throws ItemNotFound {
+        for (Item userItem : userItems) {
+            if(userItem.getName().equals(item))
+                return userItem;
+
+        }
+        throw new ItemNotFound(item);
     }
 
     public void addSorino(Sorino sorino) {
@@ -93,6 +108,31 @@ public class Profile {
                 return;
             }
         }
+    }
+
+    public void addItem(Item item){
+        for(int i = 0; i < this.userItems.size(); i++){
+            Item item1 = this.userItems.get(i);
+            if(item.getName().equals(item1.getName())){
+                item1.add();
+                this.userItems.set(i, item);
+                return;
+            }
+        }
+        this.userItems.add(item);
+    }
+
+    public void removeItem(Item item){
+        for(int i = 0; i < this.userItems.size(); i++){
+            Item item1 = this.userItems.get(i);
+            if(item.getName().equals(item1.getName())){
+                item1.remove();
+                if(item1.getDuplication() == 0) break;
+                this.userItems.set(i, item);
+                return;
+            }
+        }
+        this.userItems.add(item);
     }
 
     public String getImageUrl() {
@@ -244,7 +284,8 @@ public class Profile {
                 .append("userID", ID)
                 .append("name", name)
                 .append("imageUrl", imageUrl)
-                .append("userSorino", sorinoStr);
+                .append("userSorino", sorinoStr)
+                .append("userItems", userItems);
     }
 
     public static Profile toProfile(Document document){
@@ -263,21 +304,31 @@ public class Profile {
         ArrayList<Sorino> userSorino = new ArrayList<>();
         ArrayList<String> sorinoStr = new ArrayList<>(document.getList("userSorino", String.class));
 
+        ArrayList<Item> userItems = new ArrayList<>();
+        ArrayList<Document> items = new ArrayList<>(document.getList("userItems", Document.class));
+
         try {
             for(String string : sorinoStr) {
                 String newStr = string.substring(0, string.indexOf(":"));
                 Sorino sorino = Sorino.AllSorino.getSorino(newStr);
                 userSorino.add(sorino);
             }
-        } catch (SorinoNotFoundException e) {
+
+            for(Document document1 : items){
+                Item item = Item.toItem(document1);
+                userItems.add(item);
+            }
+        } catch (SorinoNotFoundException | ItemNotFound e) {
             e.printStackTrace();
         }
-        return new Profile(userSorino, coins, userID, name, wins, loses, imageUrl, guildID, xp, xpLevelThresh, level);
+        return new Profile(userSorino, coins, userID, name, wins, loses, imageUrl, guildID, xp, xpLevelThresh, level,
+                userItems);
     }
 
     @Override
     public String toString() {
         return "Sorino: " + userSorino.toString() + "\n" +
+                "Items: " + userItems.toString() + "\n" +
                 "Coins: " + coins + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +

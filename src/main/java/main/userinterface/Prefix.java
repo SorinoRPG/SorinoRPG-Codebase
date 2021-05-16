@@ -131,12 +131,6 @@ public class Prefix {
                 return "INFO";
             }
         },
-        ACCOUNT() {
-            @Override
-            public String prefix() {
-                return "ACCOUNT";
-            }
-        },
         INVITE(){
             @Override
             public String prefix() {

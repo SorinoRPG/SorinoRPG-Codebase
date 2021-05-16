@@ -31,8 +31,8 @@ public class Fight implements Serializable{
 
     public void saveFight(String idSum) {
          if(FightManager.fightMap.containsKey(idSum))
-            FightManager.fightMap.put(idSum, this);
-         else FightManager.fightMap.replace(idSum, this);
+            FightManager.fightMap.replace(idSum, this);
+         else FightManager.fightMap.put(idSum, this);
     }
     public static Fight readFight(String idSum) throws FightNotFoundException {
         if(!FightManager.fightMap.containsKey(idSum)) throw new FightNotFoundException();

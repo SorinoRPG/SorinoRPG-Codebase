@@ -1,5 +1,6 @@
 package game.storymode;
 
+import game.items.type.Item;
 import game.storymode.episodes.C1Episode1;
 
 import java.util.ArrayList;

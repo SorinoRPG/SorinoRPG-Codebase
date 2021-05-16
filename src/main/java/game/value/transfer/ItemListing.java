@@ -3,14 +3,15 @@ package game.value.transfer;
 import data.Profile;
 import data.ProfileNotFoundException;
 import game.characters.Sorino;
+import game.items.type.Item;
 import net.dv8tion.jda.api.entities.User;
 import org.bson.Document;
 
 import java.util.ArrayList;
 
-public class SorinoListing implements Listing{
+public class ItemListing implements Listing{
     String nameOfSeller;
-    Sorino sorino;
+    Item item;
     int price;
     long timeAllocated;
     long timeInserted;
@@ -20,9 +21,9 @@ public class SorinoListing implements Listing{
     String highestBidderName;
     ArrayList<String> losingBidders;
 
-    public SorinoListing(User seller, Sorino sorino, int price, long timeAllocated){
+    public ItemListing(User seller, Item item, int price, long timeAllocated){
         this.nameOfSeller = seller.getAsTag();
-        this.sorino = sorino;
+        this.item = item;
         this.price = price;
         this.timeAllocated = timeAllocated;
         this.timeInserted = System.currentTimeMillis();
@@ -36,11 +37,11 @@ public class SorinoListing implements Listing{
         this.losingBidders.add(seller.getId());
     }
 
-    private SorinoListing(String nameOfSeller, Sorino sorino, int price, long timeAllocated, long timeInserted,
+    private ItemListing(String nameOfSeller, Item item, int price, long timeAllocated, long timeInserted,
                           String sellerID, String listingID, String highestBidderID, String highestBidderName,
                           ArrayList<String> losingBidders){
         this.nameOfSeller = nameOfSeller;
-        this.sorino = sorino;
+        this.item = item;
         this.price = price;
         this.timeAllocated = timeAllocated;
         this.timeInserted = timeInserted;
@@ -60,7 +61,7 @@ public class SorinoListing implements Listing{
 
     @Override
     public String nameOfItem() {
-        return this.sorino.getName();
+        return this.item.getName();
     }
 
     @Override
@@ -69,8 +70,8 @@ public class SorinoListing implements Listing{
                 "SELLER: " + nameOfSeller() + "\n" +
                 "PRICE: " + this.price + "\n" +
                 "LISTING ID: " + this.listingID + "\n" +
-                "BASE HEALTH: " + sorino.getHealth(0) + "\n" +
-                "BASE ENERGY: " + sorino.getEnergy(0) ;
+                "ITEM CAPABILITY: " + this.item.getCapability().toString() + "\n" +
+                "ITEM AMOUNT: " + this.item.getDuplication();
     }
 
     @Override
@@ -87,8 +88,10 @@ public class SorinoListing implements Listing{
     public boolean checkHasItem(User user) throws ProfileNotFoundException {
         if(user.isBot()) return true;
         Profile profile = Profile.getProfile(user);
-        for(Sorino sorino : profile.getSorinoAsList())
-            if(sorino.getName().equals(this.sorino.getName())) return true;
+        for(Item item : profile.userItems)
+            if(item.getName().equals(this.item.getName()))
+                return true;
+
         return false;
     }
 
@@ -131,12 +134,12 @@ public class SorinoListing implements Listing{
 
     @Override
     public void awardItem(Profile profile) {
-        profile.addSorino(this.sorino);
+        profile.addItem(item);
     }
 
     @Override
     public void removeItem(Profile profile) {
-        profile.removeSorino(sorino);
+        profile.removeItem(item);
     }
 
     @Override
@@ -147,7 +150,7 @@ public class SorinoListing implements Listing{
     @Override
     public Document toDocument() {
         return new Document("nameOfSeller", this.nameOfSeller)
-                .append("sorino", this.sorino.getName())
+                .append("item", this.item.getName())
                 .append("price", this.price)
                 .append("timeAllocated", this.timeAllocated)
                 .append("timeInserted", this.timeInserted)
@@ -159,14 +162,13 @@ public class SorinoListing implements Listing{
     }
 
 
-    public static SorinoListing toListing(Document document) {
-        Sorino sorino = null;
+    public static ItemListing toListing(Document document) {
+        Item item = null;
         try {
-            String sorinoStr = document.getString("sorino");
-            sorinoStr = sorinoStr.substring(0, sorinoStr.indexOf(":"));
-            sorino = Sorino.AllSorino.getSorino(sorinoStr);
+            String itemStr = document.getString("item");
+            item = Item.AllItems.getItem(itemStr);
         } catch (Exception ignored){}
-        return new SorinoListing(document.getString("nameOfSeller"), sorino, document.getInteger("price"),
+        return new ItemListing(document.getString("nameOfSeller"), item, document.getInteger("price"),
                 document.getLong("timeAllocated"), document.getLong("timeInserted"),
                 document.getString("sellerID"), document.getString("listingID"),
                 document.getString("highestBidderID"), document.getString("highestBidderName"),
@@ -177,4 +179,5 @@ public class SorinoListing implements Listing{
     public String toString() {
         return this.toDocument().toJson();
     }
+
 }

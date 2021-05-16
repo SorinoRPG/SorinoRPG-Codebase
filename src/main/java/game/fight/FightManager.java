@@ -232,41 +232,28 @@ public class FightManager {
         AtomicReference<Double> returnMultiplier = new AtomicReference<>((double) 0);
         event.getJDA().retrieveUserById(gameInfo.getWinner()).queue(user ->
                         event.getJDA().retrieveUserById(gameInfo.getLoser()).queue(user1 -> {
-            try {
-                Profile winnerProfile = Profile.getProfile(user);
-                Profile loserProfile = Profile.getProfile(user1);
-                double coinMultiplier = Math.sqrt((double) (winnerProfile.getLevel() +
-                        loserProfile.getLevel()) / 2);
+                            try {
+                                Profile winnerProfile = Profile.getProfile(user);
+                                Profile loserProfile = Profile.getProfile(user1);
+                                double coinMultiplier = Math.sqrt((double) (winnerProfile.getLevel() +
+                                        loserProfile.getLevel()) / 2);
 
-                winnerProfile.setCoins((int) Math.floor((600) * coinMultiplier));
-                winnerProfile.incrementWin();
+                                winnerProfile.setCoins((int) Math.floor((600) * coinMultiplier));
+                                winnerProfile.incrementWin();
 
-                winnerProfile.incrementXP(600, event);
-                loserProfile.incrementLoss();
-                loserProfile.setCoins((int) Math.floor((-150) * coinMultiplier));
+                                winnerProfile.incrementXP(600, event);
+                                loserProfile.incrementLoss();
+                                loserProfile.setCoins((int) Math.floor((-150) * coinMultiplier));
 
-                winnerProfile.recreate();
-                loserProfile.recreate();
+                                winnerProfile.recreate();
+                                loserProfile.recreate();
 
-                returnMultiplier.set(coinMultiplier);
-            } catch (Exception e) {
-                try{
-                    Logger logger1 =
-                            new Logger("Error in finding Profile due to IO and Classes \n" +
-                                    Logger.exceptionAsString(e));
-                    event.getChannel().sendMessage(
-                            "Could not find profile due to IO and Classes "
-                    ).queue();
+                                returnMultiplier.set(coinMultiplier);
+                            } catch (Exception e) {
+                                event.getChannel().sendMessage("There was an error in finding a users profile!").queue();
+                            }
 
-                    logger1.logError();
-                } catch (IOException excI){
-                    event.getChannel().sendMessage(
-                            "Error in logging, mention a dev to get it fixed! @Developers\n" +
-                                    Logger.exceptionAsString(excI)
-                    ).queue();
-                }
-            } }
-            ));
+                        }));
 
         return returnMultiplier.get();
     }
