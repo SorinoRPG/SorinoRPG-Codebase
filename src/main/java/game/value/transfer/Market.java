@@ -216,7 +216,7 @@ public class Market {
 
 
 
-    public static MessageEmbed bid(Listing listing, int price, User user, Profile profile) {
+    public static MessageEmbed bid(Listing listing, int price, User user, Profile profile){
         if(listing.price() >= price) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(0x00dff);
@@ -239,10 +239,25 @@ public class Market {
             embedBuilder.setFooter("Please try make more money, or a lower bid.");
 
             return embedBuilder.build();
+        } else if(((profile.coins - profile.coinsToBeSpent) - price) < 0){
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(0x00dff);
+            embedBuilder.setThumbnail(user.getAvatarUrl());
+
+            embedBuilder.setTitle("Error in bidding.");
+            embedBuilder.setDescription("Your bid offer of " + price + " coins you are yet to pay are outstanding.");
+            embedBuilder.setFooter("Please try make more money, or a lower bid.");
+
+            return embedBuilder.build();
         }
 
         listing.setHighestBidderID(user);
         listing.setPrice(price);
+
+        try {
+            profile.addCoinsToBeSpent(price);
+            profile.recreate();
+        } catch(ProfileNotFoundException ignored) {}
 
         for(String userID : listing.lostBidderIds()){
             if(userID.equals(MainBot.getJda().getSelfUser().getId())) continue;

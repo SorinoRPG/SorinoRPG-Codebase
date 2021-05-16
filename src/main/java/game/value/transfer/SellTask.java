@@ -66,6 +66,7 @@ public class SellTask implements Runnable{
                     Profile profile = Profile.getProfile(user);
                     sorinoListing.awardItem(profile);
                     profile.setCoins(-sorinoListing.price());
+                    profile.removeCoinsToBeSpent(sorinoListing.price());
                     profile.recreate();
 
                     user.openPrivateChannel().queue(channel -> {
@@ -75,6 +76,67 @@ public class SellTask implements Runnable{
 
                         embed.setTitle("Congratulations! You won the biding race!");
                         embed.setDescription(sorinoListing.descOfItem());
+                        embed.setFooter("Amazing!");
+                        channel.sendMessage(embed.build()).queue();
+                    });
+                } catch(Exception ignored){}
+            });
+        } else if(document.containsKey("item")){
+            Listing itemListing = ItemListing.toListing(document);
+            if(itemListing.highestBidderID().equals(itemListing.sellerID())){
+
+                MainBot.getJda().retrieveUserById(itemListing.sellerID()).queue(
+                        user -> {
+                            if(user.isBot()) return;
+                            user.openPrivateChannel().queue(channel -> {
+                                EmbedBuilder embed = new EmbedBuilder();
+                                embed.setColor(0x00dff);
+                                embed.setThumbnail(user.getAvatarUrl());
+
+                                embed.setTitle("Unfortunately, nobody bid on your listing");
+                                embed.setDescription(itemListing.descOfItem());
+                                embed.setFooter("Try to set the price lower, or sell a more wanted Sorino");
+                                channel.sendMessage(embed.build()).queue();
+                            });
+                        });
+            }
+
+            MainBot.getJda().retrieveUserById(itemListing.sellerID()).queue(user ->{
+                try{
+                    if(user.isBot()) return;
+                    Profile profile = Profile.getProfile(user);
+                    itemListing.removeItem(profile);
+                    profile.setCoins(itemListing.price());
+                    profile.recreate();
+
+                    user.openPrivateChannel().queue(channel -> {
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.setColor(0x00dff);
+                        embed.setThumbnail(user.getAvatarUrl());
+
+                        embed.setTitle("Congratulations! You made " + itemListing.price() + " coins on your post!");
+                        embed.setDescription(itemListing.descOfItem());
+                        embed.setFooter("Amazing!");
+                        channel.sendMessage(embed.build()).queue();
+                    });
+                } catch(Exception ignored){}
+            });
+
+            MainBot.getJda().retrieveUserById(itemListing.highestBidderID()).queue(user -> {
+                try{
+                    Profile profile = Profile.getProfile(user);
+                    itemListing.awardItem(profile);
+                    profile.setCoins(-itemListing.price());
+                    profile.removeCoinsToBeSpent(itemListing.price());
+                    profile.recreate();
+
+                    user.openPrivateChannel().queue(channel -> {
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.setColor(0x00dff);
+                        embed.setThumbnail(user.getAvatarUrl());
+
+                        embed.setTitle("Congratulations! You won the biding race!");
+                        embed.setDescription(itemListing.descOfItem());
                         embed.setFooter("Amazing!");
                         channel.sendMessage(embed.build()).queue();
                     });

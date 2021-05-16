@@ -137,7 +137,7 @@ public class GuildListener extends ListenerAdapter {
             Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())),
                     20000,
                     user.getId(), user.getName(), 0, 0, user.getAvatarUrl(),
-                    event.getGuild().getId(), new ArrayList<>());
+                    0, new ArrayList<>());
             userProfile.createProfile();
         });
         for(TextChannel channel : event.getGuild().getTextChannels()) {

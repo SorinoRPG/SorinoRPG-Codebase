@@ -37,6 +37,8 @@ public class MarketPoster implements Task {
     @Override
     public void doTask() {
         try {
+            Market.update();
+
             ArrayList<Sorino> sorinoArrayList = new ArrayList<>();
             for (int i = 0; i < sorino; i++) {
                 Sorino sorinoToBeAdded = Sorino.AllSorino.getRandom();

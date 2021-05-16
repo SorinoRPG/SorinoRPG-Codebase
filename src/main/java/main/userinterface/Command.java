@@ -757,7 +757,7 @@ public enum Command {
         }
         Profile userProfile = new Profile(new ArrayList<>(Collections.singletonList(new Gray())), 50,
                 event.getAuthor().getId(), event.getAuthor().getName(), 0, 0, event.getAuthor().getAvatarUrl(),
-                event.getGuild().getId(), new ArrayList<>());
+                0, new ArrayList<>());
         userProfile.createProfile();
         EmbedBuilder message = new EmbedBuilder();
         message.setColor(0x000dff);

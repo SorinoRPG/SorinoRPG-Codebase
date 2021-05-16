@@ -27,7 +27,7 @@ public class Profile {
     public final String ID;
     public String name;
     public String imageUrl;
-    public final String guildID;
+    public int coinsToBeSpent;
     public int wins;
     public int loses;
     public int level;
@@ -35,37 +35,46 @@ public class Profile {
     public int xp;
 
     public Profile(ArrayList<Sorino> sorino, int coins,
-                   String id, String name, int wins, int loses, String imageUrl, String guildID,
+                   String id, String name, int wins, int loses, String imageUrl, int coinsToBeSpent,
                    ArrayList<Item> userItems) {
         this.userSorino = sorino;
         this.userItems = userItems;
         this.coins = coins;
+        this.coinsToBeSpent = coinsToBeSpent;
         this.ID = id;
         this.name = name;
         this.wins = wins;
         this.loses = loses;
         this.imageUrl = imageUrl;
-        this.guildID = guildID;
         this.level = 0;
         this.xpLevelThresh = 500;
         this.xp = 0;
     }
 
     public Profile(ArrayList<Sorino> sorino, int coins,
-                   String id, String name, int wins, int loses, String imageUrl, String guildID, int xp,
+                   String id, String name, int wins, int loses, String imageUrl, int coinsToBeSpent, int xp,
                    int xpLevelThresh, int level, ArrayList<Item> userItems) {
         this.userSorino = sorino;
         this.coins = coins;
+        this.coinsToBeSpent = coinsToBeSpent;
         this.ID = id;
         this.name = name;
         this.wins = wins;
         this.loses = loses;
         this.imageUrl = imageUrl;
-        this.guildID = guildID;
         this.level = level;
         this.xpLevelThresh = xpLevelThresh;
         this.xp = xp;
         this.userItems = userItems;
+    }
+
+    public void addCoinsToBeSpent(int coins){
+        this.coinsToBeSpent += coins;
+    }
+
+    public void removeCoinsToBeSpent(int coins){
+        this.coinsToBeSpent -= coins;
+        if(coinsToBeSpent < 0) coinsToBeSpent = 0;
     }
 
     public Sorino getSpecificSorino(String sorinoStr) throws SorinoNotFoundException {
@@ -137,10 +146,6 @@ public class Profile {
 
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    public String getGuildID() {
-        return guildID;
     }
 
     public void setCoins(int amount) {
@@ -280,7 +285,7 @@ public class Profile {
                 .append("level", level)
                 .append("xpLevelThresh", xpLevelThresh)
                 .append("xp", xp)
-                .append("guildID", guildID)
+                .append("coinsToBeSpent", coinsToBeSpent)
                 .append("userID", ID)
                 .append("name", name)
                 .append("imageUrl", imageUrl)
@@ -294,10 +299,10 @@ public class Profile {
             loses = document.getInteger("loses"),
             level = document.getInteger("level"),
             xp = document.getInteger("xp"),
-            xpLevelThresh = document.getInteger("xpLevelThresh");
+            xpLevelThresh = document.getInteger("xpLevelThresh"),
+            coinsToBeSpent = document.getInteger("coinsToBeSpent");
 
-        String guildID = document.getString("guildID"),
-               userID = document.getString("userID"),
+        String userID = document.getString("userID"),
                name = document.getString("name"),
                imageUrl = document.getString("imageUrl");
 
@@ -321,7 +326,8 @@ public class Profile {
         } catch (SorinoNotFoundException | ItemNotFound e) {
             e.printStackTrace();
         }
-        return new Profile(userSorino, coins, userID, name, wins, loses, imageUrl, guildID, xp, xpLevelThresh, level,
+        return new Profile(userSorino, coins, userID, name,
+                wins, loses, imageUrl, coinsToBeSpent, xp, xpLevelThresh, level,
                 userItems);
     }
 
