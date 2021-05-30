@@ -1,13 +1,20 @@
 package game.heist;
 
+import game.items.type.Item;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
 
-import java.io.Serializable;
+public interface Stage {
+    MessageEmbed option();
 
-public interface Stage extends Serializable {
-    MessageEmbed ask(String p, User user);
-    int processChoice(char choice);
-    MessageEmbed failure(User user);
-    MessageEmbed success(User user);
+    Result result(Item item);
+
+    class Result {
+        public MessageEmbed embed;
+        public int resultInteger;
+
+        Result(MessageEmbed embed, int resultInteger){
+            this.embed = embed;
+            this.resultInteger = resultInteger;
+        }
+    }
 }

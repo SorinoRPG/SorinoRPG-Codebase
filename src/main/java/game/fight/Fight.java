@@ -1,5 +1,6 @@
 package game.fight;
 
+import game.GameSaver;
 import game.characters.Sorino;
 
 import java.io.*;
@@ -30,16 +31,16 @@ public class Fight implements Serializable{
     public int currFighter = 0;
 
     public void saveFight(String idSum) {
-         if(FightManager.fightMap.containsKey(idSum))
-            FightManager.fightMap.replace(idSum, this);
-         else FightManager.fightMap.put(idSum, this);
+         if(GameSaver.fightMap.containsKey(idSum))
+            GameSaver.fightMap.replace(idSum, this);
+         else GameSaver.fightMap.put(idSum, this);
     }
     public static Fight readFight(String idSum) throws FightNotFoundException {
-        if(!FightManager.fightMap.containsKey(idSum)) throw new FightNotFoundException();
-        return FightManager.fightMap.get(idSum);
+        if(!GameSaver.fightMap.containsKey(idSum)) throw new FightNotFoundException();
+        return GameSaver.fightMap.get(idSum);
     }
     public void endFight(String idSum){
-       FightManager.fightMap.remove(idSum);
+       GameSaver.fightMap.remove(idSum);
     }
 
 }

@@ -1,16 +1,13 @@
 package game.heist;
 
-public class HeistNotFoundException extends Exception {
-    String cause;
+public class HeistNotFoundException extends Exception{
+    String channelID;
 
-    public HeistNotFoundException(String cause){
-        this.cause = cause;
+    HeistNotFoundException(String channelId){
+        this.channelID = channelId;
     }
 
-    @Override
-    public String toString() {
-        return "HeistNotFoundException{" +
-                "cause='" + cause + '\'' +
-                '}';
+    public String getChannelID() {
+        return channelID;
     }
 }

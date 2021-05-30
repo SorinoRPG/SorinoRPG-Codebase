@@ -6,18 +6,18 @@ import data.Profile;
 import data.ProfileNotFoundException;
 import data.logging.Logger;
 
+import game.GameSaver;
 import game.fight.*;
 import game.fight.streetfight.StreetFight;
 import game.fight.streetfight.StreetProtector;
-import game.heist.Heist;
-import game.heist.HeistNotFoundException;
+import game.heist.*;
 import game.SorinoNotFoundException;
 import game.characters.Sorino;
 import game.characters.starter.Gray;
 
 import game.items.type.Item;
+import game.items.type.ItemNotFound;
 import game.value.Slots;
-import game.value.Wrap;
 import game.value.transfer.*;
 import main.Paginator;
 import main.userinterface.parser.MarketParser;
@@ -210,7 +210,7 @@ public enum Command {
             try {
                 Profile profile = Profile.getProfile(event.getAuthor());
                 int probabilityResult = new Random().nextInt(100);
-                if (probabilityResult < 90) {
+                if (probabilityResult > 0 && probabilityResult < 25) {
                     EmbedBuilder message = new EmbedBuilder();
                     message.setColor(0x000dff);
 
@@ -224,6 +224,21 @@ public enum Command {
                     profile.setCoins(coins);
                     profile.incrementXP(coins / 2, event);
                     profile.recreate();
+                } else if(probabilityResult > 25 && probabilityResult < 51) {
+                   Item item = Item.AllItems.randomItem();
+                   profile.addItem(item);
+                   item = profile.getSpecificItem(item.getName());
+
+                   EmbedBuilder message = new EmbedBuilder();
+                   message.setColor(0x000dff);
+                   message.setTitle(event.getAuthor().getName() + " found something!");
+                   message.setDescription(event.getMessage().getAuthor().getName()
+                           + " found a " + item.getName() + "(" + item.getDuplication() + ")");
+                   message.setFooter("Nice!", event.getAuthor().getAvatarUrl());
+
+
+                    event.getChannel().sendMessage(message.build()).queue();
+                   profile.recreate();
                 } else {
                     boolean didCatch = new Random().nextInt(100) > 70;
                     Sorino sorino = Sorino.AllSorino.getRandom();
@@ -340,8 +355,8 @@ public enum Command {
              if(event.getMessage().getMentionedUsers().get(0).equals(event.getAuthor())){
                  event.getChannel().sendMessage("You cannot battle yourself!").queue();
                  return;
-             } else if(FightManager.fightExists(event.getChannel().getId())){
-                 event.getChannel().sendMessage("There is a battle going on currently in this channel.").queue();
+             } else if(GameSaver.exists(event.getChannel().getId())){
+                 event.getChannel().sendMessage("There is an event already happening in this channel.").queue();
                  return;
              }
 
@@ -461,291 +476,208 @@ public enum Command {
          }
     }),
     HEIST(event -> {
-        String mainMessage = event.getMessage()
-                .getContentRaw().replace(Prefix.guildPrefix(event.getGuild().getId()),
-                        "");
+        if(!event.getAuthor().getAsTag().equals("Manny#6363"))
+            event.getChannel().sendMessage("Sorry! Heists are being revamped, please come back soon!").queue();
 
-        String message = mainMessage.toUpperCase().substring(1);
-        if(message.equalsIgnoreCase("SELECT")){
-            if(Heist.HeistUtil.exists(event.getChannel().getId())) {
-                event.getChannel().sendMessage("Sorry! There is already a heist " +
-                        "in this channel!").queue();
+        String p = Prefix.guildPrefix(event.getGuild().getId());
+        String command = event.getMessage().getContentRaw().replace(p
+                        + "H", "");
+        String commandArgument = command.substring(command.lastIndexOf(" ")).strip();
+
+        if(command.equalsIgnoreCase("HELP")){
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setColor(0x00dff);
+            embed.addField(p + "HCHOOSE <HEIST>",
+                    "This will allow you to the selected <HEIST>. If no heist is selected, or the heist selected " +
+                            "does not exist, then a list of heists will be shown.",
+                    true);
+            embed.addField(p + "HJOIN",
+                     "This will allow you to join the current heist in a channel, YOU CANNOT JOIN A HEIST AFTER IT HAS " +
+                             "ALREADY STARTED",
+                    true);
+            embed.addField(p + "HKICK @mention",
+                    "This will allow you to remove @mention from the current heist in a channel, only the heist " +
+                            "leader can do this, and you cannot kick someone after the heist has started.",
+                    true);
+            embed.addField(p + "HCUT @mention <PERCENT>",
+                    "This will allow you to set @mention's cut of the heist rewards to a <PERCENT>. " +
+                            "You cannot set cuts during setup heists, or after a heist has started. The cuts are set " +
+                            "by the heist leader, and cannot add up to over 100.",
+                    true);
+            embed.addField(p + "HSTART",
+                    "This will start the heist.",
+                    true);
+            embed.addField(p + "HUSE <Item>",
+                    "This will allow you to use <Item> in a heist.",
+                    true);
+
+        } else if(command.toUpperCase().startsWith("CHOOSE")){
+            if(GameSaver.exists(event.getChannel().getId())){
+                event.getChannel().sendMessage("There is already an event in this channel, please try again later, " +
+                        "or in a different channel.").queue();
                 return;
             }
-            try {
-                Profile.getProfile(event.getAuthor());
-            } catch (Exception e){
-                Logger logger1 =
-                        new Logger("Error in finding Profile due to IO and Classes \n" +
-                                Logger.exceptionAsString(e));
-                event.getChannel().sendMessage(
-                        "You don't have a profile! Enter: `" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "C`\n" +
-                                "If you do have an account, join the support server!"
-                ).queue();
-                try{
-                    logger1.logError();
-                } catch (IOException excI){
-                    excI.printStackTrace();
-                }
-            }
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            String choice = command.replace("CHOOSE ", "");
+            Heist heist = Heist.HeistUtil.getHeist(choice);
 
-            embedBuilder.setTitle("Available heists!");
-            embedBuilder.setColor(0x000dff);
+            if(heist == null){
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle("Available Heists");
+                embed.setColor(0x000dff);
 
-            for(Heist heist : Heist.HeistUtil.getAll())
-                embedBuilder.addField(heist.getName() + " | Type: " + heist.getType(),
-                                "SETUP COST: " + heist.setupCost() + " coins\n" +
-                                "PAYOUT: " + heist.payout() + " coins\n" +
-                                "ENTER TO CHOOSE: " +
-                                "`" + Prefix.guildPrefix(event.getGuild().getId()) +
-                                "H" + heist.getName() + "`",
-                        true);
-
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
-        } else if(Heist.HeistUtil.isHeist(message)){
-            if(Heist.HeistUtil.exists(event.getChannel().getId())) {
-                event.getChannel().sendMessage("Sorry! There is already a heist " +
-                        "in this channel!").queue();
-                return;
-            }
-
-            try {
-                Heist heist = Heist.HeistUtil.getHeist(message);
-
-                Profile profile = Profile.getProfile(event.getAuthor());
-                if(!profile.spend(heist.setupCost())){
-                    event.getChannel().sendMessage("You can't afford this heist!").queue();
-                    return;
-                } else if (heist.levelBoundary() >= profile.getLevel()){
-                    event.getChannel().sendMessage("You are too low a level to begin this heist, come back when " +
-                            "you are level " + heist.levelBoundary() + 1).queue();
-                    return;
-                }
-
-                heist.setLeaderID(event.getAuthor().getId());
-                heist.addMember(event.getAuthor().getId());
-
-                event.getChannel().sendMessage(heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
-
-                heist.saveHeist(event.getChannel().getId());
-            } catch (Exception e){
-                event.getChannel().sendMessage("There was an error in creating this heist!" +
-                        "\nMaybe this heist does not exist, make sure the heists' name is " +
-                        "what you have entered.").queue();
-            }
-        } else if(message.equalsIgnoreCase("JOIN")){
-            try {
-                Profile.getProfile(event.getAuthor());
-            } catch (Exception e){
-                event.getChannel().sendMessage("You do not have a profile! Enter: `" +
-                        Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
-            }
-            try {
-                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
-
-                if(heist.isFull()){
-                    event.getChannel().sendMessage("Yeah I'm sorry but this heist is FULL")
-                            .queue();
-                    return;
-                } else if(heist.getAllID().contains(event.getAuthor().getId())){
-                    event.getChannel().sendMessage("You are already in this heist!")
-                            .queue();
-                    return;
-                }
-
-                heist.addMember(event.getAuthor().getId());
-                heist.saveHeist(event.getChannel().getId());
-                event.getChannel().sendMessage(heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
-            } catch (HeistNotFoundException e){
-                event.getChannel().sendMessage(
-                        "Imagine trying to join a heist that does not exist").queue();
-            }
-        } else if (message.equalsIgnoreCase("START")){
-            try {
-                Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
-                if(!heist.getLeaderID().equals(event.getAuthor().getId())){
-                    event.getChannel().sendMessage("You are not the leader!").queue();
-                    event.getChannel().sendMessage(
-                            heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
-                    return;
-                } else if(!heist.isFull()){
-                    event.getChannel().sendMessage("You can't expect to pull this off" +
-                            " if you don't have a full team!").queue();
-                    event.getChannel().sendMessage(
-                            heist.heistState(Prefix.guildPrefix(event.getGuild().getId()))).queue();
-                    return;
-                }
-
-                heist.setCurrentID(heist.getAllID().get(new Random().nextInt(heist.getAllID().size())));
-                heist.saveHeist(event.getChannel().getId());
-                event.getJDA().retrieveUserById(heist.currentID()).queue(user -> event.getChannel().sendMessage(
-                        heist.getCurrentStage().ask(Prefix.guildPrefix(event.getGuild().getId()), user)).queue());
-            } catch (HeistNotFoundException e){
-                event.getChannel().sendMessage("This heist does not exist in this channel!")
-                        .queue();
-            }
-
-        } else if(message.endsWith("A") ||
-                  message.endsWith("B") ||
-                  message.endsWith("C")){
-            try {
-                 Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
-                if(!heist.currentID().equals(event.getAuthor().getId())){
-                    event.getChannel().sendMessage("It's not your turn!\n" +
-                            "Hold back or we will be caught!").queue();
-                    return;
-                }
-                switch (heist.getCurrentStage().processChoice(message.charAt(message.length()-1))){
-                    case 0xA:{ // Chose correctly
-                        String oldId = heist.currentID();
-                        while(oldId.equals(heist.currentID()))
-                            heist.setCurrentID(heist.getAllID().get(new Random().nextInt(
-                                    heist.getAllID().size())));
-                        event.getJDA().retrieveUserById(heist.currentID()).queue(user -> {
-                                event.getChannel().sendMessage(heist.getCurrentStage().success(user)).queue();
-                                heist.incrementStage();
-                                event.getChannel().sendMessage(
-                                heist.getCurrentStage()
-                                        .ask(Prefix.guildPrefix(event.getGuild().getId()), user)).queue();
-                                heist.saveHeist(event.getChannel().getId());
-                        });
-                        return;
-                    }
-                    case 0xB:{ // Chose incorrectly
-                        event.getJDA().retrieveUserById(heist.currentID()).queue(user ->
-                                event.getChannel().sendMessage(heist.getCurrentStage().failure(user)).queue());
-                        EmbedBuilder embed = new EmbedBuilder();
+                Paginator paginator = new Paginator(event.getAuthor().getName() + " is choosing their Sorino",
+                        0x000dff);
+                for(Heist heist1 : Heist.HeistUtil.getHeists()){
+                    if(embed.getFields().size() % 6 == 0 && embed.getFields().size() != 0){
+                        paginator.addPage(embed);
+                        embed = new EmbedBuilder();
+                        embed.setTitle("Available Heists");
                         embed.setColor(0x000dff);
-                        embed.setTitle(event.getAuthor().getName() + " has been sent to prison.");
-                        embed.setDescription("They were the last person at the crime scene. SENTENCE: " +
-                                "10 minutes");
-                        embed.setThumbnail(event.getAuthor().getAvatarUrl());
-                        embed.setFooter("Find prison boring? Try bribe the guards with " +
-                                Prefix.guildPrefix(event.getGuild().getId()) + "bribe");
-                        event.getChannel().sendMessage(embed.build()).queue();
-                        GuildListener.prison.put(event.getAuthor().getId(), event.getGuild().getId());
-                        for(String Id : heist.getAllID()){
-                            event.getJDA().retrieveUserById(Id).queue(user -> {
-                                GuildListener.heistControl.put(user.getId(), event.getGuild().getId());
-                                try{
-                                    Profile profile = Profile.getProfile(user);
-                                    profile.setCoins(-heist.bail());
-                                    profile.recreate();
-                                } catch (Exception e) {
-                                    Logger logger1 =
-                                            new Logger(
-                                                    Logger.exceptionAsString(e));
-                                    event.getChannel().sendMessage(
-                                            "There seems to be a problem with your account " +
-                                                    user.getAsMention() + "\n" +
-                                                    "Join the support server, So we can get it fixed!"
-                                    ).queue();
-                                    try{
-                                        logger1.logError();
-                                    } catch (IOException excI){
-                                        excI.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                        Heist.heistMap.remove(event.getChannel().getId());
-                        return;
                     }
-                    case 0xC:{ // Won heist
-                        event.getJDA().retrieveUserById(heist.currentID()).queue(user ->
-                        event.getChannel().sendMessage(heist.getCurrentStage().success(user)).queue());
 
-                        for(String Id : heist.getAllID()){
-                            event.getJDA().retrieveUserById(Id).queue(user -> {
-                                try{
-                                    GuildListener.heistControl.put(user.getId(), event.getGuild().getId());
-                                    Profile profile = Profile.getProfile(user);
-                                    profile.setCoins(heist.payout());
-                                    if(heist.getLeaderID().equals(Id))
-                                        profile.setCoins(heist.setupCost() * 2);
-                                    profile.recreate();
-                                } catch (Exception e) {
-                                    Logger logger1 =
-                                            new Logger(
-                                                    Logger.exceptionAsString(e));
-                                    event.getChannel().sendMessage(
-                                            "There seems to be a problem with your account " +
-                                                    user.getAsMention() + "\n" +
-                                                    "Join the support server, So we can get it fixed!"
-                                    ).queue();
-                                    try{
-                                        logger1.logError();
-                                    } catch (IOException excI){
-                                        excI.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                        Heist.heistMap.remove(event.getChannel().getId());
-                    }
+                    embed.addField(heist1.getName() + " | " + heist1.getType().getName() ,
+                            heist1.getDesc() + p + "H" + heist1.getName(),
+                            true);
                 }
-            } catch (HeistNotFoundException e){
-                    event.getChannel().sendMessage("This heist does not exist in this channel!")
-                            .queue();
-                    e.printStackTrace();
-                }
-        }
-        else if(message.endsWith("ABORT")){
-                try {
-                    Heist heist = Heist.HeistUtil.getCurrentHeist(event.getChannel().getId());
-                    if(!heist.getLeaderID().equals(event.getAuthor().getId())){
-                        event.getChannel().sendMessage("Don't try and end something you didn't start!")
-                                .queue();
-                        return;
-                    }
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
 
-                    embedBuilder.setTitle(event.getAuthor().getName() + " has abandoned their heist!");
-                    embedBuilder.setDescription("They aren't getting refunded");
-                    embedBuilder.setThumbnail(event.getAuthor().getAvatarUrl());
-                    embedBuilder.setColor(0x000dff);
 
-                    Heist.heistMap.remove(event.getChannel().getId());
-                    event.getChannel().sendMessage(embedBuilder.build()).queue();
-                } catch (Exception e){
-                    event.getChannel().sendMessage("There was an error in aborting!" +
-                            "\n Maybe the heist does not exist!").queue();
-                    Logger log = new Logger(Logger.exceptionAsString(e));
-                    try {
-                        log.logError();
-                    } catch (IOException exc){
-                    exc.printStackTrace();
+                if(paginator.embeds.size() == 0) {
+                    event.getChannel().sendMessage(embed.build()).queue();
+                    return;
                 }
+                paginator.addPage(embed);
+                paginator.paginate();
+
+                if(paginator.isSinglePage){
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue();
+                } else {
+                    event.getChannel().sendMessage(paginator.currentPage.build()).queue(message1 -> {
+                     Paginator.paginators.put(message1.getId(), paginator);
+                     message1.addReaction("\u2B05").queue();
+                     message1.addReaction("\u27A1").queue();
+                    });
+                }
+            } else {
+                heist.initialize(event.getChannel().getId(), new Participant(event.getAuthor(),
+                        Participant.HeistPosition.LEADER, 100));
+                heist.save();
+
+                event.getChannel().sendMessage(heist.heistState()).queue();
             }
-        } else if(message.equalsIgnoreCase("HELP")){
-            String p = Prefix.guildPrefix(event.getGuild().getId());
+        } else if(command.toUpperCase().startsWith("JOIN")){
+            try {
+                Heist heist = Heist.HeistUtil.getHeistById(event.getChannel().getId());
+                if(heist.getAllParticipants().size() == heist.getMaxPlayers()){
+                    event.getChannel().sendMessage("This heist is full at the moment!").queue();
+                    return;
+                }
 
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setColor(0x000dff);
+                heist.addParticipant(new Participant(event.getAuthor(), Participant.HeistPosition.PARTICIPANT,
+                        0));
+                heist.generateNewCut();
+                heist.save();
+                event.getChannel().sendMessage(heist.heistState()).queue();
+            } catch (HeistNotFoundException e) {
+                event.getChannel().sendMessage("There was no heist found with the channel ID of: " +
+                        e.getChannelID()).queue();
+            }
+        } else if(command.toUpperCase().startsWith("KICK")){
+            try {
+                Heist heist = Heist.HeistUtil.getHeistById(event.getChannel().getId());
+                Participant participant = heist.getParticipant(event.getMessage().getMentionedUsers().get(0).getId());
+                if(participant == null){
+                    event.getChannel().sendMessage("This participant does not exist!").queue();
+                    return;
+                }
+                heist.removeParticipant(participant);
+                heist.generateNewCut();
+                heist.save();
 
-            embedBuilder.setTitle("Heists");
+                event.getChannel().sendMessage(heist.heistState()).queue();
+            } catch (HeistNotFoundException e) {
+                event.getChannel().sendMessage("There was no heist found with the channel ID of: " +
+                        e.getChannelID()).queue();
+            } catch (IndexOutOfBoundsException e){
+                event.getChannel().sendMessage("You need to ping a user!").queue();
+            }
+        } else if(command.toUpperCase().startsWith("CUT")){
+            try {
+                int cut = Integer.parseInt(commandArgument);
+                if(cut > 100){
+                    event.getChannel().sendMessage("The cut cannot be larger than 100!").queue();
+                    return;
+                }
 
-            embedBuilder.addField(p + "HSELECT",
-                    "This will display the available heists you can select." +
-                            "**Some heists may not accept you as you may not be the required level",
-                    true);
-            embedBuilder.addField(p + "H<HEIST>",
-                    "This will choose `<HEIST>` as the Heist you wish to play. " +
-                            "If I entered `" + p + "HCodebreaker` I would be selecting `Codebreaker`" +
-                            " as my chosen heist.",
-                    true);
-            embedBuilder.addField(p + "HSTART",
-                    "This will begin a heist, and is only allowed to be triggered " +
-                            "by the heist leader.",
-                    true);
-            embedBuilder.addField(p + "HABORT",
-                    "This will automatically abort a heist. No refunds.",
-                    true);
+                Heist heist = Heist.HeistUtil.getHeistById(event.getChannel().getId());
+                Participant former = heist.getParticipant(event.getMessage().getMentionedUsers().get(0).getId());
+                if(former == null){
+                    event.getChannel().sendMessage("The person you pinged is not in the heist!").queue();
+                    return;
+                }
 
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
+                Participant latter = new Participant(former.userID, former.userName, former.heistPosition, cut);
+                heist.replaceParticipant(former, latter);
+                heist.save();
 
+                event.getChannel().sendMessage(heist.heistState()).queue();
+            } catch (HeistNotFoundException e) {
+                event.getChannel().sendMessage("There was no heist found with the channel ID of: " +
+                        e.getChannelID()).queue();
+            } catch (IndexOutOfBoundsException e){
+                event.getChannel().sendMessage("You need to ping a user!").queue();
+            }
+        } else if(command.equalsIgnoreCase("START")){
+            try {
+                Heist heist = Heist.HeistUtil.getHeistById(event.getChannel().getId());
+                heist.start();
+                heist.save();
+
+                Stage stage = heist.getCurrentStage();
+                event.getChannel().sendMessage(stage.option()).queue();
+            } catch (HeistNotFoundException e) {
+                event.getChannel().sendMessage("There was no heist found with the channel ID of: " +
+                        e.getChannelID()).queue();
+            } catch (HeistStartupException e) {
+                event.getChannel().sendMessage(e.getReason()).queue();
+            }
+        } else if(command.toUpperCase().startsWith("USE")){
+            try {
+                Heist heist = Heist.HeistUtil.getHeistById(event.getChannel().getId());
+                Participant participant = heist.getParticipant(event.getAuthor().getId());
+
+                Item item = participant.toProfile()
+                        .getSpecificItem(commandArgument);
+                Stage stage = heist.getCurrentStage();
+                Stage.Result result = stage.result(item);
+
+                event.getChannel().sendMessage(result.embed).queue();
+
+                switch (result.resultInteger){
+                    case 0xA: {
+                        heist.nextStage();
+                        event.getChannel().sendMessage(stage.option()).queue();
+                        heist.save();
+                    }
+                    case 0xB: {
+                        for(Participant participant1 : heist.getAllParticipants()){
+                            if(participant1 == participant) continue;
+                            GuildListener.heistControl.put(participant1.userID, heist.getName());
+                        }
+                        GuildListener.prison.put(participant.userID, heist.getName());
+                        heist.delete();
+                    }
+                    case 0xC: {
+                        heist.reward();
+                        heist.delete();
+                    }
+                }
+            } catch (HeistNotFoundException e) {
+                event.getChannel().sendMessage("There was no heist found with the channel ID of: " +
+                        e.getChannelID()).queue();
+            } catch (ItemNotFound itemNotFound) {
+                event.getChannel().sendMessage("There were no items found names " + itemNotFound.getItem() +
+                        " that you own.").queue();
+            }
         }
     }),
     CREATE_PROFILE(event -> {
@@ -811,57 +743,7 @@ public enum Command {
         }
     }),
     WRAP(event -> {
-        String message = event.getMessage().getContentRaw();
-        try {
-            Profile userProfile = Profile.getProfile(event.getAuthor());
-
-            if(message.toUpperCase().contains(Wrap.CHAMPIONS.toString())){
-                Wrap.CHAMPIONS.action(userProfile, event);
-                userProfile.recreate();
-                return;
-            } else if(message.toUpperCase().contains(Wrap.PREMIUM.toString())){
-                Wrap.PREMIUM.action(userProfile, event);
-                userProfile.recreate();
-                return;
-            } else if(message.toUpperCase().contains(Wrap.STANDARD.toString())){
-                Wrap.STANDARD.action(userProfile, event);
-                userProfile.recreate();
-                return;
-            } else if(message.toUpperCase().contains(Wrap.BASIC.toString())){
-                Wrap.BASIC.action(userProfile, event);
-                userProfile.recreate();
-                return;
-            }
-        } catch (Exception e) {
-            event.getChannel().sendMessage("You do not have a profile! Enter: `" +
-                    Prefix.guildPrefix(event.getGuild().getId()) + "C`").queue();
-        }
-
-        String prefix = Prefix.guildPrefix(event.getGuild().getId());
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(0x000dff);
-
-
-        embedBuilder.setTitle("Wraps");
-
-        embedBuilder.addField("BASIC: 1,500 coins",
-                "Contains 1 Common Sorino\n" +
-                      "Enter `" + prefix + "WBASIC` to open.",
-                true);
-        embedBuilder.addField("STANDARD: 10,000 coins",
-                "Contains a mix of 2 Common or Uncommon Sorino\n" +
-                        "Enter `" + prefix + "WSTANDARD` to open.",
-                true);
-        embedBuilder.addField("PREMIUM: 45,000 coins",
-                "Contains a mix of 3 Uncommon or Rare Sorino\n" +
-                        "Enter `" + prefix + "WPREMIUM` to open.",
-                true);
-        embedBuilder.addField("CHAMPIONS: 100,000 coins",
-                "Contains a mix of 3 Hidden or Lost Sorino\n" +
-                        "Enter `" + prefix + "WCHAMPIONS` to open.",
-                true);
-
-        event.getChannel().sendMessage(embedBuilder.build()).queue();
+        event.getChannel().sendMessage("Apologies, but Wraps have been removed until further notice.").queue();
     }),
     CHANGE(event -> {
         event.getGuild().retrieveMember(event.getAuthor()).queue( member -> {
@@ -1220,7 +1102,7 @@ public enum Command {
         try {
             if(command.toUpperCase().contains("START")){
 
-                if(FightManager.fightExists(event.getChannel().getId())){
+                if(GameSaver.exists(event.getChannel().getId())){
                     event.getChannel().sendMessage("There is a battle going on currently in this channel.").queue();
                     return;
                 }

@@ -130,10 +130,16 @@ public interface Item {
         }
 
         public static Item randomItem() {
-            ArrayList<AllItems> allItems = new ArrayList<>(EnumSet.allOf(AllItems.class));
+            ArrayList<Item.AllItems> Item = new ArrayList<>(EnumSet.allOf(Item.AllItems.class));
+            ArrayList<Item> randomItem = new ArrayList<>();
 
-            Random random = new Random();
-            return allItems.get(random.nextInt(allItems.size())).getItem();
+            for (Item.AllItems allItem : Item) {
+                Item currItem = allItem.getItem();
+                for(int i = 0; i < currItem.getCapability().getRarity(); i++)
+                    randomItem.add(currItem);
+            }
+
+            return randomItem.get(new Random().nextInt(randomItem.size()));
         }
     }
 

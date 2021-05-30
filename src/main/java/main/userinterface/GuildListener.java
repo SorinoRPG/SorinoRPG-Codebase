@@ -189,7 +189,7 @@ public class GuildListener extends ListenerAdapter {
     public static Map<String, String> heistControl = ExpiringMap
             .builder()
             .maxSize(100000000)
-            .expiration(1, TimeUnit.MINUTES)
+            .expiration(10, TimeUnit.MINUTES)
             .expirationListener((k, v) -> MainBot.getJda().retrieveUserById((String) k).queue(user ->
                 user.openPrivateChannel().queue(channel -> {
                     if(prison.containsKey(user.getId())) return;

@@ -266,6 +266,17 @@ public class Profile {
         return profile;
     }
 
+    public static Profile getProfile(String userID) throws ProfileNotFoundException {
+        MongoCollection<Document> collection = Mongo.mongoClient()
+                .getDatabase("user")
+                .getCollection("account");
+        if(!collection.find(new Document("userID", userID)).iterator().hasNext())
+            throw new ProfileNotFoundException();
+
+        Document document = collection.find(new Document("userID", userID)).first();
+        return Profile.toProfile(document);
+    }
+
     public static boolean profileExists(String userID) {
         return Mongo.mongoClient()
                 .getDatabase("user")
@@ -275,9 +286,13 @@ public class Profile {
 
     public Document toDocument(){
         ArrayList<String> sorinoStr = new ArrayList<>();
+        ArrayList<Document> items = new ArrayList();
 
         for(Sorino sorino : userSorino)
             sorinoStr.add(sorino.getName());
+        for(Item item  : userItems){
+            items.add(item.toDocument());
+        }
 
         return new Document("coins", coins)
                 .append("wins", wins)
@@ -290,7 +305,7 @@ public class Profile {
                 .append("name", name)
                 .append("imageUrl", imageUrl)
                 .append("userSorino", sorinoStr)
-                .append("userItems", userItems);
+                .append("userItems", items);
     }
 
     public static Profile toProfile(Document document){
@@ -333,8 +348,13 @@ public class Profile {
 
     @Override
     public String toString() {
+        ArrayList<String> items = new ArrayList<>();
+        for(Item item : userItems)
+            items.add(item.getName() + "(" + item.getDuplication() + ")");
+
+
         return "Sorino: " + userSorino.toString() + "\n" +
-                "Items: " + userItems.toString() + "\n" +
+                "Items: " + items.toString() + "\n" +
                 "Coins: " + coins + "\n" +
                 "Wins: " + wins + "\n" +
                 "Loses: " + loses + "\n" +

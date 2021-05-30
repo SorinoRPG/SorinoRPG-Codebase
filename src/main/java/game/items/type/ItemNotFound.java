@@ -7,6 +7,9 @@ public class ItemNotFound extends Exception{
         this.item = item;
     }
 
+    public String getItem() {
+        return item;
+    }
 
     @Override
     public String toString() {

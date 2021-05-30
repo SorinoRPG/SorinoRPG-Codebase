@@ -4,39 +4,20 @@ package game.fight;
 import data.Profile;
 import data.ProfileNotFoundException;
 
-import data.logging.Logger;
-
+import game.GameSaver;
 import game.characters.Sorino;
 
-import main.MainBot;
 import main.Paginator;
 import main.userinterface.Prefix;
 import main.userinterface.UserAction;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.jodah.expiringmap.ExpiringMap;
 
-import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class FightManager {
-    public static
-    ExpiringMap<String, Fight> fightMap = ExpiringMap.builder()
-            .maxSize(10000000)
-            .expiration(1, TimeUnit.HOURS)
-            .expirationListener((k, v) -> {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(0x00dff);
-                embed.setTitle("This fight has gone on for 1 hour.");
-                embed.setDescription("The fight in this channel has gone on too long, therefore it was deleted.");
-                embed.setFooter("All user-data will stay as it was before the fight.");
-
-                //noinspection ConstantConditions
-                MainBot.getJda().getTextChannelById((String) k).sendMessage(embed.build()).queue();
-            }).build();
 
     interface ChooseSorino {
         void action(User user, GuildMessageReceivedEvent event);
@@ -256,9 +237,5 @@ public class FightManager {
                         }));
 
         return returnMultiplier.get();
-    }
-
-    public static boolean fightExists(String channelID){
-        return fightMap.containsKey(channelID);
     }
 }
